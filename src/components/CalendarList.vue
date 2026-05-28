@@ -59,15 +59,14 @@
           </div>
           
           <div v-if="diary.images && diary.images.length > 0" class="diary-images" @click.stop>
-            <viewer :images="diary.images" class="image-viewer">
-              <img 
-                v-for="(img, idx) in diary.images.slice(0, 3)" 
-                :key="idx" 
-                :src="img" 
-                alt="" 
-                class="diary-image"
-              />
-            </viewer>
+            <img 
+              v-for="(img, idx) in diary.images.slice(0, 3)" 
+              :key="idx" 
+              :src="img" 
+              alt="" 
+              class="diary-image"
+              @click="previewImage(img)"
+            />
             <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
         </div>
@@ -80,24 +79,41 @@
         <span>点击添加日记</span>
       </div>
     </div>
+    
+    <!-- 图片预览 -->
+    <transition name="preview-fade">
+      <div v-if="previewVisible" class="image-preview-modal" @click="closePreview">
+        <img :src="previewSrc" alt="" class="preview-image" />
+        <button class="close-preview-btn" @click="closePreview">×</button>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, nextTick } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
-import { Viewer } from 'v-viewer';
-import 'viewerjs/dist/viewer.css';
 
 const store = useDiaryStore();
 const emit = defineEmits(['select-day', 'edit-diary']);
 
 const listRef = ref(null);
+const previewVisible = ref(false);
+const previewSrc = ref('');
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
 const hasMarketMarks = (diary) => {
   return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
+};
+
+const previewImage = (src) => {
+  previewSrc.value = src;
+  previewVisible.value = true;
+};
+
+const closePreview = () => {
+  previewVisible.value = false;
 };
 
 const calendarDays = computed(() => {
@@ -346,16 +362,17 @@ const handleEditDiary = (day, diary) => {
   flex-wrap: wrap;
 }
 
-.image-viewer {
-  display: contents;
-}
-
 .diary-image {
   width: 40px;
   height: 40px;
   border-radius: 4px;
   object-fit: cover;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.diary-image:hover {
+  transform: scale(1.1);
 }
 
 .image-more {
@@ -387,6 +404,53 @@ const handleEditDiary = (day, diary) => {
 
 .no-diary:hover {
   color: #4080ff;
+}
+
+/* 图片预览 */
+.image-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.close-preview-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-fade-enter-active,
+.preview-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.preview-fade-enter-from,
+.preview-fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {

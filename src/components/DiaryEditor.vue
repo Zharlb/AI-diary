@@ -247,16 +247,15 @@
                     <span>点击或拖拽图片到此处上传</span>
                   </div>
                   <div class="image-preview-list" v-else>
-                    <viewer :images="form.images" class="image-viewer">
-                      <div 
-                        v-for="(img, index) in form.images" 
-                        :key="index" 
-                        class="image-item"
-                      >
-                        <img :src="img" alt="" />
-                        <button class="remove-image" @click.stop="removeImage(index)">×</button>
-                      </div>
-                    </viewer>
+                    <div 
+                      v-for="(img, index) in form.images" 
+                      :key="index" 
+                      class="image-item"
+                      @click.stop="previewImage(img)"
+                    >
+                      <img :src="img" alt="" />
+                      <button class="remove-image" @click.stop="removeImage(index)">×</button>
+                    </div>
                     <div class="add-more-images" @click.stop="triggerFileInput">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
@@ -339,6 +338,14 @@
           </div>
         </div>
       </transition>
+      
+      <!-- 图片预览 -->
+      <transition name="preview-fade">
+        <div v-if="previewVisible" class="image-preview-modal" @click="closePreview">
+          <img :src="previewSrc" alt="" class="preview-image" />
+          <button class="close-preview-btn" @click="closePreview">×</button>
+        </div>
+      </transition>
     </div>
   </transition>
 </template>
@@ -347,9 +354,7 @@
 import { ref, watch, reactive, computed, nextTick } from 'vue'
 import { useDiaryStore, formatDate } from '@/stores/diary'
 import { QuillEditor } from '@vueup/vue-quill'
-import { Viewer } from 'v-viewer'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import 'viewerjs/dist/viewer.css'
 
 const props = defineProps({
   visible: Boolean,
@@ -366,6 +371,8 @@ const editorMode = ref('edit')
 const newTag = ref('')
 const fileInputRef = ref(null)
 const expandedHistory = ref({})
+const previewVisible = ref(false)
+const previewSrc = ref('')
 
 const form = reactive({
   title: '',
@@ -401,10 +408,6 @@ const reversedHistory = computed(() => {
   if (!props.diary || !props.diary.history) return []
   return [...props.diary.history].reverse()
 })
-
-const toggleHistoryItem = (index) => {
-  expandedHistory.value[index] = !expandedHistory.value[index]
-}
 
 watch(() => props.visible, (val) => {
   if (val) {
@@ -497,6 +500,19 @@ const handleFileSelect = (e) => {
 
 const removeImage = (index) => {
   form.images.splice(index, 1)
+}
+
+const previewImage = (src) => {
+  previewSrc.value = src
+  previewVisible.value = true
+}
+
+const closePreview = () => {
+  previewVisible.value = false
+}
+
+const toggleHistoryItem = (index) => {
+  expandedHistory.value[index] = !expandedHistory.value[index]
 }
 
 const trackChanges = () => {
@@ -1029,10 +1045,6 @@ const handleClose = () => {
   gap: 10px;
 }
 
-.image-viewer {
-  display: contents;
-}
-
 .image-item {
   position: relative;
   width: 80px;
@@ -1322,6 +1334,53 @@ const handleClose = () => {
 
 .btn-danger:hover {
   background: #ee5a5a;
+}
+
+/* 图片预览 */
+.image-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.close-preview-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-fade-enter-active,
+.preview-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.preview-fade-enter-from,
+.preview-fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {
