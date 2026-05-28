@@ -35,7 +35,7 @@ import { computed } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 
 const store = useDiaryStore()
-const emit = defineEmits(['today-clicked'])
+const emit = defineEmits(['today-clicked', 'view-changed'])
 
 const viewModes = [
   { value: 'week', label: '周' },
@@ -60,7 +60,11 @@ const currentDateText = computed(() => {
 })
 
 const handleViewChange = (mode) => {
+  // 切换视图时设置日期为今天
+  const now = new Date()
   store.setViewMode(mode)
+  store.setCurrentDate(now)
+  emit('view-changed')
 }
 
 const handlePrev = () => {

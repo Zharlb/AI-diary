@@ -11,7 +11,7 @@
     </header>
     
     <div class="toolbar-wrapper">
-      <CalendarToolbar @today-clicked="handleTodayClicked" />
+      <CalendarToolbar @today-clicked="handleTodayClicked" @view-changed="handleTodayClicked" />
     </div>
     
     <main class="app-main">
