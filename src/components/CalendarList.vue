@@ -45,8 +45,28 @@
         >
           <div v-if="diary.title" class="diary-title">{{ diary.title }}</div>
           <div v-if="diary.summary" class="diary-summary">{{ diary.summary }}</div>
+          
+          <div v-if="hasMarketMarks(diary)" class="market-marks">
+            <span v-if="diary.marketMark" :class="['mark-badge', diary.marketMark]">大盘</span>
+            <span v-if="diary.volumeMark" :class="['mark-badge', diary.volumeMark]">量能</span>
+            <span v-if="diary.indexMark" :class="['mark-badge', diary.indexMark]">指数</span>
+            <span v-if="diary.focusMark" :class="['mark-badge', diary.focusMark]">重点</span>
+            <span v-if="diary.expectationMark" :class="['mark-badge', diary.expectationMark]">预期</span>
+          </div>
+          
           <div v-if="diary.tags && diary.tags.length > 0" class="diary-tags">
             <span v-for="tag in diary.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
+          </div>
+          
+          <div v-if="diary.images && diary.images.length > 0" class="diary-images">
+            <img 
+              v-for="(img, idx) in diary.images.slice(0, 3)" 
+              :key="idx" 
+              :src="img" 
+              alt="" 
+              class="diary-image"
+            />
+            <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
         </div>
         <div v-if="day.diaries.length > 3" class="more-diaries">
@@ -71,6 +91,10 @@ const emit = defineEmits(['select-day', 'edit-diary']);
 const listRef = ref(null);
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+
+const hasMarketMarks = (diary) => {
+  return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
+};
 
 const calendarDays = computed(() => {
   const result = [];
@@ -274,6 +298,30 @@ const handleEditDiary = (day, diary) => {
   overflow: hidden;
 }
 
+.market-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.mark-badge {
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.mark-badge.red {
+  background: #ffe0e0;
+  color: #ff4444;
+}
+
+.mark-badge.green {
+  background: #e0ffe0;
+  color: #00c853;
+}
+
 .diary-tags {
   display: flex;
   gap: 4px;
@@ -287,6 +335,32 @@ const handleEditDiary = (day, diary) => {
   color: #4080ff;
   font-size: 11px;
   border-radius: 12px;
+}
+
+.diary-images {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.diary-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.image-more {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #666;
 }
 
 .more-diaries {
@@ -356,6 +430,16 @@ const handleEditDiary = (day, diary) => {
   .no-diary {
     padding: 14px;
     font-size: 12px;
+  }
+  
+  .diary-image {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .image-more {
+    width: 36px;
+    height: 36px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <transition name="modal-fade">
-    <div class="diary-modal" v-if="visible" @click.self="handleClose">
+    <div class="diary-modal" v-if="visible">
       <transition name="modal-scale">
         <div class="modal-content" v-if="visible">
           <div class="modal-header">
@@ -20,11 +20,16 @@
               </div>
               <div class="form-group">
                 <label>重要程度</label>
-                <select v-model="form.importance" class="form-select">
-                  <option value="low">普通</option>
-                  <option value="medium">重要</option>
-                  <option value="high">非常重要</option>
-                </select>
+                <div class="importance-btns">
+                  <button 
+                    v-for="imp in importanceOptions" 
+                    :key="imp.value"
+                    :class="['imp-btn', imp.value, { active: form.importance === imp.value }]"
+                    @click="form.importance = imp.value"
+                  >
+                    {{ imp.label }}
+                  </button>
+                </div>
               </div>
               <div class="form-group">
                 <label>颜色标记</label>
@@ -77,43 +82,79 @@
               <h3>市场记录</h3>
               
               <div class="form-row">
-                <div class="form-group">
-                  <label>大盘</label>
+                <div class="form-group market-item">
+                  <div class="market-label-row">
+                    <label>大盘</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'red', { active: form.marketMark === 'red' }]"
+                        @click="form.marketMark = form.marketMark === 'red' ? '' : 'red'"
+                      >红</button>
+                      <button 
+                        :class="['mark-btn', 'green', { active: form.marketMark === 'green' }]"
+                        @click="form.marketMark = form.marketMark === 'green' ? '' : 'green'"
+                      >绿</button>
+                    </div>
+                  </div>
                   <div class="quick-input">
                     <input v-model="form.market" type="text" class="form-input" />
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.market" 
                         :key="opt"
-                        class="quick-btn"
+                        :class="['quick-btn', { selected: form.market === opt }]"
                         @click="form.market = opt"
                       >{{ opt }}</button>
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label>量能</label>
+                <div class="form-group market-item">
+                  <div class="market-label-row">
+                    <label>量能</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'red', { active: form.volumeMark === 'red' }]"
+                        @click="form.volumeMark = form.volumeMark === 'red' ? '' : 'red'"
+                      >红</button>
+                      <button 
+                        :class="['mark-btn', 'green', { active: form.volumeMark === 'green' }]"
+                        @click="form.volumeMark = form.volumeMark === 'green' ? '' : 'green'"
+                      >绿</button>
+                    </div>
+                  </div>
                   <div class="quick-input">
                     <input v-model="form.volume" type="text" class="form-input" />
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.volume" 
                         :key="opt"
-                        class="quick-btn"
+                        :class="['quick-btn', { selected: form.volume === opt }]"
                         @click="form.volume = opt"
                       >{{ opt }}</button>
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label>指数</label>
+                <div class="form-group market-item">
+                  <div class="market-label-row">
+                    <label>指数</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'red', { active: form.indexMark === 'red' }]"
+                        @click="form.indexMark = form.indexMark === 'red' ? '' : 'red'"
+                      >红</button>
+                      <button 
+                        :class="['mark-btn', 'green', { active: form.indexMark === 'green' }]"
+                        @click="form.indexMark = form.indexMark === 'green' ? '' : 'green'"
+                      >绿</button>
+                    </div>
+                  </div>
                   <div class="quick-input">
                     <input v-model="form.index" type="text" class="form-input" />
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.index" 
                         :key="opt"
-                        class="quick-btn"
+                        :class="['quick-btn', { selected: form.index === opt }]"
                         @click="form.index = opt"
                       >{{ opt }}</button>
                     </div>
@@ -122,31 +163,90 @@
               </div>
               
               <div class="form-row">
-                <div class="form-group">
-                  <label>重点</label>
+                <div class="form-group market-item">
+                  <div class="market-label-row">
+                    <label>重点</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'red', { active: form.focusMark === 'red' }]"
+                        @click="form.focusMark = form.focusMark === 'red' ? '' : 'red'"
+                      >红</button>
+                      <button 
+                        :class="['mark-btn', 'green', { active: form.focusMark === 'green' }]"
+                        @click="form.focusMark = form.focusMark === 'green' ? '' : 'green'"
+                      >绿</button>
+                    </div>
+                  </div>
                   <div class="quick-input">
                     <input v-model="form.focus" type="text" class="form-input" />
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.focus" 
                         :key="opt"
-                        class="quick-btn"
+                        :class="['quick-btn', { selected: form.focus === opt }]"
                         @click="form.focus = opt"
                       >{{ opt }}</button>
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label>预期</label>
+                <div class="form-group market-item">
+                  <div class="market-label-row">
+                    <label>预期</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'red', { active: form.expectationMark === 'red' }]"
+                        @click="form.expectationMark = form.expectationMark === 'red' ? '' : 'red'"
+                      >红</button>
+                      <button 
+                        :class="['mark-btn', 'green', { active: form.expectationMark === 'green' }]"
+                        @click="form.expectationMark = form.expectationMark === 'green' ? '' : 'green'"
+                      >绿</button>
+                    </div>
+                  </div>
                   <div class="quick-input">
                     <input v-model="form.expectation" type="text" class="form-input" />
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.expectation" 
                         :key="opt"
-                        class="quick-btn"
+                        :class="['quick-btn', { selected: form.expectation === opt }]"
                         @click="form.expectation = opt"
                       >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>图片上传</label>
+                <div class="image-upload-area" @click="triggerFileInput">
+                  <input 
+                    type="file" 
+                    ref="fileInputRef"
+                    accept="image/*" 
+                    multiple 
+                    @change="handleFileSelect"
+                    style="display: none;"
+                  />
+                  <div class="upload-placeholder" v-if="form.images.length === 0">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>点击或拖拽图片到此处上传</span>
+                  </div>
+                  <div class="image-preview-list" v-else>
+                    <div v-for="(img, index) in form.images" :key="index" class="image-item">
+                      <img :src="img" alt="" />
+                      <button class="remove-image" @click.stop="removeImage(index)">×</button>
+                    </div>
+                    <div class="add-more-images" @click.stop="triggerFileInput">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -166,16 +266,28 @@
                     @click="editorMode = 'preview'"
                   >预览</button>
                 </div>
-                <textarea 
-                  v-model="form.content" 
-                  placeholder="输入日记内容..." 
-                  class="form-textarea"
-                  :class="{ hidden: editorMode === 'preview' }"
-                ></textarea>
+                <div class="rich-editor" v-show="editorMode === 'edit'">
+                  <div class="toolbar">
+                    <button type="button" @click="execCommand('bold')" title="加粗"><b>B</b></button>
+                    <button type="button" @click="execCommand('italic')" title="斜体"><i>I</i></button>
+                    <button type="button" @click="execCommand('underline')" title="下划线"><u>U</u></button>
+                    <button type="button" @click="execCommand('strikeThrough')" title="删除线"><s>S</s></button>
+                    <span class="separator">|</span>
+                    <button type="button" @click="execCommand('insertUnorderedList')" title="无序列表">• 列表</button>
+                    <button type="button" @click="execCommand('insertOrderedList')" title="有序列表">1. 列表</button>
+                  </div>
+                  <div 
+                    ref="editorRef"
+                    contenteditable="true"
+                    class="editor-content"
+                    @input="handleEditorInput"
+                    @paste="handlePaste"
+                  ></div>
+                </div>
                 <div 
                   v-if="editorMode === 'preview'" 
                   class="preview-content"
-                  v-html="renderPreview()"
+                  v-html="form.content"
                 ></div>
               </div>
             </div>
@@ -184,8 +296,21 @@
               <h3>修改记录</h3>
               <div class="history-list">
                 <div v-for="(item, index) in diary.history" :key="index" class="history-item">
-                  <span class="history-time">{{ formatTime(item.time) }}</span>
-                  <span class="history-action">{{ item.action }}</span>
+                  <div class="history-header">
+                    <span class="history-time">{{ formatTime(item.time) }}</span>
+                    <span class="history-action">{{ item.action }}</span>
+                  </div>
+                  <div v-if="item.changes && item.changes.length > 0" class="history-changes">
+                    <div v-for="(change, cIndex) in item.changes" :key="cIndex" class="change-item">
+                      <span class="change-field">{{ change.field }}</span>
+                      <span class="change-detail">
+                        <span v-if="change.oldValue" class="old-value">{{ change.oldValue }}</span>
+                        <span class="arrow">→</span>
+                        <span v-if="change.newValue" class="new-value">{{ change.newValue }}</span>
+                        <span v-if="change.position" class="change-position">({{ change.position }})</span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -203,7 +328,7 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, computed } from 'vue'
+import { ref, watch, reactive, computed, nextTick } from 'vue'
 import { useDiaryStore, formatDate } from '@/stores/diary'
 
 const props = defineProps({
@@ -219,6 +344,14 @@ const quickOptions = computed(() => store.quickOptions)
 
 const editorMode = ref('edit')
 const newTag = ref('')
+const editorRef = ref(null)
+const fileInputRef = ref(null)
+
+const importanceOptions = [
+  { value: 'low', label: '普通' },
+  { value: 'medium', label: '重要' },
+  { value: 'high', label: '非常重要' }
+]
 
 const form = reactive({
   title: '',
@@ -231,7 +364,13 @@ const form = reactive({
   volume: '',
   index: '',
   focus: '',
-  expectation: ''
+  expectation: '',
+  marketMark: '',
+  volumeMark: '',
+  indexMark: '',
+  focusMark: '',
+  expectationMark: '',
+  images: []
 })
 
 const colors = [
@@ -246,10 +385,12 @@ const colors = [
 ]
 
 const isEdit = computed(() => !!props.diary)
+const originalDiary = ref(null)
 
 watch(() => props.visible, (val) => {
   if (val) {
     if (props.diary) {
+      originalDiary.value = JSON.parse(JSON.stringify(props.diary))
       Object.assign(form, {
         title: props.diary.title || '',
         summary: props.diary.summary || '',
@@ -261,9 +402,21 @@ watch(() => props.visible, (val) => {
         volume: props.diary.volume || '',
         index: props.diary.index || '',
         focus: props.diary.focus || '',
-        expectation: props.diary.expectation || ''
+        expectation: props.diary.expectation || '',
+        marketMark: props.diary.marketMark || '',
+        volumeMark: props.diary.volumeMark || '',
+        indexMark: props.diary.indexMark || '',
+        focusMark: props.diary.focusMark || '',
+        expectationMark: props.diary.expectationMark || '',
+        images: [...(props.diary.images || [])]
+      })
+      nextTick(() => {
+        if (editorRef.value) {
+          editorRef.value.innerHTML = form.content
+        }
       })
     } else {
+      originalDiary.value = null
       Object.assign(form, {
         title: '',
         summary: '',
@@ -275,7 +428,18 @@ watch(() => props.visible, (val) => {
         volume: '',
         index: '',
         focus: '',
-        expectation: ''
+        expectation: '',
+        marketMark: '',
+        volumeMark: '',
+        indexMark: '',
+        focusMark: '',
+        expectationMark: '',
+        images: []
+      })
+      nextTick(() => {
+        if (editorRef.value) {
+          editorRef.value.innerHTML = ''
+        }
       })
     }
     editorMode.value = 'edit'
@@ -297,12 +461,109 @@ const removeTag = (tag) => {
   }
 }
 
-const renderPreview = () => {
-  let html = form.content
-    .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-  return html
+const execCommand = (command) => {
+  document.execCommand(command, false, null)
+  if (editorRef.value) {
+    editorRef.value.focus()
+  }
+}
+
+const handleEditorInput = () => {
+  if (editorRef.value) {
+    form.content = editorRef.value.innerHTML
+  }
+}
+
+const handlePaste = (e) => {
+  e.preventDefault()
+  const text = e.clipboardData.getData('text/plain')
+  document.execCommand('insertText', false, text)
+}
+
+const triggerFileInput = () => {
+  fileInputRef.value?.click()
+}
+
+const handleFileSelect = (e) => {
+  const files = e.target.files
+  if (files) {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        form.images.push(event.target.result)
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+  e.target.value = ''
+}
+
+const removeImage = (index) => {
+  form.images.splice(index, 1)
+}
+
+const trackChanges = () => {
+  if (!originalDiary.value) return []
+  
+  const changes = []
+  const fields = [
+    { key: 'title', label: '标题' },
+    { key: 'summary', label: '概要' },
+    { key: 'content', label: '内容' },
+    { key: 'importance', label: '重要程度' },
+    { key: 'color', label: '颜色' },
+    { key: 'market', label: '大盘' },
+    { key: 'volume', label: '量能' },
+    { key: 'index', label: '指数' },
+    { key: 'focus', label: '重点' },
+    { key: 'expectation', label: '预期' },
+    { key: 'marketMark', label: '大盘标记' },
+    { key: 'volumeMark', label: '量能标记' },
+    { key: 'indexMark', label: '指数标记' },
+    { key: 'focusMark', label: '重点标记' },
+    { key: 'expectationMark', label: '预期标记' },
+    { key: 'tags', label: '标签' }
+  ]
+  
+  fields.forEach(field => {
+    const oldVal = originalDiary.value[field.key]
+    const newVal = form[field.key]
+    
+    if (field.key === 'tags') {
+      const oldStr = Array.isArray(oldVal) ? oldVal.join(',') : ''
+      const newStr = Array.isArray(newVal) ? newVal.join(',') : ''
+      if (oldStr !== newStr) {
+        changes.push({
+          field: field.label,
+          oldValue: oldStr || '(空)',
+          newValue: newStr || '(空)',
+          position: '标签列表'
+        })
+      }
+    } else if (field.key === 'content') {
+      if (oldVal !== newVal) {
+        changes.push({
+          field: field.label,
+          oldValue: '(已修改)' ,
+          newValue: '(已修改)',
+          position: '富文本内容'
+        })
+      }
+    } else {
+      const oldStr = String(oldVal || '')
+      const newStr = String(newVal || '')
+      if (oldStr !== newStr) {
+        changes.push({
+          field: field.label,
+          oldValue: oldStr || '(空)',
+          newValue: newStr || '(空)',
+          position: '表单输入'
+        })
+      }
+    }
+  })
+  
+  return changes
 }
 
 const formatTime = (time) => {
@@ -328,7 +589,8 @@ const handleSave = () => {
   }
   
   if (props.diary) {
-    store.updateDiary(props.diary.id, data)
+    const changes = trackChanges()
+    store.updateDiary(props.diary.id, data, changes.length > 0 ? changes : undefined)
   } else {
     store.addDiary(data)
   }
@@ -390,7 +652,7 @@ const handleClose = () => {
   background: white;
   border-radius: 12px;
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -473,20 +735,6 @@ const handleClose = () => {
   border-color: #4080ff;
 }
 
-.form-select {
-  padding: 9px 11px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  background: white;
-  cursor: pointer;
-}
-
-.form-select:focus {
-  border-color: #4080ff;
-}
-
 .form-textarea {
   padding: 11px;
   border: 1px solid #e0e0e0;
@@ -504,10 +752,6 @@ const handleClose = () => {
 
 .form-textarea:focus {
   border-color: #4080ff;
-}
-
-.form-textarea.hidden {
-  display: none;
 }
 
 .color-picker {
@@ -531,6 +775,45 @@ const handleClose = () => {
 
 .color-btn.active {
   border-color: #333;
+}
+
+.importance-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.imp-btn {
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.imp-btn:hover {
+  border-color: #4080ff;
+  color: #4080ff;
+}
+
+.imp-btn.active.low {
+  background: #6bcb77;
+  border-color: #6bcb77;
+  color: white;
+}
+
+.imp-btn.active.medium {
+  background: #ffd93d;
+  border-color: #ffd93d;
+  color: #333;
+}
+
+.imp-btn.active.high {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+  color: white;
 }
 
 .tags-container {
@@ -603,6 +886,61 @@ const handleClose = () => {
   color: #333;
 }
 
+.market-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.market-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.market-label-row label {
+  margin: 0;
+}
+
+.color-marks {
+  display: flex;
+  gap: 4px;
+}
+
+.mark-btn {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mark-btn.red {
+  background: #fff;
+  color: #ff4444;
+  border-color: #ffcccc;
+}
+
+.mark-btn.red.active {
+  background: #ff4444;
+  color: white;
+  border-color: #ff4444;
+}
+
+.mark-btn.green {
+  background: #fff;
+  color: #00c853;
+  border-color: #ccffcc;
+}
+
+.mark-btn.green.active {
+  background: #00c853;
+  color: white;
+  border-color: #00c853;
+}
+
 .quick-input {
   display: flex;
   flex-direction: column;
@@ -632,6 +970,90 @@ const handleClose = () => {
   color: #4080ff;
 }
 
+.quick-btn.selected {
+  background: #4080ff;
+  border-color: #4080ff;
+  color: white;
+}
+
+.image-upload-area {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 100px;
+}
+
+.image-upload-area:hover {
+  border-color: #4080ff;
+  background: #f8f9ff;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #999;
+  font-size: 13px;
+}
+
+.image-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-more-images {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-more-images:hover {
+  border-color: #4080ff;
+  color: #4080ff;
+}
+
 .editor-tabs {
   display: flex;
   gap: 7px;
@@ -654,9 +1076,53 @@ const handleClose = () => {
   color: white;
 }
 
+.rich-editor {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  width: 30px;
+  height: 28px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.toolbar button:hover {
+  background: #f0f5ff;
+  border-color: #4080ff;
+}
+
+.separator {
+  color: #ddd;
+  line-height: 28px;
+}
+
+.editor-content {
+  min-height: 150px;
+  padding: 12px;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .preview-content {
-  min-height: 90px;
-  padding: 11px;
+  min-height: 150px;
+  padding: 12px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
@@ -679,18 +1145,78 @@ const handleClose = () => {
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .history-item {
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.history-header {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 6px;
   font-size: 12px;
-  color: #666;
 }
 
 .history-time {
   color: #999;
+}
+
+.history-action {
+  color: #4080ff;
+  font-weight: 500;
+}
+
+.history-changes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed #e0e0e0;
+}
+
+.change-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.change-field {
+  color: #666;
+  min-width: 60px;
+}
+
+.change-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.old-value {
+  color: #ff6b6b;
+  text-decoration: line-through;
+}
+
+.arrow {
+  color: #999;
+}
+
+.new-value {
+  color: #6bcb77;
+  font-weight: 500;
+}
+
+.change-position {
+  color: #999;
+  font-size: 11px;
+  font-style: italic;
 }
 
 .modal-footer {
@@ -770,6 +1296,14 @@ const handleClose = () => {
   
   .market-section {
     padding: 12px;
+  }
+  
+  .market-item {
+    min-width: 100%;
+  }
+  
+  .importance-btns {
+    flex-wrap: wrap;
   }
   
   .modal-footer {

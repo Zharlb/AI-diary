@@ -41,11 +41,9 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   const addDiary = (diary) => {
-    // 查找是否已有当天的日记
     const existingIndex = diaries.value.findIndex(d => d.date === diary.date)
     
     if (existingIndex !== -1) {
-      // 更新已有的日记
       diaries.value[existingIndex] = {
         ...diaries.value[existingIndex],
         ...diary,
@@ -61,7 +59,6 @@ export const useDiaryStore = defineStore('diary', () => {
       saveToStorage(STORAGE_KEY, diaries.value)
       return diaries.value[existingIndex]
     } else {
-      // 创建新日记
       const newDiary = {
         id: Date.now(),
         ...diary,
@@ -78,19 +75,25 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  const updateDiary = (id, updates) => {
+  const updateDiary = (id, updates, changes = null) => {
     const index = diaries.value.findIndex(d => d.id === id)
     if (index !== -1) {
+      const historyEntry = {
+        time: new Date().toISOString(),
+        action: '修改'
+      }
+      
+      if (changes && changes.length > 0) {
+        historyEntry.changes = changes
+      }
+      
       diaries.value[index] = {
         ...diaries.value[index],
         ...updates,
         updatedAt: new Date().toISOString(),
         history: [
           ...diaries.value[index].history,
-          {
-            time: new Date().toISOString(),
-            action: '修改'
-          }
+          historyEntry
         ]
       }
       saveToStorage(STORAGE_KEY, diaries.value)
@@ -135,7 +138,6 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   const setCurrentDate = (date) => {
-    // 确保创建一个新的 Date 对象以触发响应式更新
     const newDate = new Date(date)
     newDate.setHours(0, 0, 0, 0)
     currentDate.value = newDate
