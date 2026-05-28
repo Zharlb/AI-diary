@@ -10,8 +10,11 @@
       </button>
     </header>
     
-    <main class="app-main">
+    <div class="toolbar-wrapper">
       <CalendarToolbar />
+    </div>
+    
+    <main class="app-main">
       <CalendarList @select-day="handleDayClick" />
     </main>
     
@@ -21,18 +24,22 @@
       </svg>
     </button>
     
-    <DiaryEditor 
-      :visible="showEditor" 
-      :day="selectedDay"
-      :diary="selectedDiary"
-      @close="showEditor = false"
-      @saved="handleDiarySaved"
-    />
+    <transition name="modal-fade">
+      <DiaryEditor 
+        :visible="showEditor" 
+        :day="selectedDay"
+        :diary="selectedDiary"
+        @close="showEditor = false"
+        @saved="handleDiarySaved"
+      />
+    </transition>
     
-    <QuickOptionsManager 
-      :visible="showQuickOptions" 
-      @close="showQuickOptions = false" 
-    />
+    <transition name="modal-fade">
+      <QuickOptionsManager 
+        :visible="showQuickOptions" 
+        @close="showQuickOptions = false" 
+      />
+    </transition>
   </div>
 </template>
 
@@ -76,10 +83,13 @@ const handleDiarySaved = () => {
 }
 
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 12px 16px;
   background: linear-gradient(135deg, #4080ff 0%, #6a9dff 100%);
   color: white;
   box-shadow: 0 2px 8px rgba(64, 128, 255, 0.3);
@@ -87,13 +97,13 @@ const handleDiarySaved = () => {
 
 .app-header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .options-btn {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
@@ -109,18 +119,28 @@ const handleDiarySaved = () => {
   background: rgba(255, 255, 255, 0.3);
 }
 
+.toolbar-wrapper {
+  position: sticky;
+  top: 56px;
+  z-index: 99;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 8px 16px 0;
+  background: #f5f7fa;
+}
+
 .app-main {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px 16px 20px;
 }
 
 .add-btn {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 60px;
-  height: 60px;
+  right: 16px;
+  bottom: 16px;
+  width: 56px;
+  height: 56px;
   border: none;
   border-radius: 50%;
   background: #4080ff;
@@ -131,6 +151,7 @@ const handleDiarySaved = () => {
   justify-content: center;
   box-shadow: 0 4px 12px rgba(64, 128, 255, 0.4);
   transition: all 0.2s;
+  z-index: 98;
 }
 
 .add-btn:hover {
@@ -138,13 +159,35 @@ const handleDiarySaved = () => {
   box-shadow: 0 6px 16px rgba(64, 128, 255, 0.5);
 }
 
+/* 弹窗过渡效果 */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
 @media (max-width: 768px) {
   .app-main {
-    padding: 12px;
+    padding: 8px 12px 20px;
+  }
+  
+  .toolbar-wrapper {
+    padding: 8px 12px 0;
   }
   
   .app-header h1 {
-    font-size: 20px;
+    font-size: 16px;
+  }
+  
+  .add-btn {
+    width: 52px;
+    height: 52px;
+    right: 12px;
+    bottom: 12px;
   }
 }
 </style>

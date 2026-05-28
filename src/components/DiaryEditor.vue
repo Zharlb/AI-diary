@@ -1,201 +1,205 @@
 <template>
-  <div class="diary-modal" v-if="visible" @click.self="handleClose">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>{{ isEdit ? '编辑日记' : '新建日记' }}</h2>
-        <button class="close-btn" @click="handleClose">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>标题</label>
-            <input v-model="form.title" type="text" placeholder="输入标题" class="form-input" />
-          </div>
-          <div class="form-group">
-            <label>重要程度</label>
-            <select v-model="form.importance" class="form-select">
-              <option value="low">普通</option>
-              <option value="medium">重要</option>
-              <option value="high">非常重要</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>颜色标记</label>
-            <div class="color-picker">
-              <button 
-                v-for="color in colors" 
-                :key="color"
-                :class="['color-btn', { active: form.color === color }]"
-                :style="{ backgroundColor: color }"
-                @click="form.color = color"
-              ></button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>概要</label>
-            <textarea v-model="form.summary" placeholder="输入概要" class="form-textarea short"></textarea>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>标签</label>
-            <div class="tags-container">
-              <div 
-                v-for="tag in form.tags" 
-                :key="tag" 
-                class="tag-item"
-              >
-                {{ tag }}
-                <button @click="removeTag(tag)" class="tag-remove">×</button>
-              </div>
-              <div class="tag-input-wrapper">
-                <input 
-                  v-model="newTag" 
-                  type="text" 
-                  placeholder="添加标签"
-                  class="tag-input"
-                  @keyup.enter="addTag"
-                />
-                <button @click="addTag" class="tag-add-btn">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="market-section">
-          <h3>市场记录</h3>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label>大盘</label>
-              <div class="quick-input">
-                <input v-model="form.market" type="text" class="form-input" />
-                <div class="quick-options">
-                  <button 
-                    v-for="opt in quickOptions.market" 
-                    :key="opt"
-                    class="quick-btn"
-                    @click="form.market = opt"
-                  >{{ opt }}</button>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>量能</label>
-              <div class="quick-input">
-                <input v-model="form.volume" type="text" class="form-input" />
-                <div class="quick-options">
-                  <button 
-                    v-for="opt in quickOptions.volume" 
-                    :key="opt"
-                    class="quick-btn"
-                    @click="form.volume = opt"
-                  >{{ opt }}</button>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>指数</label>
-              <div class="quick-input">
-                <input v-model="form.index" type="text" class="form-input" />
-                <div class="quick-options">
-                  <button 
-                    v-for="opt in quickOptions.index" 
-                    :key="opt"
-                    class="quick-btn"
-                    @click="form.index = opt"
-                  >{{ opt }}</button>
-                </div>
-              </div>
-            </div>
+  <transition name="modal-fade">
+    <div class="diary-modal" v-if="visible" @click.self="handleClose">
+      <transition name="modal-scale">
+        <div class="modal-content" v-if="visible">
+          <div class="modal-header">
+            <h2>{{ isEdit ? '编辑日记' : '新建日记' }}</h2>
+            <button class="close-btn" @click="handleClose">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
           
-          <div class="form-row">
-            <div class="form-group">
-              <label>重点</label>
-              <div class="quick-input">
-                <input v-model="form.focus" type="text" class="form-input" />
-                <div class="quick-options">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>标题</label>
+                <input v-model="form.title" type="text" placeholder="输入标题" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label>重要程度</label>
+                <select v-model="form.importance" class="form-select">
+                  <option value="low">普通</option>
+                  <option value="medium">重要</option>
+                  <option value="high">非常重要</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>颜色标记</label>
+                <div class="color-picker">
                   <button 
-                    v-for="opt in quickOptions.focus" 
-                    :key="opt"
-                    class="quick-btn"
-                    @click="form.focus = opt"
-                  >{{ opt }}</button>
+                    v-for="color in colors" 
+                    :key="color"
+                    :class="['color-btn', { active: form.color === color }]"
+                    :style="{ backgroundColor: color }"
+                    @click="form.color = color"
+                  ></button>
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <label>预期</label>
-              <div class="quick-input">
-                <input v-model="form.expectation" type="text" class="form-input" />
-                <div class="quick-options">
+            
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>概要</label>
+                <textarea v-model="form.summary" placeholder="输入概要" class="form-textarea short"></textarea>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>标签</label>
+                <div class="tags-container">
+                  <div 
+                    v-for="tag in form.tags" 
+                    :key="tag" 
+                    class="tag-item"
+                  >
+                    {{ tag }}
+                    <button @click="removeTag(tag)" class="tag-remove">×</button>
+                  </div>
+                  <div class="tag-input-wrapper">
+                    <input 
+                      v-model="newTag" 
+                      type="text" 
+                      placeholder="添加标签"
+                      class="tag-input"
+                      @keyup.enter="addTag"
+                    />
+                    <button @click="addTag" class="tag-add-btn">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="market-section">
+              <h3>市场记录</h3>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>大盘</label>
+                  <div class="quick-input">
+                    <input v-model="form.market" type="text" class="form-input" />
+                    <div class="quick-options">
+                      <button 
+                        v-for="opt in quickOptions.market" 
+                        :key="opt"
+                        class="quick-btn"
+                        @click="form.market = opt"
+                      >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>量能</label>
+                  <div class="quick-input">
+                    <input v-model="form.volume" type="text" class="form-input" />
+                    <div class="quick-options">
+                      <button 
+                        v-for="opt in quickOptions.volume" 
+                        :key="opt"
+                        class="quick-btn"
+                        @click="form.volume = opt"
+                      >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>指数</label>
+                  <div class="quick-input">
+                    <input v-model="form.index" type="text" class="form-input" />
+                    <div class="quick-options">
+                      <button 
+                        v-for="opt in quickOptions.index" 
+                        :key="opt"
+                        class="quick-btn"
+                        @click="form.index = opt"
+                      >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>重点</label>
+                  <div class="quick-input">
+                    <input v-model="form.focus" type="text" class="form-input" />
+                    <div class="quick-options">
+                      <button 
+                        v-for="opt in quickOptions.focus" 
+                        :key="opt"
+                        class="quick-btn"
+                        @click="form.focus = opt"
+                      >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>预期</label>
+                  <div class="quick-input">
+                    <input v-model="form.expectation" type="text" class="form-input" />
+                    <div class="quick-options">
+                      <button 
+                        v-for="opt in quickOptions.expectation" 
+                        :key="opt"
+                        class="quick-btn"
+                        @click="form.expectation = opt"
+                      >{{ opt }}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>内容</label>
+                <div class="editor-tabs">
                   <button 
-                    v-for="opt in quickOptions.expectation" 
-                    :key="opt"
-                    class="quick-btn"
-                    @click="form.expectation = opt"
-                  >{{ opt }}</button>
+                    :class="['tab-btn', { active: editorMode === 'edit' }]"
+                    @click="editorMode = 'edit'"
+                  >编辑</button>
+                  <button 
+                    :class="['tab-btn', { active: editorMode === 'preview' }]"
+                    @click="editorMode = 'preview'"
+                  >预览</button>
+                </div>
+                <textarea 
+                  v-model="form.content" 
+                  placeholder="输入日记内容..." 
+                  class="form-textarea"
+                  :class="{ hidden: editorMode === 'preview' }"
+                ></textarea>
+                <div 
+                  v-if="editorMode === 'preview'" 
+                  class="preview-content"
+                  v-html="renderPreview()"
+                ></div>
+              </div>
+            </div>
+            
+            <div v-if="diary && diary.history" class="history-section">
+              <h3>修改记录</h3>
+              <div class="history-list">
+                <div v-for="(item, index) in diary.history" :key="index" class="history-item">
+                  <span class="history-time">{{ formatTime(item.time) }}</span>
+                  <span class="history-action">{{ item.action }}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>内容</label>
-            <div class="editor-tabs">
-              <button 
-                :class="['tab-btn', { active: editorMode === 'edit' }]"
-                @click="editorMode = 'edit'"
-              >编辑</button>
-              <button 
-                :class="['tab-btn', { active: editorMode === 'preview' }]"
-                @click="editorMode = 'preview'"
-              >预览</button>
-            </div>
-            <textarea 
-              v-model="form.content" 
-              placeholder="输入日记内容..." 
-              class="form-textarea"
-              :class="{ hidden: editorMode === 'preview' }"
-            ></textarea>
-            <div 
-              v-if="editorMode === 'preview'" 
-              class="preview-content"
-              v-html="renderPreview()"
-            ></div>
+          
+          <div class="modal-footer">
+            <button v-if="isEdit" class="btn btn-danger" @click="handleDelete">删除</button>
+            <button class="btn btn-secondary" @click="handleClose">取消</button>
+            <button class="btn btn-primary" @click="handleSave">保存</button>
           </div>
         </div>
-        
-        <div v-if="diary && diary.history" class="history-section">
-          <h3>修改记录</h3>
-          <div class="history-list">
-            <div v-for="(item, index) in diary.history" :key="index" class="history-item">
-              <span class="history-time">{{ formatTime(item.time) }}</span>
-              <span class="history-action">{{ item.action }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="modal-footer">
-        <button v-if="isEdit" class="btn btn-danger" @click="handleDelete">删除</button>
-        <button class="btn btn-secondary" @click="handleClose">取消</button>
-        <button class="btn btn-primary" @click="handleSave">保存</button>
-      </div>
+      </transition>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script setup>
@@ -347,6 +351,27 @@ const handleClose = () => {
 </script>
 
 <style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-scale-enter-active,
+.modal-scale-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-scale-enter-from,
+.modal-scale-leave-to {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
 .diary-modal {
   position: fixed;
   top: 0;
@@ -358,7 +383,7 @@ const handleClose = () => {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 16px;
 }
 
 .modal-content {
@@ -376,13 +401,13 @@ const handleClose = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   color: #333;
 }
 
@@ -407,33 +432,36 @@ const handleClose = () => {
 .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 16px;
 }
 
 .form-row {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  min-width: 120px;
 }
 
 .form-group.flex-1 {
   flex: 1;
+  min-width: 200px;
 }
 
 .form-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #333;
 }
 
 .form-input {
-  padding: 10px 12px;
+  padding: 9px 11px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
@@ -446,7 +474,7 @@ const handleClose = () => {
 }
 
 .form-select {
-  padding: 10px 12px;
+  padding: 9px 11px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
@@ -460,18 +488,18 @@ const handleClose = () => {
 }
 
 .form-textarea {
-  padding: 12px;
+  padding: 11px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
   outline: none;
   resize: vertical;
-  min-height: 100px;
+  min-height: 90px;
   transition: border-color 0.2s;
 }
 
 .form-textarea.short {
-  min-height: 60px;
+  min-height: 55px;
 }
 
 .form-textarea:focus {
@@ -484,12 +512,13 @@ const handleClose = () => {
 
 .color-picker {
   display: flex;
-  gap: 8px;
+  gap: 7px;
+  flex-wrap: wrap;
 }
 
 .color-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: 2px solid transparent;
   border-radius: 50%;
   cursor: pointer;
@@ -507,29 +536,29 @@ const handleClose = () => {
 .tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
 }
 
 .tag-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 4px 9px;
   background: #e8f4fd;
   color: #4080ff;
   border-radius: 16px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .tag-remove {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   border: none;
   background: rgba(64, 128, 255, 0.2);
   border-radius: 50%;
   color: #4080ff;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -542,56 +571,56 @@ const handleClose = () => {
 }
 
 .tag-input {
-  padding: 6px 10px;
+  padding: 5px 9px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-  font-size: 13px;
-  width: 120px;
+  font-size: 12px;
+  width: 110px;
 }
 
 .tag-add-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: none;
   background: #4080ff;
   color: white;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   margin-left: 4px;
 }
 
 .market-section {
   background: #f8f9fa;
-  padding: 16px;
+  padding: 14px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .market-section h3 {
-  font-size: 15px;
-  margin: 0 0 12px 0;
+  font-size: 14px;
+  margin: 0 0 11px 0;
   color: #333;
 }
 
 .quick-input {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .quick-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
 .quick-btn {
-  padding: 4px 10px;
+  padding: 4px 9px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   background: white;
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
   cursor: pointer;
   transition: all 0.2s;
@@ -605,17 +634,17 @@ const handleClose = () => {
 
 .editor-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 7px;
+  margin-bottom: 7px;
 }
 
 .tab-btn {
-  padding: 6px 16px;
+  padding: 5px 14px;
   border: none;
   border-radius: 4px;
   background: #f5f7fa;
   color: #666;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -626,8 +655,8 @@ const handleClose = () => {
 }
 
 .preview-content {
-  min-height: 100px;
-  padding: 12px;
+  min-height: 90px;
+  padding: 11px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
@@ -636,27 +665,27 @@ const handleClose = () => {
 }
 
 .history-section {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid #f0f0f0;
 }
 
 .history-section h3 {
-  font-size: 15px;
-  margin: 0 0 12px 0;
+  font-size: 14px;
+  margin: 0 0 11px 0;
   color: #333;
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12px;
   color: #666;
 }
 
@@ -667,17 +696,17 @@ const handleClose = () => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: 10px;
+  padding: 14px 16px;
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 9px 18px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -707,5 +736,50 @@ const handleClose = () => {
 
 .btn-danger:hover {
   background: #ee5a5a;
+}
+
+@media (max-width: 768px) {
+  .diary-modal {
+    padding: 10px;
+  }
+  
+  .modal-header {
+    padding: 14px;
+  }
+  
+  .modal-header h2 {
+    font-size: 16px;
+  }
+  
+  .modal-body {
+    padding: 14px;
+  }
+  
+  .form-row {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .form-group {
+    min-width: 100%;
+  }
+  
+  .form-group.flex-1 {
+    min-width: 100%;
+  }
+  
+  .market-section {
+    padding: 12px;
+  }
+  
+  .modal-footer {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 }
 </style>

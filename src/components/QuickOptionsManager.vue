@@ -1,52 +1,56 @@
 <template>
-  <div class="quick-options-modal" v-if="visible" @click.self="handleClose">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>管理快捷选项</h2>
-        <button class="close-btn" @click="handleClose">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
-          <div class="category-header">
-            <h3>{{ categoryLabels[category] }}</h3>
-            <div class="add-option">
-              <input 
-                v-model="newOptions[category]" 
-                type="text" 
-                :placeholder="`添加${categoryLabels[category]}`"
-                class="option-input"
-                @keyup.enter="addOption(category)"
-              />
-              <button @click="addOption(category)" class="add-btn">+</button>
+  <transition name="modal-fade">
+    <div class="quick-options-modal" v-if="visible" @click.self="handleClose">
+      <transition name="modal-scale">
+        <div class="modal-content" v-if="visible">
+          <div class="modal-header">
+            <h2>管理快捷选项</h2>
+            <button class="close-btn" @click="handleClose">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
+              <div class="category-header">
+                <h3>{{ categoryLabels[category] }}</h3>
+                <div class="add-option">
+                  <input 
+                    v-model="newOptions[category]" 
+                    type="text" 
+                    :placeholder="'添加' + categoryLabels[category]"
+                    class="option-input"
+                    @keyup.enter="addOption(category)"
+                  />
+                  <button @click="addOption(category)" class="add-btn">+</button>
+                </div>
+              </div>
+              <div class="options-list">
+                <div 
+                  v-for="option in options" 
+                  :key="option" 
+                  class="option-item"
+                >
+                  <span>{{ option }}</span>
+                  <button @click="removeOption(category, option)" class="remove-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="options-list">
-            <div 
-              v-for="option in options" 
-              :key="option" 
-              class="option-item"
-            >
-              <span>{{ option }}</span>
-              <button @click="removeOption(category, option)" class="remove-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
+          
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="handleClose">关闭</button>
           </div>
         </div>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="handleClose">关闭</button>
-      </div>
+      </transition>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script setup>import { reactive } from 'vue';
@@ -89,6 +93,27 @@ const handleClose = () => {
 </script>
 
 <style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-scale-enter-active,
+.modal-scale-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-scale-enter-from,
+.modal-scale-leave-to {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
 .quick-options-modal {
   position: fixed;
   top: 0;
@@ -100,7 +125,7 @@ const handleClose = () => {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 16px;
 }
 
 .modal-content {
@@ -118,13 +143,13 @@ const handleClose = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   color: #333;
 }
 
@@ -149,11 +174,11 @@ const handleClose = () => {
 .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 16px;
 }
 
 .category-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .category-section:last-child {
@@ -164,18 +189,21 @@ const handleClose = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .category-header h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
   color: #333;
 }
 
 .add-option {
   display: flex;
-  gap: 8px;
+  gap: 7px;
+  align-items: center;
 }
 
 .option-input {
@@ -183,39 +211,44 @@ const handleClose = () => {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   font-size: 13px;
-  width: 150px;
+  width: 140px;
 }
 
 .add-btn {
-  padding: 6px 14px;
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
   background: #4080ff;
   color: white;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-btn:hover {
+  background: #3070ef;
 }
 
 .options-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 
 .option-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 7px;
+  padding: 5px 11px;
   background: #f5f7fa;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
   color: #333;
 }
 
 .remove-btn {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: none;
   background: transparent;
   color: #999;
@@ -233,16 +266,16 @@ const handleClose = () => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 20px;
+  padding: 14px 16px;
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 9px 18px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -254,5 +287,44 @@ const handleClose = () => {
 
 .btn-secondary:hover {
   background: #e8eaed;
+}
+
+@media (max-width: 768px) {
+  .quick-options-modal {
+    padding: 10px;
+  }
+  
+  .modal-header {
+    padding: 14px;
+  }
+  
+  .modal-header h2 {
+    font-size: 16px;
+  }
+  
+  .modal-body {
+    padding: 14px;
+  }
+  
+  .category-section {
+    margin-bottom: 18px;
+  }
+  
+  .category-header {
+    gap: 8px;
+  }
+  
+  .option-input {
+    width: 120px;
+  }
+  
+  .modal-footer {
+    padding: 12px 14px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 }
 </style>

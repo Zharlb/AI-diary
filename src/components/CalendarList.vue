@@ -38,60 +38,64 @@
   </div>
 </template>
 
-<script setup>import { computed } from 'vue';
+<script setup>
+import { computed } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
+
 const store = useDiaryStore();
 const emit = defineEmits(['select-day']);
+
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+
 const calendarDays = computed(() => {
- const result = [];
- const current = new Date(store.currentDate);
- let startDate;
- let endDate;
- if (store.viewMode === 'year') {
- startDate = new Date(current.getFullYear(), 0, 1);
- endDate = new Date(current.getFullYear(), 11, 31);
- }
- else if (store.viewMode === 'month') {
- startDate = new Date(current.getFullYear(), current.getMonth(), 1);
- endDate = new Date(current.getFullYear(), current.getMonth() + 1, 0);
- }
- else {
- const dayOfWeek = current.getDay();
- startDate = new Date(current);
- startDate.setDate(current.getDate() - dayOfWeek);
- endDate = new Date(startDate);
- endDate.setDate(startDate.getDate() + 6);
- }
- const today = new Date();
- today.setHours(0, 0, 0, 0);
- const currentDateForCompare = new Date(store.currentDate);
- currentDateForCompare.setHours(0, 0, 0, 0);
- const date = new Date(startDate);
- while (date <= endDate) {
- const dateStr = formatDate(date);
- const diaries = store.getDiariesByDate(date);
- const dateForCompare = new Date(date);
- dateForCompare.setHours(0, 0, 0, 0);
- const isToday = dateForCompare.getTime() === today.getTime();
- const isSelected = isToday;
- const color = diaries.length > 0 ? diaries[0].color : null;
- result.push({
- date: new Date(date),
- dateStr,
- day: date.getDate(),
- weekDay: weekDays[date.getDay()],
- diaries,
- isToday,
- isSelected,
- color
- });
- date.setDate(date.getDate() + 1);
- }
- return result;
+  const result = [];
+  const current = new Date(store.currentDate);
+  let startDate;
+  let endDate;
+
+  if (store.viewMode === 'year') {
+    startDate = new Date(current.getFullYear(), 0, 1);
+    endDate = new Date(current.getFullYear(), 11, 31);
+  } else if (store.viewMode === 'month') {
+    startDate = new Date(current.getFullYear(), current.getMonth(), 1);
+    endDate = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+  } else {
+    const dayOfWeek = current.getDay();
+    startDate = new Date(current);
+    startDate.setDate(current.getDate() - dayOfWeek);
+    endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const date = new Date(startDate);
+  while (date <= endDate) {
+    const dateStr = formatDate(date);
+    const diaries = store.getDiariesByDate(date);
+    const dateForCompare = new Date(date);
+    dateForCompare.setHours(0, 0, 0, 0);
+    const isToday = dateForCompare.getTime() === today.getTime();
+    const isSelected = isToday;
+    const color = diaries.length > 0 ? diaries[0].color : null;
+    result.push({
+      date: new Date(date),
+      dateStr,
+      day: date.getDate(),
+      weekDay: weekDays[date.getDay()],
+      diaries,
+      isToday,
+      isSelected,
+      color
+    });
+    date.setDate(date.getDate() + 1);
+  }
+  return result;
 });
+
 const handleDayClick = (day) => {
- emit('select-day', day);
+  emit('select-day', day);
 };
 </script>
 
@@ -99,13 +103,13 @@ const handleDayClick = (day) => {
 .calendar-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .day-item {
   background: white;
   border-radius: 8px;
-  padding: 16px;
+  padding: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: all 0.2s;
@@ -129,42 +133,42 @@ const handleDayClick = (day) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .day-info {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
 
 .day-number {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: #333;
 }
 
 .day-week {
-  font-size: 14px;
+  font-size: 13px;
   color: #999;
 }
 
 .day-color {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
 }
 
 .day-diaries {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .diary-preview {
-  padding: 12px;
+  padding: 10px;
   background: #f8f9fa;
   border-radius: 6px;
   transition: all 0.2s;
@@ -179,7 +183,7 @@ const handleDayClick = (day) => {
 }
 
 .diary-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #333;
   margin-bottom: 4px;
@@ -189,7 +193,7 @@ const handleDayClick = (day) => {
 }
 
 .diary-summary {
-  font-size: 13px;
+  font-size: 12px;
   color: #666;
   line-height: 1.5;
   display: -webkit-box;
@@ -200,29 +204,75 @@ const handleDayClick = (day) => {
 
 .diary-tags {
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
 }
 
 .tag {
-  padding: 2px 8px;
+  padding: 2px 6px;
   background: #e8f4fd;
   color: #4080ff;
-  font-size: 12px;
+  font-size: 11px;
   border-radius: 12px;
 }
 
 .more-diaries {
-  font-size: 13px;
+  font-size: 12px;
   color: #4080ff;
   text-align: center;
-  padding: 8px;
+  padding: 6px;
 }
 
 .no-diary {
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   color: #999;
-  font-size: 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .calendar-list {
+    gap: 8px;
+  }
+  
+  .day-item {
+    padding: 12px;
+  }
+  
+  .day-header {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  
+  .day-number {
+    font-size: 20px;
+  }
+  
+  .day-week {
+    font-size: 12px;
+  }
+  
+  .day-color {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .diary-preview {
+    padding: 8px;
+  }
+  
+  .diary-title {
+    font-size: 13px;
+  }
+  
+  .diary-summary {
+    font-size: 11px;
+  }
+  
+  .no-diary {
+    padding: 14px;
+    font-size: 12px;
+  }
 }
 </style>

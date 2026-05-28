@@ -41,19 +41,41 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   const addDiary = (diary) => {
-    const newDiary = {
-      id: Date.now(),
-      ...diary,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      history: [{
-        time: new Date().toISOString(),
-        action: '创建'
-      }]
+    // 查找是否已有当天的日记
+    const existingIndex = diaries.value.findIndex(d => d.date === diary.date)
+    
+    if (existingIndex !== -1) {
+      // 更新已有的日记
+      diaries.value[existingIndex] = {
+        ...diaries.value[existingIndex],
+        ...diary,
+        updatedAt: new Date().toISOString(),
+        history: [
+          ...diaries.value[existingIndex].history,
+          {
+            time: new Date().toISOString(),
+            action: '修改'
+          }
+        ]
+      }
+      saveToStorage(STORAGE_KEY, diaries.value)
+      return diaries.value[existingIndex]
+    } else {
+      // 创建新日记
+      const newDiary = {
+        id: Date.now(),
+        ...diary,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        history: [{
+          time: new Date().toISOString(),
+          action: '创建'
+        }]
+      }
+      diaries.value.push(newDiary)
+      saveToStorage(STORAGE_KEY, diaries.value)
+      return newDiary
     }
-    diaries.value.push(newDiary)
-    saveToStorage(STORAGE_KEY, diaries.value)
-    return newDiary
   }
 
   const updateDiary = (id, updates) => {
