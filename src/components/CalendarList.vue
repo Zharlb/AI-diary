@@ -407,18 +407,12 @@ const handleEditDiary = (day, diary) => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  cursor: pointer;
 }
 
 .diary-preview {
   padding: 10px;
   background: #f8f9fa;
   border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.diary-preview:hover {
-  background: #e8eaed;
 }
 
 .diary-title {
