@@ -14,24 +14,11 @@
           
           <div class="modal-body">
             <div class="form-row">
-              <div class="form-group flex-1">
+              <div class="form-group flex-2">
                 <label>标题</label>
                 <div class="input-with-clear">
                   <input v-model="form.title" type="text" placeholder="输入标题" class="form-input" />
                   <button v-if="form.title" class="clear-btn" @click="form.title = ''">×</button>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>重要程度</label>
-                <div class="importance-btns">
-                  <button 
-                    v-for="imp in importanceOptions" 
-                    :key="imp.value"
-                    :class="['imp-btn', imp.value, { active: form.importance === imp.value }]"
-                    @click="form.importance = imp.value"
-                  >
-                    {{ imp.label }}
-                  </button>
                 </div>
               </div>
               <div class="form-group">
@@ -260,15 +247,16 @@
                     <span>点击或拖拽图片到此处上传</span>
                   </div>
                   <div class="image-preview-list" v-else>
-                    <div 
-                      v-for="(img, index) in form.images" 
-                      :key="index" 
-                      class="image-item"
-                      @click.stop="previewImage(index)"
-                    >
-                      <img :src="img" alt="" />
-                      <button class="remove-image" @click.stop="removeImage(index)">×</button>
-                    </div>
+                    <viewer :images="form.images" class="image-viewer">
+                      <div 
+                        v-for="(img, index) in form.images" 
+                        :key="index" 
+                        class="image-item"
+                      >
+                        <img :src="img" alt="" />
+                        <button class="remove-image" @click.stop="removeImage(index)">×</button>
+                      </div>
+                    </viewer>
                     <div class="add-more-images" @click.stop="triggerFileInput">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
@@ -310,15 +298,22 @@
               </div>
             </div>
             
-            <div v-if="diary && diary.history" class="history-section">
+            <div v-if="diary && diary.history && diary.history.length > 0" class="history-section">
               <h3>修改记录</h3>
               <div class="history-list">
-                <div v-for="(item, index) in diary.history" :key="index" class="history-item">
-                  <div class="history-header">
+                <div 
+                  v-for="(item, index) in reversedHistory" 
+                  :key="index" 
+                  class="history-item"
+                >
+                  <div class="history-header" @click="toggleHistoryItem(index)">
                     <span class="history-time">{{ formatTime(item.time) }}</span>
                     <span class="history-action">{{ item.action }}</span>
+                    <button class="toggle-btn">
+                      {{ expandedHistory[index] ? '▼' : '▶' }}
+                    </button>
                   </div>
-                  <div v-if="item.changes && item.changes.length > 0" class="history-changes">
+                  <div v-if="item.changes && item.changes.length > 0" v-show="expandedHistory[index]" class="history-changes">
                     <div v-for="(change, cIndex) in item.changes" :key="cIndex" class="change-item">
                       <span class="change-field">{{ change.field }}</span>
                       <span class="change-detail">
@@ -328,6 +323,9 @@
                         <span v-if="change.position" class="change-position">({{ change.position }})</span>
                       </span>
                     </div>
+                  </div>
+                  <div v-else v-show="expandedHistory[index]" class="no-changes">
+                    无内容变更
                   </div>
                 </div>
               </div>
@@ -349,7 +347,9 @@
 import { ref, watch, reactive, computed, nextTick } from 'vue'
 import { useDiaryStore, formatDate } from '@/stores/diary'
 import { QuillEditor } from '@vueup/vue-quill'
+import { Viewer } from 'v-viewer'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import 'viewerjs/dist/viewer.css'
 
 const props = defineProps({
   visible: Boolean,
@@ -365,19 +365,13 @@ const quickOptions = computed(() => store.quickOptions)
 const editorMode = ref('edit')
 const newTag = ref('')
 const fileInputRef = ref(null)
-
-const importanceOptions = [
-  { value: 'low', label: '普通' },
-  { value: 'medium', label: '重要' },
-  { value: 'high', label: '非常重要' }
-]
+const expandedHistory = ref({})
 
 const form = reactive({
   title: '',
   summary: '',
   content: '',
   tags: [],
-  importance: 'low',
   color: '#4080ff',
   market: '',
   volume: '',
@@ -396,15 +390,21 @@ const colors = [
   '#4080ff',
   '#ff6b6b',
   '#ffd93d',
-  '#ff9f43',
-  '#a55eea',
-  '#00d2d3',
-  '#54a0ff',
-  '#333333'
+  '#6bcb77',
+  '#ff9f43'
 ]
 
 const isEdit = computed(() => !!props.diary)
 const originalDiary = ref(null)
+
+const reversedHistory = computed(() => {
+  if (!props.diary || !props.diary.history) return []
+  return [...props.diary.history].reverse()
+})
+
+const toggleHistoryItem = (index) => {
+  expandedHistory.value[index] = !expandedHistory.value[index]
+}
 
 watch(() => props.visible, (val) => {
   if (val) {
@@ -415,7 +415,6 @@ watch(() => props.visible, (val) => {
         summary: props.diary.summary || '',
         content: props.diary.content || '',
         tags: [...(props.diary.tags || [])],
-        importance: props.diary.importance || 'low',
         color: props.diary.color || '#4080ff',
         market: props.diary.market || '',
         volume: props.diary.volume || '',
@@ -429,6 +428,10 @@ watch(() => props.visible, (val) => {
         expectationMark: props.diary.expectationMark || '',
         images: [...(props.diary.images || [])]
       })
+      expandedHistory.value = {}
+      if (props.diary.history && props.diary.history.length > 0) {
+        expandedHistory.value[0] = true
+      }
     } else {
       originalDiary.value = null
       Object.assign(form, {
@@ -436,7 +439,6 @@ watch(() => props.visible, (val) => {
         summary: '',
         content: '',
         tags: [],
-        importance: 'low',
         color: '#4080ff',
         market: '',
         volume: '',
@@ -450,6 +452,7 @@ watch(() => props.visible, (val) => {
         expectationMark: '',
         images: []
       })
+      expandedHistory.value = {}
     }
     editorMode.value = 'edit'
   }
@@ -496,18 +499,6 @@ const removeImage = (index) => {
   form.images.splice(index, 1)
 }
 
-const previewImage = (index) => {
-  if (window.ImagePreview) {
-    window.ImagePreview(form.images, index)
-  } else {
-    const img = document.createElement('img')
-    img.src = form.images[index]
-    img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.9);object-fit:contain;cursor:pointer'
-    img.onclick = () => img.remove()
-    document.body.appendChild(img)
-  }
-}
-
 const trackChanges = () => {
   if (!originalDiary.value) return []
   
@@ -516,7 +507,6 @@ const trackChanges = () => {
     { key: 'title', label: '标题' },
     { key: 'summary', label: '概要' },
     { key: 'content', label: '内容' },
-    { key: 'importance', label: '重要程度' },
     { key: 'color', label: '颜色' },
     { key: 'market', label: '大盘' },
     { key: 'volume', label: '量能' },
@@ -590,7 +580,22 @@ const handleSave = () => {
   }
   
   const data = {
-    ...form,
+    title: form.title,
+    summary: form.summary,
+    content: form.content,
+    tags: [...form.tags],
+    color: form.color,
+    market: form.market,
+    volume: form.volume,
+    index: form.index,
+    focus: form.focus,
+    expectation: form.expectation,
+    marketMark: form.marketMark,
+    volumeMark: form.volumeMark,
+    indexMark: form.indexMark,
+    focusMark: form.focusMark,
+    expectationMark: form.expectationMark,
+    images: [...form.images],
     date: formatDate(props.day?.date || new Date())
   }
   
@@ -722,6 +727,11 @@ const handleClose = () => {
   min-width: 200px;
 }
 
+.form-group.flex-2 {
+  flex: 2;
+  min-width: 200px;
+}
+
 .form-group label {
   font-size: 13px;
   font-weight: 500;
@@ -765,6 +775,7 @@ const handleClose = () => {
 .input-with-clear,
 .textarea-with-clear {
   position: relative;
+  width: 100%;
 }
 
 .input-with-clear .form-input {
@@ -824,45 +835,6 @@ const handleClose = () => {
 
 .color-btn.active {
   border-color: #333;
-}
-
-.importance-btns {
-  display: flex;
-  gap: 4px;
-}
-
-.imp-btn {
-  padding: 6px 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: white;
-  font-size: 12px;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.imp-btn:hover {
-  border-color: #4080ff;
-  color: #4080ff;
-}
-
-.imp-btn.active.low {
-  background: #4080ff;
-  border-color: #4080ff;
-  color: white;
-}
-
-.imp-btn.active.medium {
-  background: #ff9f43;
-  border-color: #ff9f43;
-  color: white;
-}
-
-.imp-btn.active.high {
-  background: #ff6b6b;
-  border-color: #ff6b6b;
-  color: white;
 }
 
 .tags-container {
@@ -1057,6 +1029,10 @@ const handleClose = () => {
   gap: 10px;
 }
 
+.image-viewer {
+  display: contents;
+}
+
 .image-item {
   position: relative;
   width: 80px;
@@ -1160,6 +1136,22 @@ const handleClose = () => {
   font-size: 14px;
   line-height: 1.6;
   color: #333;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.preview-content :deep(ul),
+.preview-content :deep(ol) {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.preview-content :deep(li) {
+  margin: 4px 0;
+}
+
+.preview-content :deep(p) {
+  margin: 8px 0;
 }
 
 .history-section {
@@ -1178,38 +1170,60 @@ const handleClose = () => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 200px;
+  max-height: 250px;
   overflow-y: auto;
 }
 
 .history-item {
-  padding: 10px;
   background: #f8f9fa;
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .history-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.history-header:hover {
+  background: #f0f0f0;
 }
 
 .history-time {
   color: #999;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 .history-action {
   color: #4080ff;
   font-weight: 500;
+  font-size: 12px;
+  flex: 1;
+}
+
+.toggle-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .history-changes {
+  padding: 0 10px 10px 10px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-top: 6px;
-  border-top: 1px dashed #e0e0e0;
 }
 
 .change-item {
@@ -1217,11 +1231,18 @@ const handleClose = () => {
   align-items: center;
   gap: 8px;
   font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.change-item:last-child {
+  border-bottom: none;
 }
 
 .change-field {
   color: #666;
   min-width: 60px;
+  flex-shrink: 0;
 }
 
 .change-detail {
@@ -1248,6 +1269,13 @@ const handleClose = () => {
 .change-position {
   color: #999;
   font-size: 11px;
+  font-style: italic;
+}
+
+.no-changes {
+  padding: 0 10px 10px 10px;
+  color: #999;
+  font-size: 12px;
   font-style: italic;
 }
 
@@ -1318,11 +1346,9 @@ const handleClose = () => {
     margin-bottom: 12px;
   }
   
-  .form-group {
-    min-width: 100%;
-  }
-  
-  .form-group.flex-1 {
+  .form-group,
+  .form-group.flex-1,
+  .form-group.flex-2 {
     min-width: 100%;
   }
   
@@ -1332,10 +1358,6 @@ const handleClose = () => {
   
   .market-item {
     min-width: 100%;
-  }
-  
-  .importance-btns {
-    flex-wrap: wrap;
   }
   
   .modal-footer {

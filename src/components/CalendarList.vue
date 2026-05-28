@@ -41,7 +41,7 @@
         <div 
           v-for="diary in day.diaries.slice(0, 3)" 
           :key="diary.id"
-          :class="['diary-preview', { important: diary.importance === 'high' }]"
+          class="diary-preview"
         >
           <div v-if="diary.title" class="diary-title">{{ diary.title }}</div>
           <div v-if="diary.summary" class="diary-summary">{{ diary.summary }}</div>
@@ -58,15 +58,16 @@
             <span v-for="tag in diary.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
           </div>
           
-          <div v-if="diary.images && diary.images.length > 0" class="diary-images">
-            <img 
-              v-for="(img, idx) in diary.images.slice(0, 3)" 
-              :key="idx" 
-              :src="img" 
-              alt="" 
-              class="diary-image"
-              @click.stop="previewImage(img)"
-            />
+          <div v-if="diary.images && diary.images.length > 0" class="diary-images" @click.stop>
+            <viewer :images="diary.images" class="image-viewer">
+              <img 
+                v-for="(img, idx) in diary.images.slice(0, 3)" 
+                :key="idx" 
+                :src="img" 
+                alt="" 
+                class="diary-image"
+              />
+            </viewer>
             <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
         </div>
@@ -85,6 +86,8 @@
 <script setup>
 import { computed, ref, nextTick } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
+import { Viewer } from 'v-viewer';
+import 'viewerjs/dist/viewer.css';
 
 const store = useDiaryStore();
 const emit = defineEmits(['select-day', 'edit-diary']);
@@ -95,14 +98,6 @@ const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
 const hasMarketMarks = (diary) => {
   return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
-};
-
-const previewImage = (src) => {
-  const img = document.createElement('img')
-  img.src = src
-  img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.9);object-fit:contain;cursor:pointer'
-  img.onclick = () => img.remove()
-  document.body.appendChild(img)
 };
 
 const calendarDays = computed(() => {
@@ -283,10 +278,6 @@ const handleEditDiary = (day, diary) => {
   background: #e8eaed;
 }
 
-.diary-preview.important {
-  border-left: 3px solid #ff6b6b;
-}
-
 .diary-title {
   font-size: 14px;
   font-weight: 500;
@@ -353,6 +344,10 @@ const handleEditDiary = (day, diary) => {
   gap: 4px;
   margin-top: 6px;
   flex-wrap: wrap;
+}
+
+.image-viewer {
+  display: contents;
 }
 
 .diary-image {

@@ -10,6 +10,7 @@
   "dependencies": {
     "@vueup/vue-quill": "^1.2.0",
     "pinia": "^2.1.7",
+    "v-viewer": "^3.0.23",
     "vue": "^3.4.21",
     "wangeditor": "^4.7.15"
   },
