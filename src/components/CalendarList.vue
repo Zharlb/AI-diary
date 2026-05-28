@@ -65,7 +65,7 @@
               :src="img" 
               alt="" 
               class="diary-image"
-              @click="previewImage(img)"
+              @click="openPreview(diary.images, idx)"
             />
             <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
@@ -83,15 +83,59 @@
     <!-- 图片预览 -->
     <transition name="preview-fade">
       <div v-if="previewVisible" class="image-preview-modal" @click="closePreview">
-        <img :src="previewSrc" alt="" class="preview-image" />
-        <button class="close-preview-btn" @click="closePreview">×</button>
+        <div class="preview-toolbar">
+          <button class="toolbar-btn" @click.stop="zoomIn" title="放大">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" @click.stop="zoomOut" title="缩小">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M8 11h6"/>
+            </svg>
+          </button>
+          <span class="zoom-level">{{ Math.round(scale * 100) }}%</span>
+          <button class="toolbar-btn" @click.stop="rotateLeft" title="左旋">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" @click.stop="rotateRight" title="右旋">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/>
+            </svg>
+          </button>
+          <div class="toolbar-separator"></div>
+          <button class="toolbar-btn" @click.stop="prevImage" :disabled="currentIndex <= 0" title="上一张">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+          <span class="image-counter">{{ currentIndex + 1 }} / {{ previewImages.length }}</span>
+          <button class="toolbar-btn" @click.stop="nextImage" :disabled="currentIndex >= previewImages.length - 1" title="下一张">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        <img 
+          :src="previewSrc" 
+          alt="" 
+          class="preview-image"
+          :style="{
+            transform: `scale(${scale}) rotate(${rotation}deg)`,
+            transition: 'transform 0.3s ease'
+          }"
+          @click.stop
+        />
+        <button class="close-preview-btn" @click.stop="closePreview">×</button>
       </div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, nextTick } from 'vue';
+import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
 
 const store = useDiaryStore();
@@ -100,6 +144,10 @@ const emit = defineEmits(['select-day', 'edit-diary']);
 const listRef = ref(null);
 const previewVisible = ref(false);
 const previewSrc = ref('');
+const previewImages = ref([]);
+const currentIndex = ref(0);
+const scale = ref(1);
+const rotation = ref(0);
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -107,14 +155,83 @@ const hasMarketMarks = (diary) => {
   return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
 };
 
-const previewImage = (src) => {
-  previewSrc.value = src;
+const openPreview = (images, index) => {
+  previewImages.value = images;
+  currentIndex.value = index;
+  previewSrc.value = images[index];
+  scale.value = 1;
+  rotation.value = 0;
   previewVisible.value = true;
 };
 
 const closePreview = () => {
   previewVisible.value = false;
 };
+
+const zoomIn = () => {
+  scale.value = Math.min(scale.value + 0.25, 3);
+};
+
+const zoomOut = () => {
+  scale.value = Math.max(scale.value - 0.25, 0.5);
+};
+
+const rotateLeft = () => {
+  rotation.value -= 90;
+};
+
+const rotateRight = () => {
+  rotation.value += 90;
+};
+
+const prevImage = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+    previewSrc.value = previewImages.value[currentIndex.value];
+    scale.value = 1;
+    rotation.value = 0;
+  }
+};
+
+const nextImage = () => {
+  if (currentIndex.value < previewImages.value.length - 1) {
+    currentIndex.value++;
+    previewSrc.value = previewImages.value[currentIndex.value];
+    scale.value = 1;
+    rotation.value = 0;
+  }
+};
+
+const handleKeydown = (e) => {
+  if (!previewVisible.value) return;
+  
+  switch (e.key) {
+    case 'Escape':
+      closePreview();
+      break;
+    case 'ArrowLeft':
+      prevImage();
+      break;
+    case 'ArrowRight':
+      nextImage();
+      break;
+    case '+':
+    case '=':
+      zoomIn();
+      break;
+    case '-':
+      zoomOut();
+      break;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown);
+});
 
 const calendarDays = computed(() => {
   const result = [];
@@ -420,10 +537,67 @@ const handleEditDiary = (day, diary) => {
   justify-content: center;
 }
 
+.preview-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.zoom-level,
+.image-counter {
+  color: white;
+  font-size: 13px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+}
+
 .preview-image {
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 85%;
+  max-height: 75vh;
   object-fit: contain;
+  cursor: grab;
+}
+
+.preview-image:active {
+  cursor: grabbing;
 }
 
 .close-preview-btn {
@@ -441,6 +615,11 @@ const handleEditDiary = (day, diary) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-preview-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .preview-fade-enter-active,
@@ -511,6 +690,28 @@ const handleEditDiary = (day, diary) => {
   .image-more {
     width: 36px;
     height: 36px;
+  }
+  
+  .preview-toolbar {
+    top: 10px;
+    padding: 6px 12px;
+    gap: 4px;
+  }
+  
+  .toolbar-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .zoom-level,
+  .image-counter {
+    font-size: 11px;
+    min-width: 40px;
+  }
+  
+  .preview-image {
+    max-width: 90%;
+    max-height: 70vh;
   }
 }
 </style>
