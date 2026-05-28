@@ -135,7 +135,10 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   const setCurrentDate = (date) => {
-    currentDate.value = new Date(date)
+    // 确保创建一个新的 Date 对象以触发响应式更新
+    const newDate = new Date(date)
+    newDate.setHours(0, 0, 0, 0)
+    currentDate.value = new Date
   }
 
   return {

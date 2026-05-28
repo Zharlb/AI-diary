@@ -15,14 +15,8 @@
     </div>
     
     <main class="app-main">
-      <CalendarList @select-day="handleDayClick" />
+      <CalendarList @select-day="handleDayClick" @edit-diary="handleEditDiary" />
     </main>
-    
-    <button class="add-btn" @click="openNewDiary">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12h14"/>
-      </svg>
-    </button>
     
     <transition name="modal-fade">
       <DiaryEditor 
@@ -65,9 +59,9 @@ const handleDayClick = (day) => {
   showEditor.value = true
 }
 
-const openNewDiary = () => {
-  selectedDay.value = { date: new Date() }
-  selectedDiary.value = null
+const handleEditDiary = ({ day, diary }) => {
+  selectedDay.value = day
+  selectedDiary.value = diary
   showEditor.value = true
 }
 
@@ -79,7 +73,6 @@ const handleDiarySaved = () => {
 .app {
   min-height: 100vh;
   background: #f5f7fa;
-  padding-bottom: 80px;
 }
 
 .app-header {
@@ -135,30 +128,6 @@ const handleDiarySaved = () => {
   padding: 12px 16px 20px;
 }
 
-.add-btn {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  width: 56px;
-  height: 56px;
-  border: none;
-  border-radius: 50%;
-  background: #4080ff;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(64, 128, 255, 0.4);
-  transition: all 0.2s;
-  z-index: 98;
-}
-
-.add-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(64, 128, 255, 0.5);
-}
-
 /* 弹窗过渡效果 */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
@@ -181,13 +150,6 @@ const handleDiarySaved = () => {
   
   .app-header h1 {
     font-size: 16px;
-  }
-  
-  .add-btn {
-    width: 52px;
-    height: 52px;
-    right: 12px;
-    bottom: 12px;
   }
 }
 </style>

@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 
 const store = useDiaryStore()
@@ -45,7 +45,7 @@ const viewModes = [
 const viewMode = computed(() => store.viewMode)
 
 const currentDateText = computed(() => {
-  const date = store.currentDate
+  const date = new Date(store.currentDate)
   const year = date.getFullYear()
   const month = date.getMonth() + 1
   
@@ -88,7 +88,7 @@ const handleNext = () => {
 
 const handleToday = () => {
   const now = new Date()
-  store.setCurrentDate(now)
+  store.setCurrentDate(new Date(now.getTime()))
 }
 </script>
 
@@ -97,7 +97,8 @@ const handleToday = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 10px 14px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -106,10 +107,11 @@ const handleToday = () => {
 .view-controls {
   display: flex;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .view-btn {
-  padding: 6px 12px;
+  padding: 6px 14px;
   border: none;
   border-radius: 6px;
   background: #f5f7fa;
@@ -132,11 +134,12 @@ const handleToday = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .nav-btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
   background: #f5f7fa;
@@ -153,7 +156,7 @@ const handleToday = () => {
 }
 
 .current-date {
-  min-width: 100px;
+  min-width: 90px;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
@@ -161,7 +164,7 @@ const handleToday = () => {
 }
 
 .today-btn {
-  padding: 6px 12px;
+  padding: 6px 16px;
   border: 1px solid #4080ff;
   border-radius: 6px;
   background: white;
@@ -177,9 +180,35 @@ const handleToday = () => {
 
 @media (max-width: 768px) {
   .calendar-toolbar {
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 10px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  
+  .view-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .current-date {
+    min-width: 80px;
+    font-size: 13px;
+  }
+  
+  .today-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .calendar-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .view-controls {
@@ -189,12 +218,7 @@ const handleToday = () => {
   
   .nav-controls {
     width: 100%;
-    justify-content: space-between;
-  }
-  
-  .current-date {
-    min-width: 80px;
-    font-size: 13px;
+    justify-content: center;
   }
 }
 </style>

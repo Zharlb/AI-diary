@@ -4,17 +4,39 @@
       v-for="day in calendarDays" 
       :key="day.dateStr"
       :class="['day-item', { today: day.isToday, selected: day.isSelected }]"
-      @click="handleDayClick(day)"
     >
       <div class="day-header">
         <div class="day-info">
           <span class="day-number">{{ day.day }}</span>
           <span class="day-week">{{ day.weekDay }}</span>
         </div>
-        <div v-if="day.color" class="day-color" :style="{ backgroundColor: day.color }"></div>
+        <div class="day-actions">
+          <div v-if="day.color" class="day-color" :style="{ backgroundColor: day.color }"></div>
+          <button 
+            v-if="day.diaries.length > 0" 
+            class="edit-btn" 
+            @click.stop="handleEditDiary(day, day.diaries[0])"
+            title="编辑日记"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <button 
+            v-else 
+            class="add-btn-small" 
+            @click.stop="handleDayClick(day)"
+            title="添加日记"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+        </div>
       </div>
       
-      <div v-if="day.diaries.length > 0" class="day-diaries">
+      <div v-if="day.diaries.length > 0" class="day-diaries" @click="handleDayClick(day)">
         <div 
           v-for="diary in day.diaries.slice(0, 3)" 
           :key="diary.id"
@@ -31,8 +53,8 @@
         </div>
       </div>
       
-      <div v-else class="no-diary">
-        <span>暂无日记</span>
+      <div v-else class="no-diary" @click="handleDayClick(day)">
+        <span>点击添加日记</span>
       </div>
     </div>
   </div>
@@ -43,7 +65,7 @@ import { computed } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
 
 const store = useDiaryStore();
-const emit = defineEmits(['select-day']);
+const emit = defineEmits(['select-day', 'edit-diary']);
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -97,6 +119,10 @@ const calendarDays = computed(() => {
 const handleDayClick = (day) => {
   emit('select-day', day);
 };
+
+const handleEditDiary = (day, diary) => {
+  emit('edit-diary', { day, diary });
+};
 </script>
 
 <style scoped>
@@ -111,7 +137,6 @@ const handleDayClick = (day) => {
   border-radius: 8px;
   padding: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
   transition: all 0.2s;
   border-left: 4px solid transparent;
 }
@@ -155,16 +180,44 @@ const handleDayClick = (day) => {
   color: #999;
 }
 
+.day-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .day-color {
   width: 22px;
   height: 22px;
   border-radius: 50%;
 }
 
+.edit-btn,
+.add-btn-small {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f7fa;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover,
+.add-btn-small:hover {
+  background: #4080ff;
+  color: white;
+}
+
 .day-diaries {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  cursor: pointer;
 }
 
 .diary-preview {
@@ -175,7 +228,7 @@ const handleDayClick = (day) => {
 }
 
 .diary-preview:hover {
-  background: #f0f0f0;
+  background: #e8eaed;
 }
 
 .diary-preview.important {
@@ -229,6 +282,11 @@ const handleDayClick = (day) => {
   text-align: center;
   color: #999;
   font-size: 13px;
+  cursor: pointer;
+}
+
+.no-diary:hover {
+  color: #4080ff;
 }
 
 @media (max-width: 768px) {
@@ -256,6 +314,12 @@ const handleDayClick = (day) => {
   .day-color {
     width: 20px;
     height: 20px;
+  }
+  
+  .edit-btn,
+  .add-btn-small {
+    width: 28px;
+    height: 28px;
   }
   
   .diary-preview {
