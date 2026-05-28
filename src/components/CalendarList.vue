@@ -1,8 +1,9 @@
 <template>
-  <div class="calendar-list">
+  <div class="calendar-list" ref="listRef">
     <div 
       v-for="day in calendarDays" 
       :key="day.dateStr"
+      :ref="day.isToday ? todayRef : null"
       :class="['day-item', { today: day.isToday, selected: day.isSelected }]"
     >
       <div class="day-header">
@@ -61,11 +62,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { useDiaryStore, formatDate } from '@/stores/diary';
 
 const store = useDiaryStore();
 const emit = defineEmits(['select-day', 'edit-diary']);
+
+const listRef = ref(null);
+const todayRef = ref(null);
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -114,6 +118,24 @@ const calendarDays = computed(() => {
     date.setDate(date.getDate() + 1);
   }
   return result;
+});
+
+const scrollToToday = () => {
+  nextTick(() => {
+    if (todayRef.value) {
+      const element = Array.isArray(todayRef.value) ? todayRef.value[0] : todayRef.value;
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+  });
+};
+
+defineExpose({
+  scrollToToday
 });
 
 const handleDayClick = (day) => {

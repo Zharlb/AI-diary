@@ -35,6 +35,7 @@ import { computed } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 
 const store = useDiaryStore()
+const emit = defineEmits(['today-clicked'])
 
 const viewModes = [
   { value: 'week', label: '周' },
@@ -88,7 +89,8 @@ const handleNext = () => {
 
 const handleToday = () => {
   const now = new Date()
-  store.setCurrentDate(new Date(now.getTime()))
+  store.setCurrentDate(now)
+  emit('today-clicked')
 }
 </script>
 
