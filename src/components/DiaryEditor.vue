@@ -341,7 +341,7 @@
       
       <!-- 图片预览 -->
       <transition name="preview-fade">
-        <div v-if="previewVisible" class="image-preview-modal" @click="closePreview">
+        <div v-if="previewVisible" class="image-preview-modal" @click="closePreview" @wheel="handleWheel">
           <div class="preview-toolbar">
             <button class="toolbar-btn" @click.stop="zoomIn" title="放大">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -557,10 +557,20 @@ const openPreview = (index) => {
   scale.value = 1
   rotation.value = 0
   previewVisible.value = true
+  document.body.style.overflow = 'hidden'
 }
 
 const closePreview = () => {
   previewVisible.value = false
+  document.body.style.overflow = ''
+}
+
+const handleWheel = (e) => {
+  if (!previewVisible.value) return
+  
+  e.preventDefault()
+  const delta = e.deltaY > 0 ? -0.1 : 0.1
+  scale.value = Math.min(Math.max(scale.value + delta, 0.5), 3)
 }
 
 const zoomIn = () => {

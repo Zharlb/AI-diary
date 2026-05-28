@@ -37,7 +37,7 @@
         </div>
       </div>
       
-      <div v-if="day.diaries.length > 0" class="day-diaries" @click="handleDayClick(day)">
+      <div v-if="day.diaries.length > 0" class="day-diaries">
         <div 
           v-for="diary in day.diaries.slice(0, 3)" 
           :key="diary.id"
@@ -58,14 +58,14 @@
             <span v-for="tag in diary.tags.slice(0, 2)" :key="tag" class="tag">{{ tag }}</span>
           </div>
           
-          <div v-if="diary.images && diary.images.length > 0" class="diary-images" @click.stop>
+          <div v-if="diary.images && diary.images.length > 0" class="diary-images">
             <img 
               v-for="(img, idx) in diary.images.slice(0, 3)" 
               :key="idx" 
               :src="img" 
               alt="" 
               class="diary-image"
-              @click="openPreview(diary.images, idx)"
+              @click.stop="openPreview(diary.images, idx)"
             />
             <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
@@ -75,14 +75,14 @@
         </div>
       </div>
       
-      <div v-else class="no-diary" @click="handleDayClick(day)">
-        <span>点击添加日记</span>
+      <div v-else class="no-diary">
+        <span></span>
       </div>
     </div>
     
     <!-- 图片预览 -->
     <transition name="preview-fade">
-      <div v-if="previewVisible" class="image-preview-modal" @click="closePreview">
+      <div v-if="previewVisible" class="image-preview-modal" @click="closePreview" @wheel="handleWheel">
         <div class="preview-toolbar">
           <button class="toolbar-btn" @click.stop="zoomIn" title="放大">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -162,10 +162,20 @@ const openPreview = (images, index) => {
   scale.value = 1;
   rotation.value = 0;
   previewVisible.value = true;
+  document.body.style.overflow = 'hidden';
 };
 
 const closePreview = () => {
   previewVisible.value = false;
+  document.body.style.overflow = '';
+};
+
+const handleWheel = (e) => {
+  if (!previewVisible.value) return;
+  
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  scale.value = Math.min(Math.max(scale.value + delta, 0.5), 3);
 };
 
 const zoomIn = () => {
