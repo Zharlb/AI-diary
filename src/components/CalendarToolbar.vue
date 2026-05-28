@@ -97,11 +97,12 @@ const handleToday = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
+  gap: 16px;
+  padding: 10px 16px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
 }
 
 .view-controls {
@@ -133,7 +134,7 @@ const handleToday = () => {
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -156,11 +157,12 @@ const handleToday = () => {
 }
 
 .current-date {
-  min-width: 90px;
+  min-width: 100px;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
   color: #333;
+  flex-shrink: 0;
 }
 
 .today-btn {
@@ -172,53 +174,42 @@ const handleToday = () => {
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .today-btn:hover {
   background: #f0f5ff;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .calendar-toolbar {
-    padding: 10px 12px;
+    padding: 8px 12px;
     gap: 10px;
   }
   
   .view-btn {
-    padding: 6px 12px;
+    padding: 5px 10px;
     font-size: 12px;
   }
   
   .nav-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
   }
   
   .current-date {
-    min-width: 80px;
+    min-width: 70px;
     font-size: 13px;
   }
   
   .today-btn {
-    padding: 6px 12px;
+    padding: 5px 12px;
     font-size: 12px;
-  }
-}
-
-@media (max-width: 560px) {
-  .calendar-toolbar {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .view-controls {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .nav-controls {
-    width: 100%;
-    justify-content: center;
   }
 }
 </style>
