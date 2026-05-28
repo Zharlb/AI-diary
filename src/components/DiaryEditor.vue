@@ -16,7 +16,10 @@
             <div class="form-row">
               <div class="form-group flex-1">
                 <label>标题</label>
-                <input v-model="form.title" type="text" placeholder="输入标题" class="form-input" />
+                <div class="input-with-clear">
+                  <input v-model="form.title" type="text" placeholder="输入标题" class="form-input" />
+                  <button v-if="form.title" class="clear-btn" @click="form.title = ''">×</button>
+                </div>
               </div>
               <div class="form-group">
                 <label>重要程度</label>
@@ -48,7 +51,10 @@
             <div class="form-row">
               <div class="form-group flex-1">
                 <label>概要</label>
-                <textarea v-model="form.summary" placeholder="输入概要" class="form-textarea short"></textarea>
+                <div class="textarea-with-clear">
+                  <textarea v-model="form.summary" placeholder="输入概要" class="form-textarea short"></textarea>
+                  <button v-if="form.summary" class="clear-btn textarea-clear" @click="form.summary = ''">×</button>
+                </div>
               </div>
             </div>
             
@@ -87,17 +93,20 @@
                     <label>大盘</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'red', { active: form.marketMark === 'red' }]"
-                        @click="form.marketMark = form.marketMark === 'red' ? '' : 'red'"
-                      >红</button>
+                        :class="['mark-btn', 'up', { active: form.marketMark === 'up' }]"
+                        @click="form.marketMark = form.marketMark === 'up' ? '' : 'up'"
+                      >▲</button>
                       <button 
-                        :class="['mark-btn', 'green', { active: form.marketMark === 'green' }]"
-                        @click="form.marketMark = form.marketMark === 'green' ? '' : 'green'"
-                      >绿</button>
+                        :class="['mark-btn', 'down', { active: form.marketMark === 'down' }]"
+                        @click="form.marketMark = form.marketMark === 'down' ? '' : 'down'"
+                      >▼</button>
                     </div>
                   </div>
                   <div class="quick-input">
-                    <input v-model="form.market" type="text" class="form-input" />
+                    <div class="input-with-clear">
+                      <input v-model="form.market" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form.market" class="clear-btn" @click="form.market = ''">×</button>
+                    </div>
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.market" 
@@ -113,17 +122,20 @@
                     <label>量能</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'red', { active: form.volumeMark === 'red' }]"
-                        @click="form.volumeMark = form.volumeMark === 'red' ? '' : 'red'"
-                      >红</button>
+                        :class="['mark-btn', 'up', { active: form.volumeMark === 'up' }]"
+                        @click="form.volumeMark = form.volumeMark === 'up' ? '' : 'up'"
+                      >▲</button>
                       <button 
-                        :class="['mark-btn', 'green', { active: form.volumeMark === 'green' }]"
-                        @click="form.volumeMark = form.volumeMark === 'green' ? '' : 'green'"
-                      >绿</button>
+                        :class="['mark-btn', 'down', { active: form.volumeMark === 'down' }]"
+                        @click="form.volumeMark = form.volumeMark === 'down' ? '' : 'down'"
+                      >▼</button>
                     </div>
                   </div>
                   <div class="quick-input">
-                    <input v-model="form.volume" type="text" class="form-input" />
+                    <div class="input-with-clear">
+                      <input v-model="form.volume" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form.volume" class="clear-btn" @click="form.volume = ''">×</button>
+                    </div>
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.volume" 
@@ -139,17 +151,20 @@
                     <label>指数</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'red', { active: form.indexMark === 'red' }]"
-                        @click="form.indexMark = form.indexMark === 'red' ? '' : 'red'"
-                      >红</button>
+                        :class="['mark-btn', 'up', { active: form.indexMark === 'up' }]"
+                        @click="form.indexMark = form.indexMark === 'up' ? '' : 'up'"
+                      >▲</button>
                       <button 
-                        :class="['mark-btn', 'green', { active: form.indexMark === 'green' }]"
-                        @click="form.indexMark = form.indexMark === 'green' ? '' : 'green'"
-                      >绿</button>
+                        :class="['mark-btn', 'down', { active: form.indexMark === 'down' }]"
+                        @click="form.indexMark = form.indexMark === 'down' ? '' : 'down'"
+                      >▼</button>
                     </div>
                   </div>
                   <div class="quick-input">
-                    <input v-model="form.index" type="text" class="form-input" />
+                    <div class="input-with-clear">
+                      <input v-model="form.index" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form.index" class="clear-btn" @click="form.index = ''">×</button>
+                    </div>
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.index" 
@@ -168,17 +183,20 @@
                     <label>重点</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'red', { active: form.focusMark === 'red' }]"
-                        @click="form.focusMark = form.focusMark === 'red' ? '' : 'red'"
-                      >红</button>
+                        :class="['mark-btn', 'up', { active: form.focusMark === 'up' }]"
+                        @click="form.focusMark = form.focusMark === 'up' ? '' : 'up'"
+                      >▲</button>
                       <button 
-                        :class="['mark-btn', 'green', { active: form.focusMark === 'green' }]"
-                        @click="form.focusMark = form.focusMark === 'green' ? '' : 'green'"
-                      >绿</button>
+                        :class="['mark-btn', 'down', { active: form.focusMark === 'down' }]"
+                        @click="form.focusMark = form.focusMark === 'down' ? '' : 'down'"
+                      >▼</button>
                     </div>
                   </div>
                   <div class="quick-input">
-                    <input v-model="form.focus" type="text" class="form-input" />
+                    <div class="input-with-clear">
+                      <input v-model="form.focus" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form.focus" class="clear-btn" @click="form.focus = ''">×</button>
+                    </div>
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.focus" 
@@ -194,17 +212,20 @@
                     <label>预期</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'red', { active: form.expectationMark === 'red' }]"
-                        @click="form.expectationMark = form.expectationMark === 'red' ? '' : 'red'"
-                      >红</button>
+                        :class="['mark-btn', 'up', { active: form.expectationMark === 'up' }]"
+                        @click="form.expectationMark = form.expectationMark === 'up' ? '' : 'up'"
+                      >▲</button>
                       <button 
-                        :class="['mark-btn', 'green', { active: form.expectationMark === 'green' }]"
-                        @click="form.expectationMark = form.expectationMark === 'green' ? '' : 'green'"
-                      >绿</button>
+                        :class="['mark-btn', 'down', { active: form.expectationMark === 'down' }]"
+                        @click="form.expectationMark = form.expectationMark === 'down' ? '' : 'down'"
+                      >▼</button>
                     </div>
                   </div>
                   <div class="quick-input">
-                    <input v-model="form.expectation" type="text" class="form-input" />
+                    <div class="input-with-clear">
+                      <input v-model="form.expectation" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form.expectation" class="clear-btn" @click="form.expectation = ''">×</button>
+                    </div>
                     <div class="quick-options">
                       <button 
                         v-for="opt in quickOptions.expectation" 
@@ -239,7 +260,12 @@
                     <span>点击或拖拽图片到此处上传</span>
                   </div>
                   <div class="image-preview-list" v-else>
-                    <div v-for="(img, index) in form.images" :key="index" class="image-item">
+                    <div 
+                      v-for="(img, index) in form.images" 
+                      :key="index" 
+                      class="image-item"
+                      @click.stop="previewImage(index)"
+                    >
                       <img :src="img" alt="" />
                       <button class="remove-image" @click.stop="removeImage(index)">×</button>
                     </div>
@@ -267,22 +293,14 @@
                   >预览</button>
                 </div>
                 <div class="rich-editor" v-show="editorMode === 'edit'">
-                  <div class="toolbar">
-                    <button type="button" @click="execCommand('bold')" title="加粗"><b>B</b></button>
-                    <button type="button" @click="execCommand('italic')" title="斜体"><i>I</i></button>
-                    <button type="button" @click="execCommand('underline')" title="下划线"><u>U</u></button>
-                    <button type="button" @click="execCommand('strikeThrough')" title="删除线"><s>S</s></button>
-                    <span class="separator">|</span>
-                    <button type="button" @click="execCommand('insertUnorderedList')" title="无序列表">• 列表</button>
-                    <button type="button" @click="execCommand('insertOrderedList')" title="有序列表">1. 列表</button>
-                  </div>
-                  <div 
-                    ref="editorRef"
-                    contenteditable="true"
-                    class="editor-content"
-                    @input="handleEditorInput"
-                    @paste="handlePaste"
-                  ></div>
+                  <QuillEditor 
+                    v-model:content="form.content"
+                    contentType="html"
+                    theme="snow"
+                    toolbar="full"
+                    placeholder="输入日记内容..."
+                    @update:content="handleEditorUpdate"
+                  />
                 </div>
                 <div 
                   v-if="editorMode === 'preview'" 
@@ -330,6 +348,8 @@
 <script setup>
 import { ref, watch, reactive, computed, nextTick } from 'vue'
 import { useDiaryStore, formatDate } from '@/stores/diary'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const props = defineProps({
   visible: Boolean,
@@ -344,7 +364,6 @@ const quickOptions = computed(() => store.quickOptions)
 
 const editorMode = ref('edit')
 const newTag = ref('')
-const editorRef = ref(null)
 const fileInputRef = ref(null)
 
 const importanceOptions = [
@@ -377,11 +396,11 @@ const colors = [
   '#4080ff',
   '#ff6b6b',
   '#ffd93d',
-  '#6bcb77',
   '#ff9f43',
   '#a55eea',
   '#00d2d3',
-  '#54a0ff'
+  '#54a0ff',
+  '#333333'
 ]
 
 const isEdit = computed(() => !!props.diary)
@@ -410,11 +429,6 @@ watch(() => props.visible, (val) => {
         expectationMark: props.diary.expectationMark || '',
         images: [...(props.diary.images || [])]
       })
-      nextTick(() => {
-        if (editorRef.value) {
-          editorRef.value.innerHTML = form.content
-        }
-      })
     } else {
       originalDiary.value = null
       Object.assign(form, {
@@ -436,11 +450,6 @@ watch(() => props.visible, (val) => {
         expectationMark: '',
         images: []
       })
-      nextTick(() => {
-        if (editorRef.value) {
-          editorRef.value.innerHTML = ''
-        }
-      })
     }
     editorMode.value = 'edit'
   }
@@ -461,23 +470,8 @@ const removeTag = (tag) => {
   }
 }
 
-const execCommand = (command) => {
-  document.execCommand(command, false, null)
-  if (editorRef.value) {
-    editorRef.value.focus()
-  }
-}
-
-const handleEditorInput = () => {
-  if (editorRef.value) {
-    form.content = editorRef.value.innerHTML
-  }
-}
-
-const handlePaste = (e) => {
-  e.preventDefault()
-  const text = e.clipboardData.getData('text/plain')
-  document.execCommand('insertText', false, text)
+const handleEditorUpdate = (content) => {
+  form.content = content
 }
 
 const triggerFileInput = () => {
@@ -500,6 +494,18 @@ const handleFileSelect = (e) => {
 
 const removeImage = (index) => {
   form.images.splice(index, 1)
+}
+
+const previewImage = (index) => {
+  if (window.ImagePreview) {
+    window.ImagePreview(form.images, index)
+  } else {
+    const img = document.createElement('img')
+    img.src = form.images[index]
+    img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.9);object-fit:contain;cursor:pointer'
+    img.onclick = () => img.remove()
+    document.body.appendChild(img)
+  }
 }
 
 const trackChanges = () => {
@@ -544,7 +550,7 @@ const trackChanges = () => {
       if (oldVal !== newVal) {
         changes.push({
           field: field.label,
-          oldValue: '(已修改)' ,
+          oldValue: '(已修改)',
           newValue: '(已修改)',
           position: '富文本内容'
         })
@@ -723,12 +729,13 @@ const handleClose = () => {
 }
 
 .form-input {
-  padding: 9px 11px;
+  padding: 9px 30px 9px 11px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
+  width: 100%;
 }
 
 .form-input:focus {
@@ -744,6 +751,7 @@ const handleClose = () => {
   resize: vertical;
   min-height: 90px;
   transition: border-color 0.2s;
+  width: 100%;
 }
 
 .form-textarea.short {
@@ -752,6 +760,47 @@ const handleClose = () => {
 
 .form-textarea:focus {
   border-color: #4080ff;
+}
+
+.input-with-clear,
+.textarea-with-clear {
+  position: relative;
+}
+
+.input-with-clear .form-input {
+  padding-right: 30px;
+}
+
+.textarea-with-clear .form-textarea {
+  padding-right: 30px;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: #ccc;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.textarea-clear {
+  top: 11px;
+  transform: none;
+}
+
+.clear-btn:hover {
+  background: #999;
 }
 
 .color-picker {
@@ -799,15 +848,15 @@ const handleClose = () => {
 }
 
 .imp-btn.active.low {
-  background: #6bcb77;
-  border-color: #6bcb77;
+  background: #4080ff;
+  border-color: #4080ff;
   color: white;
 }
 
 .imp-btn.active.medium {
-  background: #ffd93d;
-  border-color: #ffd93d;
-  color: #333;
+  background: #ff9f43;
+  border-color: #ff9f43;
+  color: white;
 }
 
 .imp-btn.active.high {
@@ -915,27 +964,30 @@ const handleClose = () => {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.mark-btn.red {
+.mark-btn.up {
   background: #fff;
   color: #ff4444;
   border-color: #ffcccc;
 }
 
-.mark-btn.red.active {
+.mark-btn.up.active {
   background: #ff4444;
   color: white;
   border-color: #ff4444;
 }
 
-.mark-btn.green {
+.mark-btn.down {
   background: #fff;
   color: #00c853;
   border-color: #ccffcc;
 }
 
-.mark-btn.green.active {
+.mark-btn.down.active {
   background: #00c853;
   color: white;
   border-color: #00c853;
@@ -1011,6 +1063,7 @@ const handleClose = () => {
   height: 80px;
   border-radius: 6px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .image-item img {
@@ -1082,41 +1135,20 @@ const handleClose = () => {
   overflow: hidden;
 }
 
-.toolbar {
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-  background: #f8f9fa;
+.rich-editor :deep(.ql-toolbar) {
+  border-top: none;
+  border-left: none;
+  border-right: none;
   border-bottom: 1px solid #e0e0e0;
-  flex-wrap: wrap;
 }
 
-.toolbar button {
-  width: 30px;
-  height: 28px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.toolbar button:hover {
-  background: #f0f5ff;
-  border-color: #4080ff;
-}
-
-.separator {
-  color: #ddd;
-  line-height: 28px;
-}
-
-.editor-content {
-  min-height: 150px;
-  padding: 12px;
-  outline: none;
+.rich-editor :deep(.ql-container) {
+  border: none;
   font-size: 14px;
+}
+
+.rich-editor :deep(.ql-editor) {
+  min-height: 150px;
   line-height: 1.6;
 }
 

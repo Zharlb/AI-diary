@@ -47,11 +47,11 @@
           <div v-if="diary.summary" class="diary-summary">{{ diary.summary }}</div>
           
           <div v-if="hasMarketMarks(diary)" class="market-marks">
-            <span v-if="diary.marketMark" :class="['mark-badge', diary.marketMark]">大盘</span>
-            <span v-if="diary.volumeMark" :class="['mark-badge', diary.volumeMark]">量能</span>
-            <span v-if="diary.indexMark" :class="['mark-badge', diary.indexMark]">指数</span>
-            <span v-if="diary.focusMark" :class="['mark-badge', diary.focusMark]">重点</span>
-            <span v-if="diary.expectationMark" :class="['mark-badge', diary.expectationMark]">预期</span>
+            <span v-if="diary.marketMark" :class="['mark-badge', diary.marketMark]">▲</span>
+            <span v-if="diary.volumeMark" :class="['mark-badge', diary.volumeMark]">量</span>
+            <span v-if="diary.indexMark" :class="['mark-badge', diary.indexMark]">指</span>
+            <span v-if="diary.focusMark" :class="['mark-badge', diary.focusMark]">重</span>
+            <span v-if="diary.expectationMark" :class="['mark-badge', diary.expectationMark]">预</span>
           </div>
           
           <div v-if="diary.tags && diary.tags.length > 0" class="diary-tags">
@@ -65,6 +65,7 @@
               :src="img" 
               alt="" 
               class="diary-image"
+              @click.stop="previewImage(img)"
             />
             <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
@@ -94,6 +95,14 @@ const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
 const hasMarketMarks = (diary) => {
   return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
+};
+
+const previewImage = (src) => {
+  const img = document.createElement('img')
+  img.src = src
+  img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.9);object-fit:contain;cursor:pointer'
+  img.onclick = () => img.remove()
+  document.body.appendChild(img)
 };
 
 const calendarDays = computed(() => {
@@ -310,14 +319,16 @@ const handleEditDiary = (day, diary) => {
   font-size: 10px;
   border-radius: 3px;
   font-weight: 500;
+  min-width: 18px;
+  text-align: center;
 }
 
-.mark-badge.red {
+.mark-badge.up {
   background: #ffe0e0;
   color: #ff4444;
 }
 
-.mark-badge.green {
+.mark-badge.down {
   background: #e0ffe0;
   color: #00c853;
 }
@@ -349,6 +360,7 @@ const handleEditDiary = (day, diary) => {
   height: 40px;
   border-radius: 4px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .image-more {
