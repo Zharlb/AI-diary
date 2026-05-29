@@ -353,17 +353,11 @@ watch(() => props.visible, (val) => {
         content: props.diary.content || '',
         tags: [...(props.diary.tags || [])],
         color: props.diary.color || '#4080ff',
-        market: props.diary.market || '',
-        volume: props.diary.volume || '',
-        index: props.diary.index || '',
-        focus: props.diary.focus || '',
-        expectation: props.diary.expectation || '',
-        marketMark: props.diary.marketMark || '',
-        volumeMark: props.diary.volumeMark || '',
-        indexMark: props.diary.indexMark || '',
-        focusMark: props.diary.focusMark || '',
-        expectationMark: props.diary.expectationMark || '',
         images: [...(props.diary.images || [])]
+      })
+      Object.keys(quickOptions.value).forEach(category => {
+        form[category] = props.diary[category] || ''
+        form[category + 'Mark'] = props.diary[category + 'Mark'] || ''
       })
       expandedHistory.value = {}
       if (props.diary.history && props.diary.history.length > 0) {
@@ -377,17 +371,11 @@ watch(() => props.visible, (val) => {
         content: '',
         tags: [],
         color: '#4080ff',
-        market: '',
-        volume: '',
-        index: '',
-        focus: '',
-        expectation: '',
-        marketMark: '',
-        volumeMark: '',
-        indexMark: '',
-        focusMark: '',
-        expectationMark: '',
         images: []
+      })
+      Object.keys(quickOptions.value).forEach(category => {
+        form[category] = ''
+        form[category + 'Mark'] = ''
       })
       expandedHistory.value = {}
     }
@@ -532,23 +520,22 @@ const trackChanges = () => {
   if (!originalDiary.value) return []
   
   const changes = []
-  const fields = [
+  const baseFields = [
     { key: 'title', label: '标题' },
     { key: 'summary', label: '概要' },
     { key: 'content', label: '内容' },
     { key: 'color', label: '颜色' },
-    { key: 'market', label: '大盘' },
-    { key: 'volume', label: '量能' },
-    { key: 'index', label: '指数' },
-    { key: 'focus', label: '重点' },
-    { key: 'expectation', label: '预期' },
-    { key: 'marketMark', label: '大盘标记' },
-    { key: 'volumeMark', label: '量能标记' },
-    { key: 'indexMark', label: '指数标记' },
-    { key: 'focusMark', label: '重点标记' },
-    { key: 'expectationMark', label: '预期标记' },
     { key: 'tags', label: '标签' }
   ]
+  
+  const categoryFields = []
+  Object.keys(quickOptions.value).forEach(category => {
+    const label = categoryLabels.value[category] || category
+    categoryFields.push({ key: category, label })
+    categoryFields.push({ key: category + 'Mark', label: label + '标记' })
+  })
+  
+  const fields = [...baseFields, ...categoryFields]
   
   fields.forEach(field => {
     const oldVal = originalDiary.value[field.key]
@@ -614,19 +601,14 @@ const handleSave = () => {
     content: form.content,
     tags: [...form.tags],
     color: form.color,
-    market: form.market,
-    volume: form.volume,
-    index: form.index,
-    focus: form.focus,
-    expectation: form.expectation,
-    marketMark: form.marketMark,
-    volumeMark: form.volumeMark,
-    indexMark: form.indexMark,
-    focusMark: form.focusMark,
-    expectationMark: form.expectationMark,
     images: [...form.images],
     date: formatDate(props.day?.date || new Date())
   }
+  
+  Object.keys(quickOptions.value).forEach(category => {
+    data[category] = form[category]
+    data[category + 'Mark'] = form[category + 'Mark']
+  })
   
   if (props.diary) {
     const changes = trackChanges()

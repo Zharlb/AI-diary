@@ -47,25 +47,11 @@
           <div v-if="diary.summary" class="diary-summary">{{ diary.summary }}</div>
           
           <div v-if="hasMarketInfo(diary)" class="market-info">
-            <div v-if="diary.market" class="market-item">
-              <span class="market-label">大盘:</span>
-              <span class="market-value" :class="diary.marketMark">{{ diary.market }}</span>
-            </div>
-            <div v-if="diary.volume" class="market-item">
-              <span class="market-label">量能:</span>
-              <span class="market-value" :class="diary.volumeMark">{{ diary.volume }}</span>
-            </div>
-            <div v-if="diary.index" class="market-item">
-              <span class="market-label">指数:</span>
-              <span class="market-value" :class="diary.indexMark">{{ diary.index }}</span>
-            </div>
-            <div v-if="diary.focus" class="market-item">
-              <span class="market-label">重点:</span>
-              <span class="market-value" :class="diary.focusMark">{{ diary.focus }}</span>
-            </div>
-            <div v-if="diary.expectation" class="market-item">
-              <span class="market-label">预期:</span>
-              <span class="market-value" :class="diary.expectationMark">{{ diary.expectation }}</span>
+            <div v-for="category in Object.keys(quickOptions)" :key="category" class="market-item">
+              <template v-if="diary[category]">
+                <span class="market-label">{{ categoryLabels[category] || category }}:</span>
+                <span class="market-value" :class="diary[category + 'Mark']">{{ diary[category] }}</span>
+              </template>
             </div>
           </div>
           
@@ -162,14 +148,17 @@ const currentIndex = ref(0);
 const scale = ref(1);
 const rotation = ref(0);
 
+const quickOptions = computed(() => store.quickOptions);
+const categoryLabels = computed(() => store.categoryLabels);
+
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
 const hasMarketMarks = (diary) => {
-  return diary.marketMark || diary.volumeMark || diary.indexMark || diary.focusMark || diary.expectationMark;
+  return Object.keys(quickOptions.value).some(category => diary[category + 'Mark']);
 };
 
 const hasMarketInfo = (diary) => {
-  return diary.market || diary.volume || diary.index || diary.focus || diary.expectation;
+  return Object.keys(quickOptions.value).some(category => diary[category]);
 };
 
 const openPreview = (images, index) => {
