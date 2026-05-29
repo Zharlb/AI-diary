@@ -13,18 +13,46 @@
           </div>
           
           <div class="modal-body">
+            <div class="add-category-section">
+              <div class="add-category-header">
+                <h3>添加新类别</h3>
+              </div>
+              <div class="add-category-inputs">
+                <input 
+                  v-model="newCategoryKey" 
+                  type="text" 
+                  placeholder="输入类别标识（如：market）"
+                  class="category-key-input"
+                />
+                <input 
+                  v-model="newCategoryLabel" 
+                  type="text" 
+                  placeholder="输入类别名称（如：大盘）"
+                  class="category-label-input"
+                />
+                <button @click="addCategory" class="add-category-btn">添加类别</button>
+              </div>
+            </div>
+            
             <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
               <div class="category-header">
-                <h3>{{ categoryLabels[category] }}</h3>
-                <div class="add-option">
-                  <input 
-                    v-model="newOptions[category]" 
-                    type="text" 
-                    :placeholder="'添加' + categoryLabels[category]"
-                    class="option-input"
-                    @keyup.enter="addOption(category)"
-                  />
-                  <button @click="addOption(category)" class="add-btn">+</button>
+                <h3>{{ categoryLabels[category] || category }}</h3>
+                <div class="category-actions">
+                  <div class="add-option">
+                    <input 
+                      v-model="newOptions[category]" 
+                      type="text" 
+                      :placeholder="'添加' + (categoryLabels[category] || category)"
+                      class="option-input"
+                      @keyup.enter="addOption(category)"
+                    />
+                    <button @click="addOption(category)" class="add-btn">+</button>
+                  </div>
+                  <button @click="removeCategory(category)" class="remove-category-btn" title="删除类别">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
               <div class="options-list">
@@ -53,43 +81,62 @@
   </transition>
 </template>
 
-<script setup>import { reactive } from 'vue';
-import { useDiaryStore } from '@/stores/diary';
+<script setup>
+import { reactive, ref } from 'vue'
+import { useDiaryStore } from '@/stores/diary'
+
 const props = defineProps({
- visible: Boolean
-});
-const emit = defineEmits(['close']);
-const store = useDiaryStore();
-const quickOptions = store.quickOptions;
-const categoryLabels = {
- market: '大盘',
- volume: '量能',
- index: '指数',
- focus: '重点',
- expectation: '预期'
-};
-const newOptions = reactive({
- market: '',
- volume: '',
- index: '',
- focus: '',
- expectation: ''
-});
+  visible: Boolean
+})
+const emit = defineEmits(['close'])
+const store = useDiaryStore()
+const quickOptions = store.quickOptions
+const categoryLabels = store.categoryLabels
+
+const newOptions = reactive({})
+const newCategoryKey = ref('')
+const newCategoryLabel = ref('')
+
 const addOption = (category) => {
- const option = newOptions[category].trim();
- if (option) {
- store.addQuickOption(category, option);
- newOptions[category] = '';
- }
-};
+  const option = newOptions[category]?.trim()
+  if (option) {
+    store.addQuickOption(category, option)
+    newOptions[category] = ''
+  }
+}
+
 const removeOption = (category, option) => {
- if (confirm(`确定要删除 "${option}" 吗？`)) {
- store.removeQuickOption(category, option);
- }
-};
+  if (confirm(`确定要删除 "${option}" 吗？`)) {
+    store.removeQuickOption(category, option)
+  }
+}
+
+const addCategory = () => {
+  const key = newCategoryKey.value.trim()
+  const label = newCategoryLabel.value.trim()
+  if (key && label) {
+    if (quickOptions[key]) {
+      alert('该类别标识已存在')
+      return
+    }
+    store.addQuickCategory(key, label)
+    newOptions[key] = ''
+    newCategoryKey.value = ''
+    newCategoryLabel.value = ''
+  } else {
+    alert('请输入类别标识和名称')
+  }
+}
+
+const removeCategory = (category) => {
+  if (confirm(`确定要删除类别 "${categoryLabels[category] || category}" 及其所有选项吗？`)) {
+    store.removeQuickCategory(category)
+  }
+}
+
 const handleClose = () => {
- emit('close');
-};
+  emit('close')
+}
 </script>
 
 <style scoped>

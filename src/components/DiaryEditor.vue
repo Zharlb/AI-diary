@@ -75,150 +75,35 @@
               <h3>市场记录</h3>
               
               <div class="form-row">
-                <div class="form-group market-item">
+                <div 
+                  v-for="(_, category) in quickOptions" 
+                  :key="category"
+                  class="form-group market-item"
+                >
                   <div class="market-label-row">
-                    <label>大盘</label>
+                    <label>{{ categoryLabels[category] || category }}</label>
                     <div class="color-marks">
                       <button 
-                        :class="['mark-btn', 'up', { active: form.marketMark === 'up' }]"
-                        @click="form.marketMark = form.marketMark === 'up' ? '' : 'up'"
+                        :class="['mark-btn', 'up', { active: form[category + 'Mark'] === 'up' }]"
+                        @click="form[category + 'Mark'] = form[category + 'Mark'] === 'up' ? '' : 'up'"
                       ></button>
                       <button 
-                        :class="['mark-btn', 'down', { active: form.marketMark === 'down' }]"
-                        @click="form.marketMark = form.marketMark === 'down' ? '' : 'down'"
+                        :class="['mark-btn', 'down', { active: form[category + 'Mark'] === 'down' }]"
+                        @click="form[category + 'Mark'] = form[category + 'Mark'] === 'down' ? '' : 'down'"
                       ></button>
                     </div>
                   </div>
                   <div class="quick-input">
                     <div class="input-with-clear">
-                      <input v-model="form.market" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form.market" class="clear-btn" @click="form.market = ''">×</button>
+                      <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
                     </div>
                     <div class="quick-options">
                       <button 
-                        v-for="opt in quickOptions.market" 
+                        v-for="opt in quickOptions[category]" 
                         :key="opt"
-                        :class="['quick-btn', { selected: form.market === opt }]"
-                        @click="form.market = opt"
-                      >{{ opt }}</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group market-item">
-                  <div class="market-label-row">
-                    <label>量能</label>
-                    <div class="color-marks">
-                      <button 
-                        :class="['mark-btn', 'up', { active: form.volumeMark === 'up' }]"
-                        @click="form.volumeMark = form.volumeMark === 'up' ? '' : 'up'"
-                      ></button>
-                      <button 
-                        :class="['mark-btn', 'down', { active: form.volumeMark === 'down' }]"
-                        @click="form.volumeMark = form.volumeMark === 'down' ? '' : 'down'"
-                      ></button>
-                    </div>
-                  </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form.volume" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form.volume" class="clear-btn" @click="form.volume = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions.volume" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form.volume === opt }]"
-                        @click="form.volume = opt"
-                      >{{ opt }}</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group market-item">
-                  <div class="market-label-row">
-                    <label>指数</label>
-                    <div class="color-marks">
-                      <button 
-                        :class="['mark-btn', 'up', { active: form.indexMark === 'up' }]"
-                        @click="form.indexMark = form.indexMark === 'up' ? '' : 'up'"
-                      ></button>
-                      <button 
-                        :class="['mark-btn', 'down', { active: form.indexMark === 'down' }]"
-                        @click="form.indexMark = form.indexMark === 'down' ? '' : 'down'"
-                      ></button>
-                    </div>
-                  </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form.index" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form.index" class="clear-btn" @click="form.index = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions.index" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form.index === opt }]"
-                        @click="form.index = opt"
-                      >{{ opt }}</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="form-row">
-                <div class="form-group market-item">
-                  <div class="market-label-row">
-                    <label>重点</label>
-                    <div class="color-marks">
-                      <button 
-                        :class="['mark-btn', 'up', { active: form.focusMark === 'up' }]"
-                        @click="form.focusMark = form.focusMark === 'up' ? '' : 'up'"
-                      ></button>
-                      <button 
-                        :class="['mark-btn', 'down', { active: form.focusMark === 'down' }]"
-                        @click="form.focusMark = form.focusMark === 'down' ? '' : 'down'"
-                      ></button>
-                    </div>
-                  </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form.focus" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form.focus" class="clear-btn" @click="form.focus = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions.focus" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form.focus === opt }]"
-                        @click="form.focus = opt"
-                      >{{ opt }}</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group market-item">
-                  <div class="market-label-row">
-                    <label>预期</label>
-                    <div class="color-marks">
-                      <button 
-                        :class="['mark-btn', 'up', { active: form.expectationMark === 'up' }]"
-                        @click="form.expectationMark = form.expectationMark === 'up' ? '' : 'up'"
-                      ></button>
-                      <button 
-                        :class="['mark-btn', 'down', { active: form.expectationMark === 'down' }]"
-                        @click="form.expectationMark = form.expectationMark === 'down' ? '' : 'down'"
-                      ></button>
-                    </div>
-                  </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form.expectation" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form.expectation" class="clear-btn" @click="form.expectation = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions.expectation" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form.expectation === opt }]"
-                        @click="form.expectation = opt"
+                        :class="['quick-btn', { selected: form[category] === opt }]"
+                        @click="form[category] = opt"
                       >{{ opt }}</button>
                     </div>
                   </div>
@@ -410,6 +295,7 @@ const emit = defineEmits(['close', 'saved'])
 
 const store = useDiaryStore()
 const quickOptions = computed(() => store.quickOptions)
+const categoryLabels = computed(() => store.categoryLabels)
 
 const editorMode = ref('edit')
 const newTag = ref('')

@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 const STORAGE_KEY = 'calendar_diary_data'
 const VIEW_STORAGE_KEY = 'calendar_view_mode'
 const QUICK_OPTIONS_KEY = 'calendar_quick_options'
+const CATEGORY_LABELS_KEY = 'calendar_category_labels'
 
 function loadFromStorage(key, defaultValue) {
   try {
@@ -31,6 +32,13 @@ export const useDiaryStore = defineStore('diary', () => {
     index: ['上证50', '沪深300', '创业板指', '科创板'],
     focus: ['政策面', '资金面', '技术面', '消息面'],
     expectation: ['看多', '看空', '观望']
+  }))
+  const categoryLabels = ref(loadFromStorage(CATEGORY_LABELS_KEY, {
+    market: '大盘',
+    volume: '量能',
+    index: '指数',
+    focus: '重点',
+    expectation: '预期'
   }))
 
   const currentDate = ref(new Date())
@@ -137,6 +145,24 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
+  const addQuickCategory = (categoryKey, categoryLabel) => {
+    if (!quickOptions.value[categoryKey]) {
+      quickOptions.value[categoryKey] = []
+      categoryLabels.value[categoryKey] = categoryLabel
+      saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+      saveToStorage(CATEGORY_LABELS_KEY, categoryLabels.value)
+    }
+  }
+
+  const removeQuickCategory = (categoryKey) => {
+    if (quickOptions.value[categoryKey]) {
+      delete quickOptions.value[categoryKey]
+      delete categoryLabels.value[categoryKey]
+      saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+      saveToStorage(CATEGORY_LABELS_KEY, categoryLabels.value)
+    }
+  }
+
   const setCurrentDate = (date) => {
     const newDate = new Date(date)
     newDate.setHours(0, 0, 0, 0)
@@ -147,6 +173,7 @@ export const useDiaryStore = defineStore('diary', () => {
     diaries,
     viewMode,
     quickOptions,
+    categoryLabels,
     currentDate,
     getDiariesByDate,
     addDiary,
@@ -155,6 +182,8 @@ export const useDiaryStore = defineStore('diary', () => {
     setViewMode,
     addQuickOption,
     removeQuickOption,
+    addQuickCategory,
+    removeQuickCategory,
     setCurrentDate
   }
 })
