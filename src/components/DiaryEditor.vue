@@ -1820,8 +1820,8 @@ const handleClose = () => {
   .rich-editor :deep(.ql-editor) {
     min-height: 120px;
     font-size: 14px;
-    max-height: 200px;
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
   
   .preview-content {
