@@ -74,13 +74,13 @@
             <div class="market-section">
               <h3>市场记录</h3>
               
-              <div class="form-row">
-                <div 
-                  v-for="(_, category) in quickOptions" 
-                  :key="category"
-                  class="form-group market-item"
-                >
-                  <div class="market-label-row">
+              <div 
+                v-for="(_, category) in quickOptions" 
+                :key="category"
+                class="market-item"
+              >
+                <div class="market-label-row">
+                  <div class="market-label-info">
                     <label>{{ categoryLabels[category] || category }}</label>
                     <div class="color-marks">
                       <button 
@@ -93,19 +93,19 @@
                       ></button>
                     </div>
                   </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions[category]" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form[category] === opt }]"
-                        @click="form[category] = opt"
-                      >{{ opt }}</button>
-                    </div>
+                </div>
+                <div class="quick-input">
+                  <div class="input-with-clear">
+                    <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
+                    <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
+                  </div>
+                  <div class="quick-options">
+                    <button 
+                      v-for="opt in quickOptions[category]" 
+                      :key="opt"
+                      :class="['quick-btn', { selected: form[category] === opt }]"
+                      @click="form[category] = opt"
+                    >{{ opt }}</button>
                   </div>
                 </div>
               </div>
@@ -941,36 +941,53 @@ const handleClose = () => {
 }
 
 .market-section {
-  background: #f8f9fa;
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 14px;
 }
 
 .market-section h3 {
-  font-size: 14px;
-  margin: 0 0 11px 0;
+  font-size: 15px;
+  margin: 0 0 12px 0;
   color: #333;
+  font-weight: 600;
 }
 
 .market-item {
-  flex: 1;
-  min-width: 150px;
+  width: 100%;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.market-item:last-child {
+  margin-bottom: 0;
 }
 
 .market-label-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
+}
+
+.market-label-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .market-label-row label {
   margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
 }
 
 .color-marks {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .mark-btn {
@@ -1008,13 +1025,13 @@ const handleClose = () => {
 .quick-input {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 }
 
 .quick-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
 }
 
 .quick-btn {
@@ -1611,11 +1628,11 @@ const handleClose = () => {
   }
   
   .market-item {
-    min-width: 100%;
-    padding: 8px;
+    width: 100%;
+    padding: 10px;
     margin-bottom: 8px;
     background: white;
-    border-radius: 4px;
+    border-radius: 6px;
   }
   
   .market-item:last-child {
@@ -1627,7 +1644,7 @@ const handleClose = () => {
   }
   
   .market-label-row label {
-    font-size: 12px;
+    font-size: 13px;
   }
   
   .mark-btn {
