@@ -21,16 +21,16 @@
                 <input 
                   v-model="newCategoryKey" 
                   type="text" 
-                  placeholder="输入类别标识（如：market）"
+                  placeholder="类别标识（英文字母）"
                   class="category-key-input"
                 />
                 <input 
                   v-model="newCategoryLabel" 
                   type="text" 
-                  placeholder="输入类别名称（如：大盘）"
+                  placeholder="类别名称"
                   class="category-label-input"
                 />
-                <button @click="addCategory" class="add-category-btn">添加类别</button>
+                <button @click="addCategory" class="add-category-btn">添加</button>
               </div>
             </div>
             
@@ -79,11 +79,22 @@
       </transition>
     </div>
   </transition>
+  
+  <ConfirmModal
+    :visible="confirmVisible"
+    :title="confirmTitle"
+    :message="confirmMessage"
+    :type="confirmType"
+    :show-cancel="confirmShowCancel"
+    @close="confirmVisible = false"
+    @confirm="handleConfirm"
+  />
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
+import ConfirmModal from './ConfirmModal.vue'
 
 const props = defineProps({
   visible: Boolean
@@ -97,6 +108,28 @@ const newOptions = reactive({})
 const newCategoryKey = ref('')
 const newCategoryLabel = ref('')
 
+const confirmVisible = ref(false)
+const confirmTitle = ref('提示')
+const confirmMessage = ref('')
+const confirmType = ref('info')
+const confirmCallback = ref(null)
+const confirmShowCancel = ref(true)
+
+const showConfirm = (title, message, type = 'info', callback = null, showCancel = true) => {
+  confirmTitle.value = title
+  confirmMessage.value = message
+  confirmType.value = type
+  confirmCallback.value = callback
+  confirmShowCancel.value = showCancel
+  confirmVisible.value = true
+}
+
+const handleConfirm = () => {
+  if (confirmCallback.value) {
+    confirmCallback.value()
+  }
+}
+
 const addOption = (category) => {
   const option = newOptions[category]?.trim()
   if (option) {
@@ -106,32 +139,40 @@ const addOption = (category) => {
 }
 
 const removeOption = (category, option) => {
-  if (confirm(`确定要删除 "${option}" 吗？`)) {
+  showConfirm('删除选项', `确定要删除 "${option}" 吗？`, 'warning', () => {
     store.removeQuickOption(category, option)
-  }
+  })
 }
 
 const addCategory = () => {
   const key = newCategoryKey.value.trim()
   const label = newCategoryLabel.value.trim()
-  if (key && label) {
-    if (quickOptions[key]) {
-      alert('该类别标识已存在')
-      return
-    }
-    store.addQuickCategory(key, label)
-    newOptions[key] = ''
-    newCategoryKey.value = ''
-    newCategoryLabel.value = ''
-  } else {
-    alert('请输入类别标识和名称')
+  if (!key && !label) {
+    showConfirm('提示', '请输入类别标识和名称', 'warning', null, false)
+    return
   }
+  if (!key) {
+    showConfirm('提示', '请输入类别标识', 'warning', null, false)
+    return
+  }
+  if (!label) {
+    showConfirm('提示', '请输入类别名称', 'warning', null, false)
+    return
+  }
+  if (quickOptions[key]) {
+    showConfirm('提示', '该类别标识已存在', 'error', null, false)
+    return
+  }
+  store.addQuickCategory(key, label)
+  newOptions[key] = ''
+  newCategoryKey.value = ''
+  newCategoryLabel.value = ''
 }
 
 const removeCategory = (category) => {
-  if (confirm(`确定要删除类别 "${categoryLabels[category] || category}" 及其所有选项吗？`)) {
+  showConfirm('删除类别', `确定要删除类别 "${categoryLabels[category] || category}" 及其所有选项吗？`, 'error', () => {
     store.removeQuickCategory(category)
-  }
+  })
 }
 
 const handleClose = () => {

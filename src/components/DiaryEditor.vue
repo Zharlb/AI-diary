@@ -277,6 +277,16 @@
       </transition>
     </div>
   </transition>
+  
+  <ConfirmModal
+    :visible="confirmVisible"
+    :title="confirmTitle"
+    :message="confirmMessage"
+    :type="confirmType"
+    :show-cancel="confirmShowCancel"
+    @close="confirmVisible = false"
+    @confirm="handleConfirm"
+  />
 </template>
 
 <script setup>
@@ -284,6 +294,7 @@ import { ref, watch, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useDiaryStore, formatDate } from '@/stores/diary'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import ConfirmModal from './ConfirmModal.vue'
 
 const props = defineProps({
   visible: Boolean,
@@ -296,6 +307,28 @@ const emit = defineEmits(['close', 'saved'])
 const store = useDiaryStore()
 const quickOptions = computed(() => store.quickOptions)
 const categoryLabels = computed(() => store.categoryLabels)
+
+const confirmVisible = ref(false)
+const confirmTitle = ref('提示')
+const confirmMessage = ref('')
+const confirmType = ref('info')
+const confirmCallback = ref(null)
+const confirmShowCancel = ref(true)
+
+const showConfirm = (title, message, type = 'info', callback = null, showCancel = true) => {
+  confirmTitle.value = title
+  confirmMessage.value = message
+  confirmType.value = type
+  confirmCallback.value = callback
+  confirmShowCancel.value = showCancel
+  confirmVisible.value = true
+}
+
+const handleConfirm = () => {
+  if (confirmCallback.value) {
+    confirmCallback.value()
+  }
+}
 
 const editorMode = ref('edit')
 const newTag = ref('')
@@ -591,7 +624,7 @@ const formatTime = (time) => {
 
 const handleSave = () => {
   if (!form.title.trim()) {
-    alert('请输入标题')
+    showConfirm('提示', '请输入标题', 'warning', null, false)
     return
   }
   
@@ -622,11 +655,11 @@ const handleSave = () => {
 }
 
 const handleDelete = () => {
-  if (confirm('确定要删除这篇日记吗？')) {
+  showConfirm('删除日记', '确定要删除这篇日记吗？', 'error', () => {
     store.deleteDiary(props.diary.id)
     emit('saved')
     handleClose()
-  }
+  })
 }
 
 const handleClose = () => {
