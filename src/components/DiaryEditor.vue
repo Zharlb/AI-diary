@@ -1801,14 +1801,27 @@ const handleClose = () => {
     min-height: 28px;
   }
   
+  .rich-editor {
+    position: relative;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+  
   .rich-editor :deep(.ql-toolbar) {
     flex-wrap: wrap;
     gap: 4px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    border-bottom: 1px solid #e0e0e0;
   }
   
   .rich-editor :deep(.ql-editor) {
     min-height: 120px;
     font-size: 14px;
+    max-height: 200px;
+    overflow-y: auto;
   }
   
   .preview-content {
