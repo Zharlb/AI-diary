@@ -361,9 +361,24 @@ const previewImages = ref([])
 const currentIndex = ref(0)
 const scale = ref(1)
 const rotation = ref(0)
+const modalRef = ref(null)
 
 const toggleEditorFullscreen = () => {
   isEditorFullscreen.value = !isEditorFullscreen.value
+}
+
+const handleTouchMove = (e) => {
+  // 检查触摸事件目标是否在弹窗内容区域内
+  const target = e.target
+  const modalContent = document.querySelector('.modal-content')
+  
+  // 如果在弹窗内容区域内，不阻止滚动，让内部可以正常滚动
+  if (modalContent && modalContent.contains(target)) {
+    return
+  }
+  
+  // 否则阻止背景滚动
+  e.preventDefault()
 }
 
 const form = reactive({
@@ -405,6 +420,8 @@ watch(() => props.visible, (val) => {
   if (val) {
     // 锁定背景滚动
     document.body.style.overflow = 'hidden'
+    // 拦截移动端触摸滚动
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
     if (props.diary) {
       originalDiary.value = JSON.parse(JSON.stringify(props.diary))
       Object.assign(form, {
@@ -443,6 +460,8 @@ watch(() => props.visible, (val) => {
   } else {
     // 恢复背景滚动
     document.body.style.overflow = ''
+    // 移除触摸滚动拦截
+    document.removeEventListener('touchmove', handleTouchMove)
   }
 })
 
@@ -573,6 +592,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('touchmove', handleTouchMove)
   // 确保组件卸载时恢复背景滚动
   document.body.style.overflow = ''
 })
