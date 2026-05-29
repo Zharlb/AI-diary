@@ -382,13 +382,13 @@ const handleEditDiary = (day, diary) => {
 }
 
 .day-number {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   color: #333;
 }
 
 .day-week {
-  font-size: 13px;
+  font-size: 14px;
   color: #999;
 }
 
@@ -432,28 +432,28 @@ const handleEditDiary = (day, diary) => {
 }
 
 .diary-preview {
-  padding: 10px;
+  padding: 12px;
   background: #f8f9fa;
   border-radius: 6px;
   word-wrap: break-word;
 }
 
 .diary-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
 }
 
 .diary-summary {
-  font-size: 12px;
-  color: #666;
-  line-height: 1.5;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
 }
 
 .market-info {
-  margin-top: 8px;
-  padding: 8px;
+  margin-top: 10px;
+  padding: 10px;
   background: #fff;
   border-radius: 4px;
   border-left: 3px solid #4080ff;
@@ -462,9 +462,9 @@ const handleEditDiary = (day, diary) => {
 .market-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  font-size: 12px;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .market-item:last-child {
@@ -472,29 +472,29 @@ const handleEditDiary = (day, diary) => {
 }
 
 .market-label {
-  color: #999;
+  color: #666;
   font-weight: 500;
-  min-width: 30px;
+  min-width: 34px;
 }
 
 .market-value {
-  color: #333;
+  color: #222;
   flex: 1;
 }
 
 .market-marks {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 5px;
   margin-top: 6px;
 }
 
 .mark-badge {
-  padding: 2px 6px;
-  font-size: 10px;
-  border-radius: 3px;
-  font-weight: 500;
-  min-width: 18px;
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  min-width: 20px;
   text-align: center;
 }
 
@@ -510,29 +510,29 @@ const handleEditDiary = (day, diary) => {
 
 .diary-tags {
   display: flex;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 5px;
+  margin-top: 8px;
   flex-wrap: wrap;
 }
 
 .tag {
-  padding: 2px 6px;
+  padding: 4px 8px;
   background: #e8f4fd;
   color: #4080ff;
-  font-size: 11px;
-  border-radius: 12px;
+  font-size: 13px;
+  border-radius: 14px;
 }
 
 .diary-images {
   display: flex;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 5px;
+  margin-top: 8px;
   flex-wrap: wrap;
 }
 
 .diary-image {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 4px;
   object-fit: cover;
   cursor: pointer;
@@ -544,12 +544,12 @@ const handleEditDiary = (day, diary) => {
 }
 
 .diary-content {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px dashed #e0e0e0;
-  font-size: 12px;
-  color: #555;
-  line-height: 1.6;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.7;
 }
 
 .diary-content :deep(p) {

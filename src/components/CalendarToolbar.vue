@@ -190,8 +190,9 @@ const handleToday = () => {
 @media (max-width: 768px) {
   .calendar-toolbar {
     padding: 8px 10px;
-    gap: 8px;
+    gap: 6px;
     border-radius: 6px;
+    flex-wrap: wrap;
   }
   
   .view-controls {
@@ -199,96 +200,92 @@ const handleToday = () => {
   }
   
   .view-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
     border-radius: 4px;
-    min-width: 44px;
-    min-height: 28px;
+    min-width: 36px;
+    min-height: 26px;
   }
   
   .nav-controls {
-    gap: 8px;
+    gap: 6px;
   }
   
   .nav-btn {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
   }
   
   .nav-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
   
   .current-date {
-    min-width: 80px;
-    font-size: 12px;
+    min-width: 70px;
+    font-size: 11px;
   }
   
   .today-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
     border-radius: 4px;
-    min-width: 44px;
-    min-height: 28px;
+    min-width: 36px;
+    min-height: 26px;
   }
 }
 
 @media (max-width: 480px) {
   .calendar-toolbar {
     padding: 6px 8px;
-    gap: 6px;
-    flex-wrap: wrap;
+    gap: 4px;
+    flex-wrap: nowrap;
     border-radius: 4px;
   }
   
   .view-controls {
-    width: 100%;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f0f0f0;
+    gap: 3px;
+    flex-shrink: 0;
   }
   
   .view-btn {
-    padding: 6px 14px;
-    font-size: 12px;
-    min-width: 48px;
-    min-height: 30px;
+    padding: 3px 8px;
+    font-size: 10px;
+    min-width: 32px;
+    min-height: 24px;
   }
   
   .nav-controls {
-    width: 100%;
-    justify-content: center;
-    gap: 8px;
+    gap: 4px;
+    flex: 1;
+    justify-content: flex-end;
   }
   
   .nav-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
   }
   
   .nav-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
   }
   
   .current-date {
-    min-width: 80px;
-    font-size: 13px;
-    font-weight: 600;
+    min-width: 60px;
+    font-size: 10px;
+    font-weight: 500;
   }
   
   .today-btn {
-    padding: 6px 14px;
-    font-size: 12px;
-    min-width: 48px;
-    min-height: 32px;
+    padding: 3px 8px;
+    font-size: 10px;
+    min-width: 32px;
+    min-height: 24px;
   }
 }
 </style>
