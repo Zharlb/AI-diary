@@ -187,20 +187,90 @@ const handleToday = () => {
   background: #f0f5ff;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .calendar-toolbar {
-    padding: 8px 12px;
-    gap: 10px;
+    padding: 8px 10px;
+    gap: 8px;
+    border-radius: 6px;
+  }
+  
+  .view-controls {
+    gap: 4px;
   }
   
   .view-btn {
-    padding: 5px 10px;
+    padding: 6px 12px;
     font-size: 12px;
+    border-radius: 4px;
+    min-width: 44px;
+    min-height: 28px;
+  }
+  
+  .nav-controls {
+    gap: 8px;
   }
   
   .nav-btn {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .current-date {
+    min-width: 80px;
+    font-size: 12px;
+  }
+  
+  .today-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    min-width: 44px;
+    min-height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-toolbar {
+    padding: 6px 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-radius: 4px;
+  }
+  
+  .view-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .view-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    min-width: 48px;
+    min-height: 30px;
+  }
+  
+  .nav-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
   
   .nav-btn svg {
@@ -209,13 +279,16 @@ const handleToday = () => {
   }
   
   .current-date {
-    min-width: 70px;
+    min-width: 80px;
     font-size: 13px;
+    font-weight: 600;
   }
   
   .today-btn {
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 12px;
+    min-width: 48px;
+    min-height: 32px;
   }
 }
 </style>

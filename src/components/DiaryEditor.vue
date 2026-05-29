@@ -1574,24 +1574,50 @@ const handleClose = () => {
 
 @media (max-width: 768px) {
   .diary-modal {
-    padding: 10px;
+    padding: 8px;
+    max-height: 95vh;
+    overflow: hidden;
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+    max-height: 95vh;
   }
   
   .modal-header {
-    padding: 14px;
+    padding: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
   }
   
   .modal-header h2 {
     font-size: 16px;
+    flex: 1;
+  }
+  
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 18px;
   }
   
   .modal-body {
-    padding: 14px;
+    padding: 12px;
+    overflow-y: auto;
+    max-height: calc(95vh - 120px);
+    -webkit-overflow-scrolling: touch;
   }
   
   .form-row {
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
   }
   
   .form-group,
@@ -1600,33 +1626,266 @@ const handleClose = () => {
     min-width: 100%;
   }
   
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .form-input {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 40px;
+  }
+  
+  .form-textarea {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 80px;
+  }
+  
+  .form-textarea.short {
+    min-height: 50px;
+  }
+  
+  .clear-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+  }
+  
+  .color-picker {
+    gap: 8px;
+  }
+  
+  .color-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .tags-container {
+    gap: 6px;
+  }
+  
+  .tag-item {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  
+  .tag-remove {
+    width: 18px;
+    height: 18px;
+    font-size: 14px;
+  }
+  
+  .tag-input {
+    font-size: 13px;
+    padding: 6px 10px;
+    width: 120px;
+    min-height: 32px;
+  }
+  
+  .tag-add-btn {
+    width: 28px;
+    height: 32px;
+    min-width: 28px;
+    min-height: 32px;
+    font-size: 16px;
+  }
+  
   .market-section {
-    padding: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+  }
+  
+  .market-section h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
   }
   
   .market-item {
     min-width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 4px;
   }
   
-  .modal-footer {
-    padding: 12px 14px;
-    gap: 8px;
+  .market-item:last-child {
+    margin-bottom: 0;
   }
   
-  .btn {
-    padding: 8px 16px;
+  .market-label-row {
+    margin-bottom: 6px;
+  }
+  
+  .market-label-row label {
     font-size: 12px;
   }
   
+  .mark-btn {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    font-size: 12px;
+  }
+  
+  .quick-options {
+    gap: 4px;
+  }
+  
+  .quick-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    min-height: 28px;
+  }
+  
+  .image-upload-area {
+    padding: 12px;
+    min-height: 90px;
+    border-radius: 6px;
+  }
+  
+  .upload-placeholder {
+    font-size: 13px;
+    gap: 8px;
+  }
+  
+  .upload-placeholder svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .image-preview-list {
+    gap: 8px;
+  }
+  
+  .image-item {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .remove-image {
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+  }
+  
+  .add-more-images {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .editor-tabs {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .tab-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    min-height: 28px;
+  }
+  
+  .rich-editor :deep(.ql-toolbar) {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .rich-editor :deep(.ql-editor) {
+    min-height: 120px;
+    font-size: 14px;
+  }
+  
+  .preview-content {
+    font-size: 14px;
+    padding: 12px;
+    min-height: 120px;
+    max-height: 200px;
+  }
+  
+  .history-section {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  
+  .history-section h3 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .history-list {
+    max-height: 180px;
+  }
+  
+  .history-header {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .history-time {
+    font-size: 12px;
+  }
+  
+  .history-action {
+    font-size: 12px;
+  }
+  
+  .toggle-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+  
+  .history-changes {
+    padding: 0 8px 8px 8px;
+  }
+  
+  .change-item {
+    font-size: 12px;
+    gap: 8px;
+  }
+  
+  .change-field {
+    min-width: 50px;
+    font-size: 11px;
+  }
+  
+  .modal-footer {
+    padding: 10px 12px;
+    gap: 8px;
+    position: sticky;
+    bottom: 0;
+    background: #fafafa;
+    z-index: 10;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 80px;
+    min-height: 40px;
+  }
+  
+  .btn-danger {
+    background: #ff6b6b;
+  }
+  
   .preview-toolbar {
-    top: 10px;
-    padding: 6px 12px;
+    top: 8px;
+    padding: 5px 10px;
     gap: 4px;
   }
   
   .toolbar-btn {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
   
   .zoom-level,
@@ -1636,8 +1895,200 @@ const handleClose = () => {
   }
   
   .preview-image {
-    max-width: 90%;
-    max-height: 70vh;
+    max-width: 95%;
+    max-height: 65vh;
+  }
+  
+  .close-preview-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .diary-modal {
+    padding: 4px;
+  }
+  
+  .modal-content {
+    border-radius: 6px;
+  }
+  
+  .modal-header {
+    padding: 10px;
+  }
+  
+  .modal-header h2 {
+    font-size: 15px;
+  }
+  
+  .close-btn {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .modal-body {
+    padding: 10px;
+    max-height: calc(95vh - 110px);
+  }
+  
+  .form-row {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .form-input {
+    font-size: 13px;
+    padding: 9px 10px;
+    min-height: 38px;
+  }
+  
+  .form-textarea {
+    font-size: 13px;
+    padding: 9px 10px;
+    min-height: 70px;
+  }
+  
+  .form-textarea.short {
+    min-height: 45px;
+  }
+  
+  .color-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .tag-item {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  
+  .tag-input {
+    font-size: 12px;
+    width: 100px;
+  }
+  
+  .market-section {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .market-item {
+    padding: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .market-label-row label {
+    font-size: 11px;
+  }
+  
+  .mark-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  
+  .quick-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  
+  .image-upload-area {
+    padding: 10px;
+    min-height: 80px;
+  }
+  
+  .upload-placeholder {
+    font-size: 12px;
+  }
+  
+  .upload-placeholder svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .image-item {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .remove-image {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .add-more-images {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .tab-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+  
+  .rich-editor :deep(.ql-editor) {
+    min-height: 100px;
+    font-size: 13px;
+  }
+  
+  .preview-content {
+    font-size: 13px;
+    padding: 10px;
+    min-height: 100px;
+  }
+  
+  .history-list {
+    max-height: 150px;
+  }
+  
+  .history-header {
+    padding: 6px;
+    gap: 6px;
+  }
+  
+  .history-time {
+    font-size: 11px;
+  }
+  
+  .history-action {
+    font-size: 11px;
+  }
+  
+  .change-item {
+    font-size: 11px;
+    gap: 6px;
+  }
+  
+  .modal-footer {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
+  .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    min-height: 36px;
+  }
+  
+  .toolbar-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .zoom-level,
+  .image-counter {
+    font-size: 10px;
+    min-width: 35px;
+  }
+  
+  .close-preview-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
   }
 }
 </style>

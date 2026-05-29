@@ -147,16 +147,67 @@ const handleDiarySaved = () => {
 }
 
 @media (max-width: 768px) {
-  .app-main {
-    padding: 8px 12px 20px;
-  }
-  
-  .toolbar-wrapper {
-    padding: 8px 12px 0;
+  .app-header {
+    padding: 10px 12px;
+    min-height: 52px;
   }
   
   .app-header h1 {
     font-size: 16px;
+  }
+  
+  .options-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .options-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .toolbar-wrapper {
+    padding: 6px 8px 0;
+    top: 52px;
+  }
+  
+  .app-main {
+    padding: 6px 8px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 8px 10px;
+    min-height: 48px;
+  }
+  
+  .app-header h1 {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  
+  .options-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+  
+  .options-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .toolbar-wrapper {
+    top: 48px;
+    padding: 4px 6px 0;
+  }
+  
+  .app-main {
+    padding: 4px 6px 20px;
   }
 }
 </style>

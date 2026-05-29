@@ -704,61 +704,132 @@ const handleEditDiary = (day, diary) => {
 @media (max-width: 768px) {
   .calendar-list {
     gap: 8px;
+    padding: 0;
   }
   
   .day-item {
-    padding: 12px;
+    padding: 10px;
+    border-radius: 6px;
+    border-left-width: 3px;
+  }
+  
+  .day-item:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
   
   .day-header {
     margin-bottom: 8px;
     padding-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .day-info {
+    flex: 1;
+    min-width: 50px;
   }
   
   .day-number {
-    font-size: 20px;
+    font-size: 18px;
   }
   
   .day-week {
-    font-size: 12px;
+    font-size: 11px;
   }
   
   .day-color {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
   
   .edit-btn,
   .add-btn-small {
     width: 28px;
     height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .edit-btn svg,
+  .add-btn-small svg {
+    width: 14px;
+    height: 14px;
   }
   
   .diary-preview {
     padding: 8px;
+    border-radius: 4px;
   }
   
   .diary-title {
     font-size: 13px;
+    font-weight: 600;
   }
   
   .diary-summary {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  
+  .market-info {
+    padding: 6px;
+    margin-top: 6px;
+  }
+  
+  .market-item {
+    font-size: 12px;
+    margin-bottom: 3px;
+    gap: 6px;
+  }
+  
+  .market-label {
+    min-width: 32px;
     font-size: 11px;
   }
   
-  .no-diary {
-    padding: 14px;
-    font-size: 12px;
+  .mark-badge {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+  
+  .diary-tags {
+    margin-top: 6px;
+    gap: 4px;
+  }
+  
+  .tag {
+    font-size: 11px;
+    padding: 3px 7px;
+  }
+  
+  .diary-images {
+    margin-top: 6px;
+    gap: 4px;
   }
   
   .diary-image {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+  }
+  
+  .diary-content {
+    font-size: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
+    line-height: 1.6;
+  }
+  
+  .no-diary {
+    padding: 16px;
+    font-size: 12px;
   }
   
   .image-more {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    font-size: 11px;
   }
   
   .preview-toolbar {
@@ -770,6 +841,8 @@ const handleEditDiary = (day, diary) => {
   .toolbar-btn {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
   
   .zoom-level,
@@ -779,8 +852,138 @@ const handleEditDiary = (day, diary) => {
   }
   
   .preview-image {
-    max-width: 90%;
-    max-height: 70vh;
+    max-width: 95%;
+    max-height: 65vh;
+  }
+  
+  .close-preview-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-list {
+    gap: 6px;
+  }
+  
+  .day-item {
+    padding: 8px;
+    border-radius: 4px;
+    border-left-width: 2px;
+  }
+  
+  .day-header {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+  
+  .day-number {
+    font-size: 16px;
+  }
+  
+  .day-week {
+    font-size: 10px;
+  }
+  
+  .day-color {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .edit-btn,
+  .add-btn-small {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+  }
+  
+  .diary-preview {
+    padding: 6px;
+  }
+  
+  .diary-title {
+    font-size: 12px;
+  }
+  
+  .diary-summary {
+    font-size: 11px;
+  }
+  
+  .market-info {
+    padding: 4px;
+    margin-top: 4px;
+  }
+  
+  .market-item {
+    font-size: 11px;
+    gap: 4px;
+  }
+  
+  .market-label {
+    min-width: 28px;
+    font-size: 10px;
+  }
+  
+  .diary-tags {
+    margin-top: 4px;
+    gap: 3px;
+  }
+  
+  .tag {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+  
+  .diary-images {
+    margin-top: 4px;
+    gap: 3px;
+  }
+  
+  .diary-image {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .diary-content {
+    font-size: 11px;
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+  
+  .no-diary {
+    padding: 12px;
+    font-size: 11px;
+  }
+  
+  .image-more {
+    width: 32px;
+    height: 32px;
+    font-size: 10px;
+  }
+  
+  .toolbar-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .zoom-level,
+  .image-counter {
+    font-size: 10px;
+    min-width: 35px;
+  }
+  
+  .close-preview-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
   }
 }
 </style>
