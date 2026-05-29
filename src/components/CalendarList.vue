@@ -520,11 +520,6 @@ const handleEditDiary = (day, diary) => {
   text-align: center;
   color: #999;
   font-size: 13px;
-  cursor: pointer;
-}
-
-.no-diary:hover {
-  color: #4080ff;
 }
 
 /* 图片预览 */
