@@ -87,11 +87,11 @@
                         <button 
                           :class="['mark-btn', 'up', { active: form[category + 'Mark'] === 'up' }]"
                           @click="form[category + 'Mark'] = form[category + 'Mark'] === 'up' ? '' : 'up'"
-                        >▲</button>
+                        ></button>
                         <button 
                           :class="['mark-btn', 'down', { active: form[category + 'Mark'] === 'down' }]"
                           @click="form[category + 'Mark'] = form[category + 'Mark'] === 'down' ? '' : 'down'"
-                        >▼</button>
+                        ></button>
                       </div>
                     </div>
                   </div>
