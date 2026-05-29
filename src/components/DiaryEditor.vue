@@ -403,6 +403,8 @@ const reversedHistory = computed(() => {
 
 watch(() => props.visible, (val) => {
   if (val) {
+    // 锁定背景滚动
+    document.body.style.overflow = 'hidden'
     if (props.diary) {
       originalDiary.value = JSON.parse(JSON.stringify(props.diary))
       Object.assign(form, {
@@ -438,6 +440,9 @@ watch(() => props.visible, (val) => {
       expandedHistory.value = {}
     }
     editorMode.value = 'edit'
+  } else {
+    // 恢复背景滚动
+    document.body.style.overflow = ''
   }
 })
 
@@ -489,12 +494,12 @@ const openPreview = (index) => {
   scale.value = 1
   rotation.value = 0
   previewVisible.value = true
-  document.body.style.overflow = 'hidden'
+  // 弹窗已经锁定了背景，这里不需要重复锁定
 }
 
 const closePreview = () => {
   previewVisible.value = false
-  document.body.style.overflow = ''
+  // 弹窗还在打开，这里不需要恢复背景滚动
 }
 
 const handleWheel = (e) => {
@@ -568,6 +573,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
+  // 确保组件卸载时恢复背景滚动
+  document.body.style.overflow = ''
 })
 
 const toggleHistoryItem = (index) => {
