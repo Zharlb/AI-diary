@@ -875,7 +875,9 @@ const handleClose = () => {
   border-radius: 50%;
   background: #ccc;
   color: white;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -940,7 +942,9 @@ const handleClose = () => {
   background: rgba(64, 128, 255, 0.2);
   border-radius: 50%;
   color: #4080ff;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
