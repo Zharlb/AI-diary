@@ -156,7 +156,7 @@
             <div class="form-row">
               <div class="form-group flex-1">
                 <label>内容</label>
-                <div class="editor-tabs">
+                <div :class="['editor-tabs', { 'fullscreen': isEditorFullscreen }]">
                   <button 
                     :class="['tab-btn', { active: editorMode === 'edit' }]"
                     @click="editorMode = 'edit'"
@@ -165,8 +165,20 @@
                     :class="['tab-btn', { active: editorMode === 'preview' }]"
                     @click="editorMode = 'preview'"
                   >预览</button>
+                  <button 
+                    class="tab-btn fullscreen-btn"
+                    @click="toggleEditorFullscreen"
+                    :title="isEditorFullscreen ? '退出全屏' : '全屏编辑'"
+                  >
+                    <svg v-if="!isEditorFullscreen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                    </svg>
+                    <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"/>
+                    </svg>
+                  </button>
                 </div>
-                <div class="rich-editor" v-show="editorMode === 'edit'">
+                <div :class="['rich-editor', { 'fullscreen': isEditorFullscreen }]" v-show="editorMode === 'edit'">
                   <QuillEditor 
                     v-model:content="form.content"
                     contentType="html"
@@ -339,6 +351,7 @@ const handleConfirm = () => {
 }
 
 const editorMode = ref('edit')
+const isEditorFullscreen = ref(false)
 const newTag = ref('')
 const fileInputRef = ref(null)
 const expandedHistory = ref({})
@@ -348,6 +361,10 @@ const previewImages = ref([])
 const currentIndex = ref(0)
 const scale = ref(1)
 const rotation = ref(0)
+
+const toggleEditorFullscreen = () => {
+  isEditorFullscreen.value = !isEditorFullscreen.value
+}
 
 const form = reactive({
   title: '',
@@ -1151,6 +1168,18 @@ const handleClose = () => {
   margin-bottom: 7px;
 }
 
+.editor-tabs.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10001;
+  background: white;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0;
+}
+
 .tab-btn {
   padding: 5px 14px;
   border: none;
@@ -1167,10 +1196,45 @@ const handleClose = () => {
   color: white;
 }
 
+.tab-btn.fullscreen-btn {
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
 .rich-editor {
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   overflow: hidden;
+}
+
+.rich-editor.fullscreen {
+  position: fixed;
+  top: 52px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  border: none;
+  border-radius: 0;
+  background: white;
+}
+
+.rich-editor.fullscreen :deep(.ql-toolbar) {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.rich-editor.fullscreen :deep(.ql-container) {
+  height: calc(100vh - 52px - 42px);
+}
+
+.rich-editor.fullscreen :deep(.ql-editor) {
+  min-height: calc(100vh - 52px - 42px);
+  height: 100%;
 }
 
 .rich-editor :deep(.ql-toolbar) {
