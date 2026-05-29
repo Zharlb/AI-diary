@@ -42,7 +42,7 @@
                     <input 
                       v-model="newOptions[category]" 
                       type="text" 
-                      :placeholder="'添加' + (categoryLabels[category] || category)"
+                      :placeholder="'添加选项到' + (categoryLabels[category] || category)"
                       class="option-input"
                       @keyup.enter="addOption(category)"
                     />
@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 
 const props = defineProps({
@@ -90,8 +90,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 const store = useDiaryStore()
-const quickOptions = store.quickOptions
-const categoryLabels = store.categoryLabels
+const quickOptions = computed(() => store.quickOptions)
+const categoryLabels = computed(() => store.categoryLabels)
 
 const newOptions = reactive({})
 const newCategoryKey = ref('')
@@ -114,22 +114,22 @@ const removeOption = (category, option) => {
 const addCategory = () => {
   const key = newCategoryKey.value.trim()
   const label = newCategoryLabel.value.trim()
-  if (key && label) {
-    if (quickOptions[key]) {
-      alert('该类别标识已存在')
-      return
-    }
-    store.addQuickCategory(key, label)
-    newOptions[key] = ''
-    newCategoryKey.value = ''
-    newCategoryLabel.value = ''
-  } else {
+  if (!key || !label) {
     alert('请输入类别标识和名称')
+    return
   }
+  if (quickOptions.value[key]) {
+    alert('该类别标识已存在')
+    return
+  }
+  store.addQuickCategory(key, label)
+  newOptions[key] = ''
+  newCategoryKey.value = ''
+  newCategoryLabel.value = ''
 }
 
 const removeCategory = (category) => {
-  if (confirm(`确定要删除类别 "${categoryLabels[category] || category}" 及其所有选项吗？`)) {
+  if (confirm(`确定要删除类别 "${categoryLabels.value[category] || category}" 及其所有选项吗？`)) {
     store.removeQuickCategory(category)
   }
 }
