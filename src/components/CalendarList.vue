@@ -49,28 +49,23 @@
           <div v-if="hasMarketInfo(diary)" class="market-info">
             <div v-if="diary.market" class="market-item">
               <span class="market-label">大盘:</span>
-              <span class="market-value">{{ diary.market }}</span>
-              <span v-if="diary.marketMark" :class="['mark-badge', diary.marketMark]">▲</span>
+              <span class="market-value" :class="diary.marketMark">{{ diary.market }}</span>
             </div>
             <div v-if="diary.volume" class="market-item">
               <span class="market-label">量能:</span>
-              <span class="market-value">{{ diary.volume }}</span>
-              <span v-if="diary.volumeMark" :class="['mark-badge', diary.volumeMark]">量</span>
+              <span class="market-value" :class="diary.volumeMark">{{ diary.volume }}</span>
             </div>
             <div v-if="diary.index" class="market-item">
               <span class="market-label">指数:</span>
-              <span class="market-value">{{ diary.index }}</span>
-              <span v-if="diary.indexMark" :class="['mark-badge', diary.indexMark]">指</span>
+              <span class="market-value" :class="diary.indexMark">{{ diary.index }}</span>
             </div>
             <div v-if="diary.focus" class="market-item">
               <span class="market-label">重点:</span>
-              <span class="market-value">{{ diary.focus }}</span>
-              <span v-if="diary.focusMark" :class="['mark-badge', diary.focusMark]">重</span>
+              <span class="market-value" :class="diary.focusMark">{{ diary.focus }}</span>
             </div>
             <div v-if="diary.expectation" class="market-item">
               <span class="market-label">预期:</span>
-              <span class="market-value">{{ diary.expectation }}</span>
-              <span v-if="diary.expectationMark" :class="['mark-badge', diary.expectationMark]">预</span>
+              <span class="market-value" :class="diary.expectationMark">{{ diary.expectation }}</span>
             </div>
           </div>
           
@@ -480,31 +475,14 @@ const handleEditDiary = (day, diary) => {
 .market-value {
   color: #222;
   flex: 1;
+  font-weight: 500;
 }
 
-.market-marks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 6px;
-}
-
-.mark-badge {
-  padding: 3px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  font-weight: 600;
-  min-width: 20px;
-  text-align: center;
-}
-
-.mark-badge.up {
-  background: #ffe0e0;
+.market-value.up {
   color: #ff4444;
 }
 
-.mark-badge.down {
-  background: #e0ffe0;
+.market-value.down {
   color: #00c853;
 }
 
@@ -805,12 +783,15 @@ const handleEditDiary = (day, diary) => {
   .market-value {
     flex: 1;
     color: #222;
+    font-weight: 500;
   }
   
-  .mark-badge {
-    font-size: 13px;
-    padding: 3px 8px;
-    font-weight: 600;
+  .market-value.up {
+    color: #ff4444;
+  }
+  
+  .market-value.down {
+    color: #00c853;
   }
   
   .diary-tags {

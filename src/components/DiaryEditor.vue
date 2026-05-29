@@ -82,11 +82,11 @@
                       <button 
                         :class="['mark-btn', 'up', { active: form.marketMark === 'up' }]"
                         @click="form.marketMark = form.marketMark === 'up' ? '' : 'up'"
-                      >▲</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form.marketMark === 'down' }]"
                         @click="form.marketMark = form.marketMark === 'down' ? '' : 'down'"
-                      >▼</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="quick-input">
@@ -111,11 +111,11 @@
                       <button 
                         :class="['mark-btn', 'up', { active: form.volumeMark === 'up' }]"
                         @click="form.volumeMark = form.volumeMark === 'up' ? '' : 'up'"
-                      >▲</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form.volumeMark === 'down' }]"
                         @click="form.volumeMark = form.volumeMark === 'down' ? '' : 'down'"
-                      >▼</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="quick-input">
@@ -140,11 +140,11 @@
                       <button 
                         :class="['mark-btn', 'up', { active: form.indexMark === 'up' }]"
                         @click="form.indexMark = form.indexMark === 'up' ? '' : 'up'"
-                      >▲</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form.indexMark === 'down' }]"
                         @click="form.indexMark = form.indexMark === 'down' ? '' : 'down'"
-                      >▼</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="quick-input">
@@ -172,11 +172,11 @@
                       <button 
                         :class="['mark-btn', 'up', { active: form.focusMark === 'up' }]"
                         @click="form.focusMark = form.focusMark === 'up' ? '' : 'up'"
-                      >▲</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form.focusMark === 'down' }]"
                         @click="form.focusMark = form.focusMark === 'down' ? '' : 'down'"
-                      >▼</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="quick-input">
@@ -201,11 +201,11 @@
                       <button 
                         :class="['mark-btn', 'up', { active: form.expectationMark === 'up' }]"
                         @click="form.expectationMark = form.expectationMark === 'up' ? '' : 'up'"
-                      >▲</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form.expectationMark === 'down' }]"
                         @click="form.expectationMark = form.expectationMark === 'down' ? '' : 'down'"
-                      >▼</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="quick-input">
@@ -1072,12 +1072,10 @@ const handleClose = () => {
 }
 
 .mark-btn {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border: 2px solid #ddd;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: bold;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -1087,25 +1085,21 @@ const handleClose = () => {
 
 .mark-btn.up {
   background: #fff;
-  color: #ff4444;
-  border-color: #ffcccc;
+  border-color: #ff4444;
 }
 
 .mark-btn.up.active {
   background: #ff4444;
-  color: white;
   border-color: #ff4444;
 }
 
 .mark-btn.down {
   background: #fff;
-  color: #00c853;
-  border-color: #ccffcc;
+  border-color: #00c853;
 }
 
 .mark-btn.down.active {
   background: #00c853;
-  color: white;
   border-color: #00c853;
 }
 
