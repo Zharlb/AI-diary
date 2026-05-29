@@ -1842,7 +1842,7 @@ const handleClose = () => {
   }
   
   .history-list {
-    max-height: 180px;
+    max-height: none;
   }
   
   .history-header {
