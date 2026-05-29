@@ -875,9 +875,10 @@ const handleClose = () => {
   border-radius: 50%;
   background: #ccc;
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1;
   padding: 0;
+  padding-bottom: 1px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -886,8 +887,9 @@ const handleClose = () => {
 }
 
 .textarea-clear {
-  top: 11px;
+  top: 10px;
   transform: none;
+  padding-bottom: 1px;
 }
 
 .clear-btn:hover {
@@ -942,9 +944,10 @@ const handleClose = () => {
   background: rgba(64, 128, 255, 0.2);
   border-radius: 50%;
   color: #4080ff;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
   padding: 0;
+  padding-bottom: 1px;
   cursor: pointer;
   display: flex;
   align-items: center;
