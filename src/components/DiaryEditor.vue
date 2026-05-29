@@ -1309,6 +1309,7 @@ const handleClose = () => {
   background: #f8f9fa;
   border-radius: 8px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .history-header {
@@ -1845,6 +1846,10 @@ const handleClose = () => {
     max-height: none;
   }
   
+  .history-item {
+    flex-shrink: 0;
+  }
+  
   .history-header {
     padding: 8px;
     gap: 8px;
@@ -2080,7 +2085,11 @@ const handleClose = () => {
   }
   
   .history-list {
-    max-height: 150px;
+    max-height: none;
+  }
+  
+  .history-item {
+    flex-shrink: 0;
   }
   
   .history-header {
