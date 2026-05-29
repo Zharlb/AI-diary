@@ -36,7 +36,13 @@
             
             <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
               <div class="category-header">
-                <h3>{{ categoryLabels[category] || category }}</h3>
+                <div class="category-title-wrapper">
+                  <div class="category-move-btns">
+                    <button @click="moveCategory(category, 'up')" class="move-btn" title="上移">↑</button>
+                    <button @click="moveCategory(category, 'down')" class="move-btn" title="下移">↓</button>
+                  </div>
+                  <h3>{{ categoryLabels[category] || category }}</h3>
+                </div>
                 <div class="category-actions">
                   <div class="add-option">
                     <input 
@@ -61,7 +67,13 @@
                   :key="option" 
                   class="option-item"
                 >
-                  <span>{{ option }}</span>
+                  <div class="option-content">
+                    <div class="option-move-btns">
+                      <button @click="moveOption(category, option, 'up')" class="move-btn" title="上移">↑</button>
+                      <button @click="moveOption(category, option, 'down')" class="move-btn" title="下移">↓</button>
+                    </div>
+                    <span>{{ option }}</span>
+                  </div>
                   <button @click="removeOption(category, option)" class="remove-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M18 6L6 18M6 6l12 12"/>
@@ -175,6 +187,14 @@ const removeCategory = (category) => {
   })
 }
 
+const moveCategory = (category, direction) => {
+  store.moveCategory(category, direction)
+}
+
+const moveOption = (category, option, direction) => {
+  store.moveOption(category, option, direction)
+}
+
 const handleClose = () => {
   emit('close')
 }
@@ -282,10 +302,43 @@ const handleClose = () => {
   gap: 10px;
 }
 
+.category-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-move-btns {
+  display: flex;
+  gap: 2px;
+}
+
 .category-header h3 {
   margin: 0;
   font-size: 14px;
   color: #333;
+}
+
+.move-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  background: white;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.move-btn:hover {
+  background: #f0f0f0;
+  color: #4080ff;
+  border-color: #4080ff;
 }
 
 .category-actions {
@@ -415,6 +468,17 @@ const handleClose = () => {
   color: #333;
 }
 
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option-move-btns {
+  display: flex;
+  gap: 1px;
+}
+
 .remove-btn {
   width: 20px;
   height: 20px;
@@ -426,6 +490,7 @@ const handleClose = () => {
   align-items: center;
   justify-content: center;
   transition: color 0.2s;
+  flex-shrink: 0;
 }
 
 .remove-btn:hover {

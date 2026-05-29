@@ -552,7 +552,7 @@ const toggleHistoryItem = (index) => {
 }
 
 const trackChanges = () => {
-  if (!originalDiary.value) return []
+  if (!originalDiary.value) return { hasChanges: false, changes: [] }
   
   const changes = []
   const baseFields = [
@@ -610,7 +610,7 @@ const trackChanges = () => {
     }
   })
   
-  return changes
+  return { hasChanges: changes.length > 0, changes }
 }
 
 const formatTime = (time) => {
@@ -646,8 +646,8 @@ const handleSave = () => {
   })
   
   if (props.diary) {
-    const changes = trackChanges()
-    store.updateDiary(props.diary.id, data, changes.length > 0 ? changes : undefined)
+    const { hasChanges, changes } = trackChanges()
+    store.updateDiary(props.diary.id, data, hasChanges ? changes : undefined)
   } else {
     store.addDiary(data)
   }
@@ -1233,6 +1233,7 @@ const handleClose = () => {
   background: #f8f9fa;
   border-radius: 6px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .history-header {
@@ -1305,26 +1306,39 @@ const handleClose = () => {
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .old-value {
   color: #ff6b6b;
   text-decoration: line-through;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .arrow {
   color: #999;
+  flex-shrink: 0;
 }
 
 .new-value {
   color: #6bcb77;
   font-weight: 500;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .change-position {
   color: #999;
   font-size: 11px;
   font-style: italic;
+  flex-shrink: 0;
 }
 
 .no-changes {

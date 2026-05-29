@@ -163,6 +163,54 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
+  const moveCategory = (categoryKey, direction) => {
+    const keys = Object.keys(quickOptions.value)
+    const index = keys.indexOf(categoryKey)
+    if (index === -1) return
+    
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= keys.length) return
+    
+    const newQuickOptions = {}
+    const newCategoryLabels = {}
+    keys.forEach((key, i) => {
+      if (i === index) {
+        newQuickOptions[keys[newIndex]] = quickOptions.value[categoryKey]
+        newCategoryLabels[keys[newIndex]] = categoryLabels.value[categoryKey]
+      } else if (i === newIndex) {
+        newQuickOptions[categoryKey] = quickOptions.value[key]
+        newCategoryLabels[categoryKey] = categoryLabels.value[key]
+      } else {
+        newQuickOptions[key] = quickOptions.value[key]
+        newCategoryLabels[key] = categoryLabels.value[key]
+      }
+    })
+    
+    quickOptions.value = newQuickOptions
+    categoryLabels.value = newCategoryLabels
+    saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+    saveToStorage(CATEGORY_LABELS_KEY, categoryLabels.value)
+  }
+
+  const moveOption = (categoryKey, option, direction) => {
+    const options = quickOptions.value[categoryKey]
+    if (!options) return
+    
+    const index = options.indexOf(option)
+    if (index === -1) return
+    
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= options.length) return
+    
+    const newOptions = [...options]
+    const temp = newOptions[index]
+    newOptions[index] = newOptions[newIndex]
+    newOptions[newIndex] = temp
+    
+    quickOptions.value[categoryKey] = newOptions
+    saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+  }
+
   const setCurrentDate = (date) => {
     const newDate = new Date(date)
     newDate.setHours(0, 0, 0, 0)
@@ -184,6 +232,8 @@ export const useDiaryStore = defineStore('diary', () => {
     removeQuickOption,
     addQuickCategory,
     removeQuickCategory,
+    moveCategory,
+    moveOption,
     setCurrentDate
   }
 })
