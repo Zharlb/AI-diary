@@ -721,12 +721,46 @@ const handleClose = () => {
 
 <style scoped>
 /* 滚动条样式 - 不占用宽度，只在滚动时显示 */
+.modal-body,
+.rich-editor,
+.history-list,
+.preview-content {
+  /* 使用 overlay 模式，滚动条悬浮在内容上不占用宽度 */
+  overflow-y: overlay;
+  overflow-x: overlay;
+  scrollbar-gutter: stable;
+}
+
+/* Webkit浏览器 */
 .modal-body::-webkit-scrollbar,
 .rich-editor::-webkit-scrollbar,
 .history-list::-webkit-scrollbar,
 .preview-content::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb,
+.rich-editor::-webkit-scrollbar-thumb,
+.history-list::-webkit-scrollbar-thumb,
+.preview-content::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.modal-body:hover::-webkit-scrollbar-thumb,
+.rich-editor:hover::-webkit-scrollbar-thumb,
+.history-list:hover::-webkit-scrollbar-thumb,
+.preview-content:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.modal-body::-webkit-scrollbar-track,
+.rich-editor::-webkit-scrollbar-track,
+.history-list::-webkit-scrollbar-track,
+.preview-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
@@ -735,41 +769,36 @@ const handleClose = () => {
 .rich-editor,
 .history-list,
 .preview-content {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
 
-/* 滚动时显示滚动条 - Webkit浏览器 */
-.modal-body:hover::-webkit-scrollbar,
-.rich-editor:hover::-webkit-scrollbar,
-.history-list:hover::-webkit-scrollbar,
-.preview-content:hover::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.modal-body:hover::-webkit-scrollbar-thumb,
-.rich-editor:hover::-webkit-scrollbar-thumb,
-.history-list:hover::-webkit-scrollbar-thumb,
-.preview-content:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.modal-body:hover::-webkit-scrollbar-track,
-.rich-editor:hover::-webkit-scrollbar-track,
-.history-list:hover::-webkit-scrollbar-track,
-.preview-content:hover::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Firefox - 滚动时显示滚动条 */
 .modal-body:hover,
 .rich-editor:hover,
 .history-list:hover,
 .preview-content:hover {
-  scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* 不支持 overlay 的浏览器的后备方案 */
+@supports not (overflow-y: overlay) {
+  .modal-body,
+  .rich-editor,
+  .history-list,
+  .preview-content {
+    overflow-y: auto;
+    overflow-x: auto;
+    /* 使用 padding-right 预留滚动条空间 */
+    padding-right: 6px;
+  }
+
+  .modal-body::-webkit-scrollbar,
+  .rich-editor::-webkit-scrollbar,
+  .history-list::-webkit-scrollbar,
+  .preview-content::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 .modal-fade-enter-active,
@@ -1658,12 +1687,45 @@ const handleClose = () => {
 
 @media (max-width: 768px) {
   /* 移动端滚动条样式 */
+  .modal-body,
+  .rich-editor,
+  .history-list,
+  .preview-content {
+    /* 使用 overlay 模式，滚动条悬浮在内容上不占用宽度 */
+    overflow-y: overlay;
+    overflow-x: overlay;
+    scrollbar-gutter: stable;
+  }
+
   .modal-body::-webkit-scrollbar,
   .rich-editor::-webkit-scrollbar,
   .history-list::-webkit-scrollbar,
   .preview-content::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    width: 4px;
+    height: 4px;
+    background: transparent;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb,
+  .rich-editor::-webkit-scrollbar-thumb,
+  .history-list::-webkit-scrollbar-thumb,
+  .preview-content::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-thumb,
+  .rich-editor:hover::-webkit-scrollbar-thumb,
+  .history-list:hover::-webkit-scrollbar-thumb,
+  .preview-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-body::-webkit-scrollbar-track,
+  .rich-editor::-webkit-scrollbar-track,
+  .history-list::-webkit-scrollbar-track,
+  .preview-content::-webkit-scrollbar-track {
     background: transparent;
   }
 
@@ -1672,41 +1734,36 @@ const handleClose = () => {
   .rich-editor,
   .history-list,
   .preview-content {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
   }
 
-  /* 滚动时显示滚动条 - Webkit浏览器 */
-  .modal-body:hover::-webkit-scrollbar,
-  .rich-editor:hover::-webkit-scrollbar,
-  .history-list:hover::-webkit-scrollbar,
-  .preview-content:hover::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  .modal-body:hover::-webkit-scrollbar-thumb,
-  .rich-editor:hover::-webkit-scrollbar-thumb,
-  .history-list:hover::-webkit-scrollbar-thumb,
-  .preview-content:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-  }
-
-  .modal-body:hover::-webkit-scrollbar-track,
-  .rich-editor:hover::-webkit-scrollbar-track,
-  .history-list:hover::-webkit-scrollbar-track,
-  .preview-content:hover::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  /* Firefox - 滚动时显示滚动条 */
   .modal-body:hover,
   .rich-editor:hover,
   .history-list:hover,
   .preview-content:hover {
-    scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  }
+
+  /* 不支持 overlay 的浏览器的后备方案 */
+  @supports not (overflow-y: overlay) {
+    .modal-body,
+    .rich-editor,
+    .history-list,
+    .preview-content {
+      overflow-y: auto;
+      overflow-x: auto;
+      /* 使用 padding-right 预留滚动条空间 */
+      padding-right: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar,
+    .rich-editor::-webkit-scrollbar,
+    .history-list::-webkit-scrollbar,
+    .preview-content::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
   }
 
   .diary-modal {
@@ -2084,12 +2141,45 @@ const handleClose = () => {
 
 @media (max-width: 480px) {
   /* 小屏移动端滚动条样式 */
+  .modal-body,
+  .rich-editor,
+  .history-list,
+  .preview-content {
+    /* 使用 overlay 模式，滚动条悬浮在内容上不占用宽度 */
+    overflow-y: overlay;
+    overflow-x: overlay;
+    scrollbar-gutter: stable;
+  }
+
   .modal-body::-webkit-scrollbar,
   .rich-editor::-webkit-scrollbar,
   .history-list::-webkit-scrollbar,
   .preview-content::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    width: 4px;
+    height: 4px;
+    background: transparent;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb,
+  .rich-editor::-webkit-scrollbar-thumb,
+  .history-list::-webkit-scrollbar-thumb,
+  .preview-content::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-thumb,
+  .rich-editor:hover::-webkit-scrollbar-thumb,
+  .history-list:hover::-webkit-scrollbar-thumb,
+  .preview-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-body::-webkit-scrollbar-track,
+  .rich-editor::-webkit-scrollbar-track,
+  .history-list::-webkit-scrollbar-track,
+  .preview-content::-webkit-scrollbar-track {
     background: transparent;
   }
 
@@ -2098,41 +2188,36 @@ const handleClose = () => {
   .rich-editor,
   .history-list,
   .preview-content {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
   }
 
-  /* 滚动时显示滚动条 - Webkit浏览器 */
-  .modal-body:hover::-webkit-scrollbar,
-  .rich-editor:hover::-webkit-scrollbar,
-  .history-list:hover::-webkit-scrollbar,
-  .preview-content:hover::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  .modal-body:hover::-webkit-scrollbar-thumb,
-  .rich-editor:hover::-webkit-scrollbar-thumb,
-  .history-list:hover::-webkit-scrollbar-thumb,
-  .preview-content:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-  }
-
-  .modal-body:hover::-webkit-scrollbar-track,
-  .rich-editor:hover::-webkit-scrollbar-track,
-  .history-list:hover::-webkit-scrollbar-track,
-  .preview-content:hover::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  /* Firefox - 滚动时显示滚动条 */
   .modal-body:hover,
   .rich-editor:hover,
   .history-list:hover,
   .preview-content:hover {
-    scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  }
+
+  /* 不支持 overlay 的浏览器的后备方案 */
+  @supports not (overflow-y: overlay) {
+    .modal-body,
+    .rich-editor,
+    .history-list,
+    .preview-content {
+      overflow-y: auto;
+      overflow-x: auto;
+      /* 使用 padding-right 预留滚动条空间 */
+      padding-right: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar,
+    .rich-editor::-webkit-scrollbar,
+    .history-list::-webkit-scrollbar,
+    .preview-content::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
   }
 
   .diary-modal {
