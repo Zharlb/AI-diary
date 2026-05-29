@@ -720,6 +720,58 @@ const handleClose = () => {
 </script>
 
 <style scoped>
+/* 滚动条样式 - 不占用宽度，只在滚动时显示 */
+.modal-body::-webkit-scrollbar,
+.rich-editor::-webkit-scrollbar,
+.history-list::-webkit-scrollbar,
+.preview-content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* Firefox */
+.modal-body,
+.rich-editor,
+.history-list,
+.preview-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* 滚动时显示滚动条 - Webkit浏览器 */
+.modal-body:hover::-webkit-scrollbar,
+.rich-editor:hover::-webkit-scrollbar,
+.history-list:hover::-webkit-scrollbar,
+.preview-content:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.modal-body:hover::-webkit-scrollbar-thumb,
+.rich-editor:hover::-webkit-scrollbar-thumb,
+.history-list:hover::-webkit-scrollbar-thumb,
+.preview-content:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.modal-body:hover::-webkit-scrollbar-track,
+.rich-editor:hover::-webkit-scrollbar-track,
+.history-list:hover::-webkit-scrollbar-track,
+.preview-content:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox - 滚动时显示滚动条 */
+.modal-body:hover,
+.rich-editor:hover,
+.history-list:hover,
+.preview-content:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -1605,6 +1657,58 @@ const handleClose = () => {
 }
 
 @media (max-width: 768px) {
+  /* 移动端滚动条样式 */
+  .modal-body::-webkit-scrollbar,
+  .rich-editor::-webkit-scrollbar,
+  .history-list::-webkit-scrollbar,
+  .preview-content::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  /* Firefox */
+  .modal-body,
+  .rich-editor,
+  .history-list,
+  .preview-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* 滚动时显示滚动条 - Webkit浏览器 */
+  .modal-body:hover::-webkit-scrollbar,
+  .rich-editor:hover::-webkit-scrollbar,
+  .history-list:hover::-webkit-scrollbar,
+  .preview-content:hover::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-thumb,
+  .rich-editor:hover::-webkit-scrollbar-thumb,
+  .history-list:hover::-webkit-scrollbar-thumb,
+  .preview-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-track,
+  .rich-editor:hover::-webkit-scrollbar-track,
+  .history-list:hover::-webkit-scrollbar-track,
+  .preview-content:hover::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Firefox - 滚动时显示滚动条 */
+  .modal-body:hover,
+  .rich-editor:hover,
+  .history-list:hover,
+  .preview-content:hover {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  }
+
   .diary-modal {
     position: fixed;
     top: 0;
@@ -1979,6 +2083,58 @@ const handleClose = () => {
 }
 
 @media (max-width: 480px) {
+  /* 小屏移动端滚动条样式 */
+  .modal-body::-webkit-scrollbar,
+  .rich-editor::-webkit-scrollbar,
+  .history-list::-webkit-scrollbar,
+  .preview-content::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  /* Firefox */
+  .modal-body,
+  .rich-editor,
+  .history-list,
+  .preview-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* 滚动时显示滚动条 - Webkit浏览器 */
+  .modal-body:hover::-webkit-scrollbar,
+  .rich-editor:hover::-webkit-scrollbar,
+  .history-list:hover::-webkit-scrollbar,
+  .preview-content:hover::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-thumb,
+  .rich-editor:hover::-webkit-scrollbar-thumb,
+  .history-list:hover::-webkit-scrollbar-thumb,
+  .preview-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+  }
+
+  .modal-body:hover::-webkit-scrollbar-track,
+  .rich-editor:hover::-webkit-scrollbar-track,
+  .history-list:hover::-webkit-scrollbar-track,
+  .preview-content:hover::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Firefox - 滚动时显示滚动条 */
+  .modal-body:hover,
+  .rich-editor:hover,
+  .history-list:hover,
+  .preview-content:hover {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  }
+
   .diary-modal {
     padding: 4px;
   }
