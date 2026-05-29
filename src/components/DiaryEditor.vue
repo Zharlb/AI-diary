@@ -1225,14 +1225,14 @@ const handleClose = () => {
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 250px;
+  gap: 12px;
+  max-height: 300px;
   overflow-y: auto;
 }
 
 .history-item {
   background: #f8f9fa;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -1240,7 +1240,7 @@ const handleClose = () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -1276,10 +1276,10 @@ const handleClose = () => {
 }
 
 .history-changes {
-  padding: 0 10px 10px 10px;
+  padding: 0 12px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .change-item {
@@ -1287,7 +1287,7 @@ const handleClose = () => {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  padding: 4px 0;
+  padding: 6px 0;
   border-bottom: 1px dashed #e0e0e0;
 }
 
