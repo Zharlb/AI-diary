@@ -220,8 +220,10 @@
           
           <div class="modal-footer">
             <button v-if="isEdit" class="btn btn-danger" @click="handleDelete">删除</button>
-            <button class="btn btn-secondary" @click="handleClose">取消</button>
-            <button class="btn btn-primary" @click="handleSave">保存</button>
+            <div class="right-buttons">
+              <button class="btn btn-secondary" @click="handleClose">取消</button>
+              <button class="btn btn-primary" @click="handleSave">保存</button>
+            </div>
           </div>
         </div>
       </transition>
@@ -1335,11 +1337,16 @@ const handleClose = () => {
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
   padding: 14px 16px;
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
+}
+
+.modal-footer .right-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .btn {
@@ -1788,9 +1795,17 @@ const handleClose = () => {
   .btn {
     padding: 10px 16px;
     font-size: 14px;
-    flex: 1;
     min-width: 80px;
     min-height: 40px;
+  }
+  
+  .modal-footer .right-buttons {
+    flex: 1;
+    justify-content: flex-end;
+  }
+  
+  .modal-footer .right-buttons .btn {
+    flex: 1;
   }
   
   .btn-danger {
