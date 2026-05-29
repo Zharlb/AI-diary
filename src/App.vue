@@ -148,45 +148,12 @@ const handleDiarySaved = () => {
 
 @media (max-width: 768px) {
   .app-header {
-    padding: 10px 12px;
-    min-height: 52px;
-  }
-  
-  .app-header h1 {
-    font-size: 16px;
-  }
-  
-  .options-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-  }
-  
-  .options-btn svg {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .toolbar-wrapper {
-    padding: 6px 8px 0;
-    top: 52px;
-  }
-  
-  .app-main {
-    padding: 6px 8px 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .app-header {
-    padding: 8px 10px;
+    padding: 8px 12px;
     min-height: 48px;
   }
   
   .app-header h1 {
     font-size: 15px;
-    font-weight: 500;
   }
   
   .options-btn {
@@ -202,7 +169,40 @@ const handleDiarySaved = () => {
   }
   
   .toolbar-wrapper {
+    padding: 6px 8px 0;
     top: 48px;
+  }
+  
+  .app-main {
+    padding: 6px 8px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 6px 10px;
+    min-height: 44px;
+  }
+  
+  .app-header h1 {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .options-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .options-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .toolbar-wrapper {
+    top: 44px;
     padding: 4px 6px 0;
   }
   
