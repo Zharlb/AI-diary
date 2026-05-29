@@ -1257,12 +1257,12 @@ const handleClose = () => {
 }
 
 .rich-editor :deep(.ql-editor) {
-  min-height: 200px;
+  min-height: 150px;
   line-height: 1.6;
 }
 
 .preview-content {
-  min-height: 200px;
+  min-height: 150px;
   padding: 12px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
@@ -1270,7 +1270,7 @@ const handleClose = () => {
   line-height: 1.6;
   color: #333;
   overflow-y: auto;
-  max-height: 350px;
+  max-height: 300px;
 }
 
 .preview-content :deep(ul),
@@ -1807,15 +1807,15 @@ const handleClose = () => {
   }
   
   .rich-editor :deep(.ql-editor) {
-    min-height: 200px;
+    min-height: 120px;
     font-size: 14px;
   }
   
   .preview-content {
     font-size: 14px;
     padding: 12px;
-    min-height: 200px;
-    max-height: 300px;
+    min-height: 120px;
+    max-height: 200px;
   }
   
   .history-section {
