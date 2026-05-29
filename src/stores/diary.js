@@ -86,24 +86,26 @@ export const useDiaryStore = defineStore('diary', () => {
   const updateDiary = (id, updates, changes = null) => {
     const index = diaries.value.findIndex(d => d.id === id)
     if (index !== -1) {
-      const historyEntry = {
-        time: new Date().toISOString(),
-        action: '修改'
-      }
-      
-      if (changes && changes.length > 0) {
-        historyEntry.changes = changes
-      }
-      
-      diaries.value[index] = {
+      const diary = {
         ...diaries.value[index],
         ...updates,
-        updatedAt: new Date().toISOString(),
-        history: [
+        updatedAt: new Date().toISOString()
+      }
+      
+      // 只有在有实际变更时才添加历史记录
+      if (changes && changes.length > 0) {
+        const historyEntry = {
+          time: new Date().toISOString(),
+          action: '修改',
+          changes: changes
+        }
+        diary.history = [
           ...diaries.value[index].history,
           historyEntry
         ]
       }
+      
+      diaries.value[index] = diary
       saveToStorage(STORAGE_KEY, diaries.value)
       return diaries.value[index]
     }
