@@ -192,10 +192,10 @@
                   :key="index" 
                   class="history-item"
                 >
-                  <div class="history-header" @click="toggleHistoryItem(index)">
+                  <div class="history-header" @click="item.action !== '创建' && toggleHistoryItem(index)">
                     <span class="history-time">{{ formatTime(item.time) }}</span>
                     <span class="history-action">{{ item.action }}</span>
-                    <button class="toggle-btn">
+                    <button v-if="item.action !== '创建'" class="toggle-btn">
                       {{ expandedHistory[index] ? '▼' : '▶' }}
                     </button>
                   </div>
@@ -210,7 +210,7 @@
                       </span>
                     </div>
                   </div>
-                  <div v-else v-show="expandedHistory[index]" class="no-changes">
+                  <div v-else-if="item.action !== '创建'" v-show="expandedHistory[index]" class="no-changes">
                     无内容变更
                   </div>
                 </div>
