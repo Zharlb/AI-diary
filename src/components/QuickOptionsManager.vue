@@ -34,15 +34,18 @@
               </div>
             </div>
             
-            <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
+            <div 
+              v-for="(options, category) in categoryOrder" 
+              :key="category" 
+              class="category-section"
+              draggable="true"
+              @dragstart="onCategoryDragStart($event, category)"
+              @dragover.prevent="onCategoryDragOver($event, category)"
+              @drop="onCategoryDrop($event, category)"
+              @dragend="onCategoryDragEnd"
+            >
               <div class="category-header">
-                <div class="category-title-wrapper">
-                  <div class="category-move-btns">
-                    <button @click="moveCategory(category, 'up')" class="move-btn" title="上移">↑</button>
-                    <button @click="moveCategory(category, 'down')" class="move-btn" title="下移">↓</button>
-                  </div>
-                  <h3>{{ categoryLabels[category] || category }}</h3>
-                </div>
+                <h3>{{ categoryLabels[category] || category }}</h3>
                 <div class="category-actions">
                   <div class="add-option">
                     <input 
@@ -63,17 +66,16 @@
               </div>
               <div class="options-list">
                 <div 
-                  v-for="option in options" 
+                  v-for="option in quickOptions[category]" 
                   :key="option" 
                   class="option-item"
+                  draggable="true"
+                  @dragstart="onOptionDragStart($event, category, option)"
+                  @dragover.prevent="onOptionDragOver($event, category, option)"
+                  @drop="onOptionDrop($event, category, option)"
+                  @dragend="onOptionDragEnd"
                 >
-                  <div class="option-content">
-                    <div class="option-move-btns">
-                      <button @click="moveOption(category, option, 'up')" class="move-btn" title="上移">↑</button>
-                      <button @click="moveOption(category, option, 'down')" class="move-btn" title="下移">↓</button>
-                    </div>
-                    <span>{{ option }}</span>
-                  </div>
+                  <span>{{ option }}</span>
                   <button @click="removeOption(category, option)" class="remove-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M18 6L6 18M6 6l12 12"/>
@@ -104,7 +106,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 import ConfirmModal from './ConfirmModal.vue'
 
@@ -126,6 +128,12 @@ const confirmMessage = ref('')
 const confirmType = ref('info')
 const confirmCallback = ref(null)
 const confirmShowCancel = ref(true)
+
+const draggedCategory = ref(null)
+const draggedOption = ref(null)
+const draggedOptionCategory = ref(null)
+
+const categoryOrder = computed(() => Object.keys(quickOptions))
 
 const showConfirm = (title, message, type = 'info', callback = null, showCancel = true) => {
   confirmTitle.value = title
@@ -187,12 +195,76 @@ const removeCategory = (category) => {
   })
 }
 
-const moveCategory = (category, direction) => {
-  store.moveCategory(category, direction)
+const onCategoryDragStart = (e, category) => {
+  draggedCategory.value = category
+  e.dataTransfer.effectAllowed = 'move'
+  e.target.classList.add('dragging')
 }
 
-const moveOption = (category, option, direction) => {
-  store.moveOption(category, option, direction)
+const onCategoryDragOver = (e, category) => {
+  e.preventDefault()
+  if (draggedCategory.value && draggedCategory.value !== category) {
+    e.currentTarget.classList.add('drag-over')
+  }
+}
+
+const onCategoryDrop = (e, category) => {
+  e.preventDefault()
+  if (draggedCategory.value && draggedCategory.value !== category) {
+    const keys = Object.keys(quickOptions)
+    const fromIndex = keys.indexOf(draggedCategory.value)
+    const toIndex = keys.indexOf(category)
+    const direction = fromIndex < toIndex ? 'down' : 'up'
+    let currentIndex = fromIndex
+    
+    while (currentIndex !== toIndex) {
+      currentIndex = currentIndex < toIndex ? currentIndex + 1 : currentIndex - 1
+      store.moveCategory(draggedCategory.value, direction)
+    }
+  }
+}
+
+const onCategoryDragEnd = (e) => {
+  draggedCategory.value = null
+  e.target.classList.remove('dragging')
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))
+}
+
+const onOptionDragStart = (e, category, option) => {
+  draggedOptionCategory.value = category
+  draggedOption.value = option
+  e.dataTransfer.effectAllowed = 'move'
+  e.target.classList.add('dragging')
+}
+
+const onOptionDragOver = (e, category, option) => {
+  e.preventDefault()
+  if (draggedOption.value && draggedOptionCategory.value === category && draggedOption.value !== option) {
+    e.currentTarget.classList.add('drag-over')
+  }
+}
+
+const onOptionDrop = (e, category, option) => {
+  e.preventDefault()
+  if (draggedOption.value && draggedOptionCategory.value === category && draggedOption.value !== option) {
+    const options = quickOptions[category]
+    const fromIndex = options.indexOf(draggedOption.value)
+    const toIndex = options.indexOf(option)
+    const direction = fromIndex < toIndex ? 'down' : 'up'
+    let currentIndex = fromIndex
+    
+    while (currentIndex !== toIndex) {
+      currentIndex = currentIndex < toIndex ? currentIndex + 1 : currentIndex - 1
+      store.moveOption(category, draggedOption.value, direction)
+    }
+  }
+}
+
+const onOptionDragEnd = (e) => {
+  draggedOption.value = null
+  draggedOptionCategory.value = null
+  e.target.classList.remove('dragging')
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))
 }
 
 const handleClose = () => {
@@ -285,10 +357,6 @@ const handleClose = () => {
   padding: 16px;
 }
 
-.category-section {
-  margin-bottom: 20px;
-}
-
 .category-section:last-child {
   margin-bottom: 0;
 }
@@ -302,43 +370,32 @@ const handleClose = () => {
   gap: 10px;
 }
 
-.category-title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.category-move-btns {
-  display: flex;
-  gap: 2px;
-}
-
 .category-header h3 {
   margin: 0;
   font-size: 14px;
   color: #333;
 }
 
-.move-btn {
-  width: 24px;
-  height: 24px;
-  border: 1px solid #e0e0e0;
-  border-radius: 3px;
-  background: white;
-  color: #999;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+.category-section {
+  margin-bottom: 20px;
+  cursor: grab;
   transition: all 0.2s;
-  padding: 0;
 }
 
-.move-btn:hover {
-  background: #f0f0f0;
-  color: #4080ff;
-  border-color: #4080ff;
+.category-section:active {
+  cursor: grabbing;
+}
+
+.category-section.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.category-section.drag-over {
+  border: 2px dashed #4080ff;
+  border-radius: 8px;
+  padding: 10px;
+  margin: -10px -10px 10px -10px;
 }
 
 .category-actions {
@@ -466,17 +523,22 @@ const handleClose = () => {
   border-radius: 4px;
   font-size: 12px;
   color: #333;
+  cursor: grab;
+  transition: all 0.2s;
 }
 
-.option-content {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.option-item:active {
+  cursor: grabbing;
 }
 
-.option-move-btns {
-  display: flex;
-  gap: 1px;
+.option-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.option-item.drag-over {
+  border: 2px dashed #4080ff;
+  padding: 3px 9px;
 }
 
 .remove-btn {
