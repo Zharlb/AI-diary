@@ -1806,7 +1806,6 @@ const handleClose = () => {
   .btn {
     padding: 10px 16px;
     font-size: 14px;
-    min-width: 80px;
     min-height: 40px;
   }
   
@@ -1816,7 +1815,8 @@ const handleClose = () => {
   }
   
   .modal-footer .right-buttons .btn {
-    flex: 1;
+    flex: none;
+    width: 80px;
   }
   
   .btn-danger {
@@ -1826,6 +1826,7 @@ const handleClose = () => {
   .btn-icon {
     padding: 10px 12px;
     flex: none;
+    width: 44px;
   }
   
   .preview-toolbar {
