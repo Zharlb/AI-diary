@@ -39,7 +39,7 @@
       
       <div v-if="day.diaries.length > 0" class="day-diaries">
         <div 
-          v-for="diary in day.diaries.slice(0, 3)" 
+          v-for="diary in day.diaries" 
           :key="diary.id"
           class="diary-preview"
         >
@@ -67,11 +67,7 @@
               class="diary-image"
               @click.stop="openPreview(diary.images, idx)"
             />
-            <span v-if="diary.images.length > 3" class="image-more">+{{ diary.images.length - 3 }}</span>
           </div>
-        </div>
-        <div v-if="day.diaries.length > 3" class="more-diaries">
-          +{{ day.diaries.length - 3 }} 更多
         </div>
       </div>
       
@@ -413,6 +409,7 @@ const handleEditDiary = (day, diary) => {
   padding: 10px;
   background: #f8f9fa;
   border-radius: 6px;
+  word-wrap: break-word;
 }
 
 .diary-title {
@@ -420,19 +417,12 @@ const handleEditDiary = (day, diary) => {
   font-weight: 500;
   color: #333;
   margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .diary-summary {
   font-size: 12px;
   color: #666;
   line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .market-marks {
