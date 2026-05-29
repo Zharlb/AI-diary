@@ -703,14 +703,14 @@ const handleEditDiary = (day, diary) => {
 
 @media (max-width: 768px) {
   .calendar-list {
-    gap: 8px;
+    gap: 10px;
     padding: 0;
   }
   
   .day-item {
-    padding: 10px;
-    border-radius: 6px;
-    border-left-width: 3px;
+    padding: 14px;
+    border-radius: 8px;
+    border-left-width: 4px;
   }
   
   .day-item:hover {
@@ -719,83 +719,103 @@ const handleEditDiary = (day, diary) => {
   }
   
   .day-header {
-    margin-bottom: 8px;
-    padding-bottom: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
   }
   
   .day-info {
     flex: 1;
-    min-width: 50px;
+    min-width: 60px;
   }
   
   .day-number {
-    font-size: 18px;
+    font-size: 24px;
+    font-weight: 700;
   }
   
   .day-week {
-    font-size: 11px;
+    font-size: 14px;
+    color: #666;
   }
   
   .day-color {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
   
   .edit-btn,
   .add-btn-small {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
   
   .edit-btn svg,
   .add-btn-small svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
   
   .diary-preview {
-    padding: 8px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 6px;
   }
   
   .diary-title {
-    font-size: 13px;
+    font-size: 17px;
     font-weight: 600;
+    margin-bottom: 6px;
+    color: #1a1a1a;
   }
   
   .diary-summary {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 8px;
   }
   
   .market-info {
-    padding: 6px;
-    margin-top: 6px;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
   }
   
   .market-item {
-    font-size: 12px;
-    margin-bottom: 3px;
-    gap: 6px;
+    font-size: 15px;
+    margin-bottom: 5px;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .market-item:last-child {
+    margin-bottom: 0;
   }
   
   .market-label {
-    min-width: 32px;
-    font-size: 11px;
+    min-width: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .market-value {
+    flex: 1;
+    color: #222;
   }
   
   .mark-badge {
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 13px;
+    padding: 3px 8px;
+    font-weight: 600;
   }
   
   .diary-tags {
-    margin-top: 6px;
-    gap: 4px;
+    margin-top: 10px;
+    gap: 6px;
   }
   
   .tag {
@@ -867,123 +887,145 @@ const handleEditDiary = (day, diary) => {
 
 @media (max-width: 480px) {
   .calendar-list {
-    gap: 6px;
+    gap: 8px;
   }
   
   .day-item {
-    padding: 8px;
-    border-radius: 4px;
-    border-left-width: 2px;
+    padding: 12px;
+    border-radius: 6px;
+    border-left-width: 3px;
   }
   
   .day-header {
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
   }
   
   .day-number {
-    font-size: 16px;
+    font-size: 22px;
+    font-weight: 700;
   }
   
   .day-week {
-    font-size: 10px;
+    font-size: 13px;
+    color: #666;
   }
   
   .day-color {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
   
   .edit-btn,
   .add-btn-small {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-    min-height: 26px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
   }
   
   .diary-preview {
-    padding: 6px;
+    padding: 10px;
   }
   
   .diary-title {
-    font-size: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #1a1a1a;
   }
   
   .diary-summary {
-    font-size: 11px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 6px;
   }
   
   .market-info {
-    padding: 4px;
-    margin-top: 4px;
+    padding: 8px;
+    margin-top: 8px;
   }
   
   .market-item {
-    font-size: 11px;
-    gap: 4px;
+    font-size: 14px;
+    margin-bottom: 4px;
+    gap: 6px;
+    align-items: center;
   }
   
   .market-label {
-    min-width: 28px;
-    font-size: 10px;
+    min-width: 36px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .market-value {
+    flex: 1;
+    color: #222;
   }
   
   .diary-tags {
-    margin-top: 4px;
-    gap: 3px;
+    margin-top: 8px;
+    gap: 5px;
   }
   
   .tag {
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 14px;
   }
   
   .diary-images {
-    margin-top: 4px;
-    gap: 3px;
+    margin-top: 8px;
+    gap: 4px;
   }
   
   .diary-image {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
   }
   
   .diary-content {
-    font-size: 11px;
-    margin-top: 6px;
-    padding-top: 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 8px;
+    padding-top: 8px;
+    color: #444;
   }
   
   .no-diary {
-    padding: 12px;
-    font-size: 11px;
+    padding: 16px;
+    font-size: 14px;
+    color: #999;
   }
   
   .image-more {
-    width: 32px;
-    height: 32px;
-    font-size: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 12px;
   }
   
   .toolbar-btn {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
   }
   
   .zoom-level,
   .image-counter {
-    font-size: 10px;
-    min-width: 35px;
+    font-size: 11px;
+    min-width: 38px;
   }
   
   .close-preview-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
   }
 }
 </style>

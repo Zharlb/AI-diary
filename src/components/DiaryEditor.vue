@@ -794,12 +794,13 @@ const handleClose = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  z-index: 1000;
-  padding: 16px;
+  z-index: 9999;
+  padding: 0;
+  overflow: hidden;
 }
 
 .modal-content {
@@ -1574,14 +1575,22 @@ const handleClose = () => {
 
 @media (max-width: 768px) {
   .diary-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     padding: 8px;
-    max-height: 95vh;
-    overflow: hidden;
+    max-height: none;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .modal-content {
     border-radius: 8px;
     max-height: 95vh;
+    margin-top: auto;
+    margin-bottom: auto;
   }
   
   .modal-header {
