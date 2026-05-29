@@ -1803,17 +1803,17 @@ const handleClose = () => {
   
   .rich-editor {
     position: relative;
-    max-height: 350px;
-    overflow-y: auto;
+    height: auto;
+    overflow: visible;
   }
   
   .rich-editor :deep(.ql-toolbar) {
     flex-wrap: wrap;
     gap: 4px;
-    position: sticky;
-    top: 0;
+    position: relative;
+    top: auto;
     background: white;
-    z-index: 10;
+    z-index: 1;
     border-bottom: 1px solid #e0e0e0;
   }
   
