@@ -74,40 +74,38 @@
             <div class="market-section">
               <h3>市场记录</h3>
               
-              <div class="market-grid">
-                <div 
-                  v-for="(_, category) in quickOptions" 
-                  :key="category"
-                  class="market-item"
-                >
-                  <div class="market-label-row">
-                    <div class="market-label-info">
-                      <label>{{ categoryLabels[category] || category }}</label>
-                      <div class="color-marks">
-                        <button 
-                          :class="['mark-btn', 'up', { active: form[category + 'Mark'] === 'up' }]"
-                          @click="form[category + 'Mark'] = form[category + 'Mark'] === 'up' ? '' : 'up'"
-                        ></button>
-                        <button 
-                          :class="['mark-btn', 'down', { active: form[category + 'Mark'] === 'down' }]"
-                          @click="form[category + 'Mark'] = form[category + 'Mark'] === 'down' ? '' : 'down'"
-                        ></button>
-                      </div>
+              <div 
+                v-for="(_, category) in quickOptions" 
+                :key="category"
+                class="market-item"
+              >
+                <div class="market-label-row">
+                  <div class="market-label-info">
+                    <label>{{ categoryLabels[category] || category }}</label>
+                    <div class="color-marks">
+                      <button 
+                        :class="['mark-btn', 'up', { active: form[category + 'Mark'] === 'up' }]"
+                        @click="form[category + 'Mark'] = form[category + 'Mark'] === 'up' ? '' : 'up'"
+                      ></button>
+                      <button 
+                        :class="['mark-btn', 'down', { active: form[category + 'Mark'] === 'down' }]"
+                        @click="form[category + 'Mark'] = form[category + 'Mark'] === 'down' ? '' : 'down'"
+                      ></button>
                     </div>
                   </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in quickOptions[category]" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form[category] === opt }]"
-                        @click="form[category] = opt"
-                      >{{ opt }}</button>
-                    </div>
+                </div>
+                <div class="quick-input">
+                  <div class="input-with-clear">
+                    <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
+                    <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
+                  </div>
+                  <div class="quick-options">
+                    <button 
+                      v-for="opt in quickOptions[category]" 
+                      :key="opt"
+                      :class="['quick-btn', { selected: form[category] === opt }]"
+                      @click="form[category] = opt"
+                    >{{ opt }}</button>
                   </div>
                 </div>
               </div>
@@ -552,7 +550,7 @@ const toggleHistoryItem = (index) => {
 }
 
 const trackChanges = () => {
-  if (!originalDiary.value) return { hasChanges: false, changes: [] }
+  if (!originalDiary.value) return []
   
   const changes = []
   const baseFields = [
@@ -610,7 +608,7 @@ const trackChanges = () => {
     }
   })
   
-  return { hasChanges: changes.length > 0, changes }
+  return changes
 }
 
 const formatTime = (time) => {
@@ -646,8 +644,8 @@ const handleSave = () => {
   })
   
   if (props.diary) {
-    const { hasChanges, changes } = trackChanges()
-    store.updateDiary(props.diary.id, data, hasChanges ? changes : undefined)
+    const changes = trackChanges()
+    store.updateDiary(props.diary.id, data, changes.length > 0 ? changes : undefined)
   } else {
     store.addDiary(data)
   }
@@ -955,16 +953,16 @@ const handleClose = () => {
   font-weight: 600;
 }
 
-.market-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
 .market-item {
+  width: 100%;
   padding: 12px;
   background: #f8f9fa;
   border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.market-item:last-child {
+  margin-bottom: 0;
 }
 
 .market-label-row {
@@ -1233,7 +1231,6 @@ const handleClose = () => {
   background: #f8f9fa;
   border-radius: 6px;
   overflow: hidden;
-  min-width: 0;
 }
 
 .history-header {
@@ -1306,39 +1303,26 @@ const handleClose = () => {
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
 }
 
 .old-value {
   color: #ff6b6b;
   text-decoration: line-through;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .arrow {
   color: #999;
-  flex-shrink: 0;
 }
 
 .new-value {
   color: #6bcb77;
   font-weight: 500;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .change-position {
   color: #999;
   font-size: 11px;
   font-style: italic;
-  flex-shrink: 0;
 }
 
 .no-changes {
@@ -1643,15 +1627,16 @@ const handleClose = () => {
     margin-bottom: 10px;
   }
   
-  .market-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .market-item {
     width: 100%;
     padding: 10px;
+    margin-bottom: 8px;
     background: white;
     border-radius: 6px;
+  }
+  
+  .market-item:last-child {
+    margin-bottom: 0;
   }
   
   .market-label-row {
@@ -1913,12 +1898,9 @@ const handleClose = () => {
     margin-bottom: 10px;
   }
   
-  .market-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .market-item {
     padding: 6px;
+    margin-bottom: 6px;
   }
   
   .market-label-row label {

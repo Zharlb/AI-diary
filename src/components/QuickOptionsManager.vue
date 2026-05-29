@@ -34,16 +34,7 @@
               </div>
             </div>
             
-            <div 
-              v-for="(options, category) in categoryOrder" 
-              :key="category" 
-              class="category-section"
-              draggable="true"
-              @dragstart="onCategoryDragStart($event, category)"
-              @dragover.prevent="onCategoryDragOver($event, category)"
-              @drop="onCategoryDrop($event, category)"
-              @dragend="onCategoryDragEnd"
-            >
+            <div v-for="(options, category) in quickOptions" :key="category" class="category-section">
               <div class="category-header">
                 <h3>{{ categoryLabels[category] || category }}</h3>
                 <div class="category-actions">
@@ -66,14 +57,9 @@
               </div>
               <div class="options-list">
                 <div 
-                  v-for="option in quickOptions[category]" 
+                  v-for="option in options" 
                   :key="option" 
                   class="option-item"
-                  draggable="true"
-                  @dragstart="onOptionDragStart($event, category, option)"
-                  @dragover.prevent="onOptionDragOver($event, category, option)"
-                  @drop="onOptionDrop($event, category, option)"
-                  @dragend="onOptionDragEnd"
                 >
                   <span>{{ option }}</span>
                   <button @click="removeOption(category, option)" class="remove-btn">
@@ -106,7 +92,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 import ConfirmModal from './ConfirmModal.vue'
 
@@ -128,12 +114,6 @@ const confirmMessage = ref('')
 const confirmType = ref('info')
 const confirmCallback = ref(null)
 const confirmShowCancel = ref(true)
-
-const draggedCategory = ref(null)
-const draggedOption = ref(null)
-const draggedOptionCategory = ref(null)
-
-const categoryOrder = computed(() => Object.keys(quickOptions))
 
 const showConfirm = (title, message, type = 'info', callback = null, showCancel = true) => {
   confirmTitle.value = title
@@ -193,78 +173,6 @@ const removeCategory = (category) => {
   showConfirm('删除类别', `确定要删除类别 "${categoryLabels[category] || category}" 及其所有选项吗？`, 'error', () => {
     store.removeQuickCategory(category)
   })
-}
-
-const onCategoryDragStart = (e, category) => {
-  draggedCategory.value = category
-  e.dataTransfer.effectAllowed = 'move'
-  e.target.classList.add('dragging')
-}
-
-const onCategoryDragOver = (e, category) => {
-  e.preventDefault()
-  if (draggedCategory.value && draggedCategory.value !== category) {
-    e.currentTarget.classList.add('drag-over')
-  }
-}
-
-const onCategoryDrop = (e, category) => {
-  e.preventDefault()
-  if (draggedCategory.value && draggedCategory.value !== category) {
-    const keys = Object.keys(quickOptions)
-    const fromIndex = keys.indexOf(draggedCategory.value)
-    const toIndex = keys.indexOf(category)
-    const direction = fromIndex < toIndex ? 'down' : 'up'
-    let currentIndex = fromIndex
-    
-    while (currentIndex !== toIndex) {
-      currentIndex = currentIndex < toIndex ? currentIndex + 1 : currentIndex - 1
-      store.moveCategory(draggedCategory.value, direction)
-    }
-  }
-}
-
-const onCategoryDragEnd = (e) => {
-  draggedCategory.value = null
-  e.target.classList.remove('dragging')
-  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))
-}
-
-const onOptionDragStart = (e, category, option) => {
-  draggedOptionCategory.value = category
-  draggedOption.value = option
-  e.dataTransfer.effectAllowed = 'move'
-  e.target.classList.add('dragging')
-}
-
-const onOptionDragOver = (e, category, option) => {
-  e.preventDefault()
-  if (draggedOption.value && draggedOptionCategory.value === category && draggedOption.value !== option) {
-    e.currentTarget.classList.add('drag-over')
-  }
-}
-
-const onOptionDrop = (e, category, option) => {
-  e.preventDefault()
-  if (draggedOption.value && draggedOptionCategory.value === category && draggedOption.value !== option) {
-    const options = quickOptions[category]
-    const fromIndex = options.indexOf(draggedOption.value)
-    const toIndex = options.indexOf(option)
-    const direction = fromIndex < toIndex ? 'down' : 'up'
-    let currentIndex = fromIndex
-    
-    while (currentIndex !== toIndex) {
-      currentIndex = currentIndex < toIndex ? currentIndex + 1 : currentIndex - 1
-      store.moveOption(category, draggedOption.value, direction)
-    }
-  }
-}
-
-const onOptionDragEnd = (e) => {
-  draggedOption.value = null
-  draggedOptionCategory.value = null
-  e.target.classList.remove('dragging')
-  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'))
 }
 
 const handleClose = () => {
@@ -357,6 +265,10 @@ const handleClose = () => {
   padding: 16px;
 }
 
+.category-section {
+  margin-bottom: 20px;
+}
+
 .category-section:last-child {
   margin-bottom: 0;
 }
@@ -374,28 +286,6 @@ const handleClose = () => {
   margin: 0;
   font-size: 14px;
   color: #333;
-}
-
-.category-section {
-  margin-bottom: 20px;
-  cursor: grab;
-  transition: all 0.2s;
-}
-
-.category-section:active {
-  cursor: grabbing;
-}
-
-.category-section.dragging {
-  opacity: 0.5;
-  transform: scale(0.98);
-}
-
-.category-section.drag-over {
-  border: 2px dashed #4080ff;
-  border-radius: 8px;
-  padding: 10px;
-  margin: -10px -10px 10px -10px;
 }
 
 .category-actions {
@@ -523,22 +413,6 @@ const handleClose = () => {
   border-radius: 4px;
   font-size: 12px;
   color: #333;
-  cursor: grab;
-  transition: all 0.2s;
-}
-
-.option-item:active {
-  cursor: grabbing;
-}
-
-.option-item.dragging {
-  opacity: 0.5;
-  transform: scale(0.95);
-}
-
-.option-item.drag-over {
-  border: 2px dashed #4080ff;
-  padding: 3px 9px;
 }
 
 .remove-btn {
@@ -552,7 +426,6 @@ const handleClose = () => {
   align-items: center;
   justify-content: center;
   transition: color 0.2s;
-  flex-shrink: 0;
 }
 
 .remove-btn:hover {
