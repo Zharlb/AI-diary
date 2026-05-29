@@ -697,11 +697,11 @@ const handleClose = () => {
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 0;
-  overflow: hidden;
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -713,6 +713,7 @@ const handleClose = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin: auto;
 }
 
 .modal-header {
