@@ -16,11 +16,11 @@ export const useDiaryStore = defineStore('diary', () => {
     return diaries.value.filter(d => d.date === dateStr)
   }
 
-  const fetchDiaries = async () => {
+  const fetchDiaries = async (startDate, endDate) => {
     isLoading.value = true
     error.value = null
     try {
-      const result = await diaryAPI.getAll()
+      const result = await diaryAPI.getAll(startDate, endDate)
       diaries.value = result.data || []
     } catch (err) {
       error.value = err.message
@@ -105,7 +105,9 @@ export const useDiaryStore = defineStore('diary', () => {
 
   const deleteDiary = async (id) => {
     try {
-      const result = await diaryAPI.delete(id)
+      const diary = diaries.value.find(d => d.id === id)
+      const date = diary?.date
+      const result = await diaryAPI.delete(id, date)
       if (result.success) {
         const index = diaries.value.findIndex(d => d.id === id)
         if (index !== -1) {

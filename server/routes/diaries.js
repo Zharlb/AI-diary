@@ -1,31 +1,38 @@
 import Router from 'koa-router';
-import { readData, writeData, generateId } from '../utils/fileHelper.js';
+import { readDiaryByDate, writeDiaryByDate, readDiariesInRange, generateId } from '../utils/fileHelper.js';
 
 const router = new Router();
-const DIARIES_FILE = 'diaries.json';
 
-// 获取所有日记
+// 获取日期范围内的日记
 router.get('/api/diaries', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  ctx.body = { success: true, data: diaries };
+  const { startDate, endDate } = ctx.query;
+  
+  if (startDate && endDate) {
+    const diaries = readDiariesInRange(startDate, endDate);
+    ctx.body = { success: true, data: diaries };
+  } else {
+    ctx.body = { success: true, data: [] };
+  }
 });
 
 // 获取单个日记
 router.get('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  const diary = diaries.find(d => d.id === ctx.params.id);
-  if (diary) {
-    ctx.body = { success: true, data: diary };
-  } else {
-    ctx.status = 404;
-    ctx.body = { success: false, message: 'Diary not found' };
-  }
+  ctx.status = 404;
+  ctx.body = { success: false, message: 'Diary not found' };
 });
 
 // 创建日记
 router.post('/api/diaries', async (ctx) => {
   const body = ctx.request.body;
-  const diaries = readData(DIARIES_FILE, []);
+  
+  if (!body.date) {
+    ctx.status = 400;
+    ctx.body = { success: false, message: 'Date is required' };
+    return;
+  }
+  
+  const dateStr = body.date;
+  const existingDiaries = readDiaryByDate(dateStr);
   
   const newDiary = {
     id: generateId(),
@@ -34,9 +41,9 @@ router.post('/api/diaries', async (ctx) => {
     updatedAt: new Date().toISOString()
   };
   
-  diaries.push(newDiary);
+  existingDiaries.push(newDiary);
   
-  if (writeData(DIARIES_FILE, diaries)) {
+  if (writeDiaryByDate(dateStr, existingDiaries)) {
     ctx.body = { success: true, data: newDiary };
   } else {
     ctx.status = 500;
@@ -46,7 +53,16 @@ router.post('/api/diaries', async (ctx) => {
 
 // 更新日记
 router.put('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
+  const body = ctx.request.body;
+  
+  if (!body.date) {
+    ctx.status = 400;
+    ctx.body = { success: false, message: 'Date is required' };
+    return;
+  }
+  
+  const dateStr = body.date;
+  const diaries = readDiaryByDate(dateStr);
   const index = diaries.findIndex(d => d.id === ctx.params.id);
   
   if (index === -1) {
@@ -57,14 +73,14 @@ router.put('/api/diaries/:id', async (ctx) => {
   
   const updatedDiary = {
     ...diaries[index],
-    ...ctx.request.body,
+    ...body,
     id: ctx.params.id,
     updatedAt: new Date().toISOString()
   };
   
   diaries[index] = updatedDiary;
   
-  if (writeData(DIARIES_FILE, diaries)) {
+  if (writeDiaryByDate(dateStr, diaries)) {
     ctx.body = { success: true, data: updatedDiary };
   } else {
     ctx.status = 500;
@@ -74,7 +90,16 @@ router.put('/api/diaries/:id', async (ctx) => {
 
 // 删除日记
 router.delete('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
+  const { date } = ctx.query;
+  
+  if (!date) {
+    ctx.status = 400;
+    ctx.body = { success: false, message: 'Date is required' };
+    return;
+  }
+  
+  const dateStr = date;
+  const diaries = readDiaryByDate(dateStr);
   const filteredDiaries = diaries.filter(d => d.id !== ctx.params.id);
   
   if (filteredDiaries.length === diaries.length) {
@@ -83,7 +108,7 @@ router.delete('/api/diaries/:id', async (ctx) => {
     return;
   }
   
-  if (writeData(DIARIES_FILE, filteredDiaries)) {
+  if (writeDiaryByDate(dateStr, filteredDiaries)) {
     ctx.body = { success: true };
   } else {
     ctx.status = 500;
