@@ -20,49 +20,26 @@
   "labels": {},
   "groups": [
     {
-      "id": "mpux7pe9nkpjgij39",
-      "name": "测试分组",
+      "id": "mpuy0101mrttcaq3t",
+      "name": "1",
       "categories": [
         {
-          "id": "mpux83ge2vqiykr65",
-          "name": "测试类别",
+          "id": "mpuy0wanh724zquq0",
+          "name": "阿阿斯顿",
           "options": [
-            "VSVS",
-            "凄凄切切",
-            "非法所得"
+            "手动发",
+            "梵蒂冈"
           ],
-          "createdAt": "2026-06-01T08:02:38.846Z"
-        },
-        {
-          "id": "mpuxa8vixb4p1eezx",
-          "name": "请问带我去",
-          "options": [],
-          "createdAt": "2026-06-01T08:04:19.182Z"
+          "createdAt": "2026-06-01T08:25:02.591Z"
         }
       ],
-      "createdAt": "2026-06-01T08:02:20.625Z"
+      "createdAt": "2026-06-01T08:24:22.033Z"
     },
     {
-      "id": "mpux9g22ira5is3yb",
-      "name": "冲冲冲",
-      "categories": [
-        {
-          "id": "mpux9i519lq14besw",
-          "name": "阿达",
-          "options": [
-            "擦拭",
-            "啊塞擦声"
-          ],
-          "createdAt": "2026-06-01T08:03:44.533Z"
-        }
-      ],
-      "createdAt": "2026-06-01T08:03:41.834Z"
-    },
-    {
-      "id": "mpuxy3o1vrxfdbp6c",
-      "name": "不好弄弄",
+      "id": "mpuy1eqzj05t4pe89",
+      "name": "2",
       "categories": [],
-      "createdAt": "2026-06-01T08:22:52.177Z"
+      "createdAt": "2026-06-01T08:25:26.507Z"
     }
   ]
 }

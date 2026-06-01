@@ -5,7 +5,7 @@
     "summary": "水电费VSv",
     "content": "",
     "tags": [],
-    "color": "#4080ff",
+    "color": "#6bcb77",
     "images": [],
     "date": "2026-06-04",
     "mpuu2bmu1eeybsi5a": "阿萨德去外地",
@@ -13,6 +13,40 @@
     "mpuu2fwmqwk8wgbxq": "电饭煲发的",
     "mpuu2fwmqwk8wgbxqMark": "",
     "createdAt": "2026-06-01T06:34:33.986Z",
-    "updatedAt": "2026-06-01T06:34:33.986Z"
+    "updatedAt": "2026-06-01T08:27:03.013Z",
+    "mpuy0wanh724zquq0": "不是说的",
+    "mpuy0wanh724zquq0Mark": "up",
+    "history": [
+      {
+        "time": "2026-06-01T08:26:55.498Z",
+        "action": "修改",
+        "changes": [
+          {
+            "field": "阿阿斯顿",
+            "oldValue": "(空)",
+            "newValue": "不是说的",
+            "position": "表单输入"
+          },
+          {
+            "field": "阿阿斯顿标记",
+            "oldValue": "(空)",
+            "newValue": "up",
+            "position": "表单输入"
+          }
+        ]
+      },
+      {
+        "time": "2026-06-01T08:27:02.533Z",
+        "action": "修改",
+        "changes": [
+          {
+            "field": "颜色",
+            "oldValue": "#4080ff",
+            "newValue": "#6bcb77",
+            "position": "表单输入"
+          }
+        ]
+      }
+    ]
   }
 ]

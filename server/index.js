@@ -3,6 +3,7 @@ import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import diariesRouter from './routes/diaries.js';
 import quickOptionsRouter from './routes/quickOptions.js';
+import authRouter from './routes/auth.js';
 
 const app = new Koa();
 
@@ -11,6 +12,8 @@ app.use(cors());
 app.use(bodyParser());
 
 // 路由
+app.use(authRouter.routes());
+app.use(authRouter.allowedMethods());
 app.use(diariesRouter.routes());
 app.use(diariesRouter.allowedMethods());
 app.use(quickOptionsRouter.routes());

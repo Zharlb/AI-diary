@@ -15,6 +15,42 @@
     "mpuu2fwmqwk8wgbxq": "当前温度去",
     "mpuu2fwmqwk8wgbxqMark": "down",
     "createdAt": "2026-06-01T07:30:47.927Z",
-    "updatedAt": "2026-06-01T07:30:47.928Z"
+    "updatedAt": "2026-06-01T08:25:18.095Z",
+    "mpuy0wanh724zquq0": "手动发",
+    "mpuy0wanh724zquq0Mark": "down",
+    "mpuy11aymq5p7y1oe": "手动发",
+    "mpuy11aymq5p7y1oeMark": "up",
+    "history": [
+      {
+        "time": "2026-06-01T08:25:17.611Z",
+        "action": "修改",
+        "changes": [
+          {
+            "field": "阿阿斯顿",
+            "oldValue": "(空)",
+            "newValue": "手动发",
+            "position": "表单输入"
+          },
+          {
+            "field": "阿阿斯顿标记",
+            "oldValue": "(空)",
+            "newValue": "down",
+            "position": "表单输入"
+          },
+          {
+            "field": "分 32",
+            "oldValue": "(空)",
+            "newValue": "手动发",
+            "position": "表单输入"
+          },
+          {
+            "field": "分 32标记",
+            "oldValue": "(空)",
+            "newValue": "up",
+            "position": "表单输入"
+          }
+        ]
+      }
+    ]
   }
 ]
