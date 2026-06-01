@@ -35,6 +35,26 @@ export const diaryAPI = {
 // 快捷选项接口
 export const quickOptionsAPI = {
   get: () => request('/api/quick-options'),
+  
+  // 分组相关接口
+  addGroup: (data) => request('/api/quick-options/groups', { method: 'POST', body: JSON.stringify(data) }),
+  updateGroup: (id, data) => request(`/api/quick-options/groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteGroup: (id) => request(`/api/quick-options/groups/${id}`, { method: 'DELETE' }),
+  
+  // 分组内的类别接口
+  addCategoryToGroup: (groupId, data) => request(`/api/quick-options/groups/${groupId}/categories`, { 
+    method: 'POST', 
+    body: JSON.stringify(data) 
+  }),
+  updateCategoryInGroup: (groupId, categoryId, data) => request(`/api/quick-options/groups/${groupId}/categories/${categoryId}`, { 
+    method: 'PUT', 
+    body: JSON.stringify(data) 
+  }),
+  deleteCategoryFromGroup: (groupId, categoryId) => request(`/api/quick-options/groups/${groupId}/categories/${categoryId}`, { 
+    method: 'DELETE' 
+  }),
+  
+  // 旧接口 - 保持向后兼容
   addCategory: (data) => request('/api/quick-options/categories', { method: 'POST', body: JSON.stringify(data) }),
   updateCategory: (id, data) => request(`/api/quick-options/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteCategory: (id) => request(`/api/quick-options/categories/${id}`, { method: 'DELETE' }),

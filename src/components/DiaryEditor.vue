@@ -72,40 +72,48 @@
             </div>
             
             <div class="market-section">
-              <h3>市场记录</h3>
+              <div v-if="quickOptionsGroups.length > 1" class="group-selector">
+                <label>选择分组</label>
+                <select v-model="selectedGroupId" class="form-input group-select">
+                  <option value="all">显示所有</option>
+                  <option v-for="group in quickOptionsGroups" :key="group.id" :value="group.id">
+                    {{ group.name }}
+                  </option>
+                </select>
+              </div>
               
               <div class="market-grid">
                 <div 
-                  v-for="(_, category) in quickOptions" 
-                  :key="category"
+                  v-for="item in filteredCategories" 
+                  :key="item.categoryId"
                   class="market-item"
                 >
                   <div class="market-label-row">
                     <div class="market-label-info">
-                      <label>{{ categoryLabels[category] || category }}</label>
+                      <label>{{ item.categoryName }}</label>
                       <div class="color-marks">
                         <button 
-                          :class="['mark-btn', 'up', { active: form[category + 'Mark'] === 'up' }]"
-                          @click="form[category + 'Mark'] = form[category + 'Mark'] === 'up' ? '' : 'up'"
+                          :class="['mark-btn', 'up', { active: form[item.categoryId + 'Mark'] === 'up' }]"
+                          @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'up' ? '' : 'up'"
                         ></button>
                         <button 
-                          :class="['mark-btn', 'down', { active: form[category + 'Mark'] === 'down' }]"
-                          @click="form[category + 'Mark'] = form[category + 'Mark'] === 'down' ? '' : 'down'"
+                          :class="['mark-btn', 'down', { active: form[item.categoryId + 'Mark'] === 'down' }]"
+                          @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'down' ? '' : 'down'"
                         ></button>
                       </div>
                     </div>
                   </div>
                   <div class="quick-input">
                     <div class="input-with-clear">
-                      <input v-model="form[category]" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form[category]" class="clear-btn" @click="form[category] = ''">×</button>
+                      <input v-model="form[item.categoryId]" type="text" class="form-input" placeholder="输入或选择" />
+                      <button v-if="form[item.categoryId]" class="clear-btn" @click="form[item.categoryId] = ''">×</button>
                     </div>
                     <div class="quick-options">
                       <button 
-                        v-for="opt in quickOptions[category]" 
+                        v-for="opt in item.options" 
                         :key="opt"
-                        :class="['quick-btn', { selected: form[category] === opt }]"
-                        @click="form[category] = opt"
+                        :class="['quick-btn', { selected: form[item.categoryId] === opt }]"
+                        @click="form[item.categoryId] = opt"
                       >{{ opt }}</button>
                     </div>
                   </div>
@@ -327,6 +335,35 @@ const emit = defineEmits(['close', 'saved'])
 const store = useDiaryStore()
 const quickOptions = computed(() => store.quickOptions)
 const categoryLabels = computed(() => store.categoryLabels)
+const quickOptionsGroups = computed(() => store.quickOptionsGroups)
+const selectedGroupId = ref('all')
+
+const filteredCategories = computed(() => {
+  const categories = []
+  if (quickOptionsGroups.value.length > 0) {
+    quickOptionsGroups.value.forEach(group => {
+      if (selectedGroupId.value === 'all' || selectedGroupId.value === group.id) {
+        group.categories.forEach(cat => {
+          categories.push({
+            categoryId: cat.id,
+            categoryName: cat.name,
+            options: cat.options || []
+          })
+        })
+      }
+    })
+  } else {
+    // 向后兼容旧数据结构
+    Object.keys(quickOptions.value).forEach(categoryId => {
+      categories.push({
+        categoryId,
+        categoryName: categoryLabels.value[categoryId] || categoryId,
+        options: quickOptions.value[categoryId] || []
+      })
+    })
+  }
+  return categories
+})
 
 const confirmVisible = ref(false)
 const confirmTitle = ref('提示')
@@ -432,9 +469,19 @@ watch(() => props.visible, (val) => {
         color: props.diary.color || '#4080ff',
         images: [...(props.diary.images || [])]
       })
-      Object.keys(quickOptions.value).forEach(category => {
-        form[category] = props.diary[category] || ''
-        form[category + 'Mark'] = props.diary[category + 'Mark'] || ''
+      // 清空所有类别字段
+      Object.keys(form).forEach(key => {
+        if (key !== 'title' && key !== 'summary' && key !== 'content' && 
+            key !== 'tags' && key !== 'color' && key !== 'images' && 
+            !key.endsWith('Mark')) {
+          delete form[key]
+          delete form[key + 'Mark']
+        }
+      })
+      // 设置新的类别字段
+      filteredCategories.value.forEach(item => {
+        form[item.categoryId] = props.diary[item.categoryId] || ''
+        form[item.categoryId + 'Mark'] = props.diary[item.categoryId + 'Mark'] || ''
       })
       expandedHistory.value = {}
       if (props.diary.history && props.diary.history.length > 0) {
@@ -450,9 +497,19 @@ watch(() => props.visible, (val) => {
         color: '#4080ff',
         images: []
       })
-      Object.keys(quickOptions.value).forEach(category => {
-        form[category] = ''
-        form[category + 'Mark'] = ''
+      // 清空所有类别字段
+      Object.keys(form).forEach(key => {
+        if (key !== 'title' && key !== 'summary' && key !== 'content' && 
+            key !== 'tags' && key !== 'color' && key !== 'images' && 
+            !key.endsWith('Mark')) {
+          delete form[key]
+          delete form[key + 'Mark']
+        }
+      })
+      // 设置新的类别字段
+      filteredCategories.value.forEach(item => {
+        form[item.categoryId] = ''
+        form[item.categoryId + 'Mark'] = ''
       })
       expandedHistory.value = {}
     }
@@ -614,10 +671,9 @@ const trackChanges = () => {
   ]
   
   const categoryFields = []
-  Object.keys(quickOptions.value).forEach(category => {
-    const label = categoryLabels.value[category] || category
-    categoryFields.push({ key: category, label })
-    categoryFields.push({ key: category + 'Mark', label: label + '标记' })
+  filteredCategories.value.forEach(item => {
+    categoryFields.push({ key: item.categoryId, label: item.categoryName })
+    categoryFields.push({ key: item.categoryId + 'Mark', label: item.categoryName + '标记' })
   })
   
   const fields = [...baseFields, ...categoryFields]
@@ -690,9 +746,9 @@ const handleSave = () => {
     date: formatDate(props.day?.date || new Date())
   }
   
-  Object.keys(quickOptions.value).forEach(category => {
-    data[category] = form[category]
-    data[category + 'Mark'] = form[category + 'Mark']
+  filteredCategories.value.forEach(item => {
+    data[item.categoryId] = form[item.categoryId]
+    data[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark']
   })
   
   if (props.diary) {
@@ -1084,6 +1140,38 @@ const handleClose = () => {
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 14px;
+}
+
+.group-selector {
+  margin-bottom: 12px;
+}
+
+.group-selector label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.group-select {
+  padding: 9px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  background: white;
+  cursor: pointer;
+}
+
+.group-select:focus {
+  border-color: #4080ff;
+}
+
+.group-select:hover {
+  border-color: #c0c0c0;
 }
 
 .market-section h3 {
@@ -1901,9 +1989,18 @@ const handleClose = () => {
     border-radius: 6px;
   }
   
-  .market-section h3 {
-    font-size: 14px;
+  .group-selector {
     margin-bottom: 10px;
+  }
+  
+  .group-selector label {
+    font-size: 12px;
+  }
+  
+  .group-select {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 40px;
   }
   
   .market-grid {

@@ -5,7 +5,8 @@ import { diaryAPI, quickOptionsAPI } from '@/api'
 export const useDiaryStore = defineStore('diary', () => {
   const diaries = ref([])
   const viewMode = ref('week')
-  const quickOptions = ref({})
+  const quickOptions = ref({}) // 保持向后兼容
+  const quickOptionsGroups = ref([]) // 新的分组数据结构
   const categoryLabels = ref({})
   const currentDate = ref(new Date())
   const isLoading = ref(false)
@@ -34,18 +35,45 @@ export const useDiaryStore = defineStore('diary', () => {
     try {
       const result = await quickOptionsAPI.get()
       if (result.data) {
-        const categories = result.data.categories || []
-        const labels = result.data.labels || {}
-        
-        quickOptions.value = {}
-        categoryLabels.value = { ...labels }
-        
-        categories.forEach(cat => {
-          quickOptions.value[cat.id] = cat.options || []
-          if (cat.name) {
-            categoryLabels.value[cat.id] = cat.name
+        // 处理分组结构
+        if (result.data.groups) {
+          quickOptionsGroups.value = result.data.groups
+          
+          // 同时更新向后兼容的数据结构
+          quickOptions.value = {}
+          categoryLabels.value = {}
+          
+          result.data.groups.forEach(group => {
+            group.categories.forEach(cat => {
+              quickOptions.value[cat.id] = cat.options || []
+              categoryLabels.value[cat.id] = cat.name
+            })
+          })
+        } else {
+          // 向后兼容旧数据结构
+          const categories = result.data.categories || []
+          const labels = result.data.labels || {}
+          
+          quickOptions.value = {}
+          categoryLabels.value = { ...labels }
+          
+          categories.forEach(cat => {
+            quickOptions.value[cat.id] = cat.options || []
+            if (cat.name) {
+              categoryLabels.value[cat.id] = cat.name
+            }
+          })
+          
+          // 自动迁移旧数据到分组结构
+          if (categories.length > 0) {
+            quickOptionsGroups.value = [{
+              id: 'default-group',
+              name: '默认分组',
+              categories: categories,
+              createdAt: new Date().toISOString()
+            }]
           }
-        })
+        }
       }
     } catch (err) {
       console.error('Failed to fetch quick options:', err)
@@ -125,6 +153,76 @@ export const useDiaryStore = defineStore('diary', () => {
     localStorage.setItem('calendar_view_mode', mode)
   }
 
+  const addQuickOptionsGroup = async (groupName) => {
+    try {
+      const result = await quickOptionsAPI.addGroup({ name: groupName })
+      if (result.success) {
+        quickOptionsGroups.value.push(result.data)
+        return result.data
+      }
+    } catch (err) {
+      console.error('Failed to add group:', err)
+    }
+    return null
+  }
+
+  const removeQuickOptionsGroup = async (groupId) => {
+    try {
+      const result = await quickOptionsAPI.deleteGroup(groupId)
+      if (result.success) {
+        // 移除分组，同时清理对应的 quickOptions 和 categoryLabels
+        const group = quickOptionsGroups.value.find(g => g.id === groupId)
+        if (group) {
+          group.categories.forEach(cat => {
+            delete quickOptions.value[cat.id]
+            delete categoryLabels.value[cat.id]
+          })
+        }
+        quickOptionsGroups.value = quickOptionsGroups.value.filter(g => g.id !== groupId)
+        return true
+      }
+    } catch (err) {
+      console.error('Failed to remove group:', err)
+    }
+    return false
+  }
+
+  const addQuickCategoryToGroup = async (groupId, categoryName) => {
+    try {
+      const result = await quickOptionsAPI.addCategoryToGroup(groupId, { name: categoryName })
+      if (result.success) {
+        const group = quickOptionsGroups.value.find(g => g.id === groupId)
+        if (group) {
+          group.categories.push(result.data)
+          quickOptions.value[result.data.id] = []
+          categoryLabels.value[result.data.id] = categoryName
+        }
+        return result.data
+      }
+    } catch (err) {
+      console.error('Failed to add category to group:', err)
+    }
+    return null
+  }
+
+  const removeQuickCategoryFromGroup = async (groupId, categoryId) => {
+    try {
+      const result = await quickOptionsAPI.deleteCategoryFromGroup(groupId, categoryId)
+      if (result.success) {
+        const group = quickOptionsGroups.value.find(g => g.id === groupId)
+        if (group) {
+          group.categories = group.categories.filter(c => c.id !== categoryId)
+          delete quickOptions.value[categoryId]
+          delete categoryLabels.value[categoryId]
+        }
+        return true
+      }
+    } catch (err) {
+      console.error('Failed to remove category from group:', err)
+    }
+    return false
+  }
+
   const addQuickOption = async (categoryId, option) => {
     try {
       const result = await quickOptionsAPI.addOption(categoryId, option)
@@ -134,6 +232,19 @@ export const useDiaryStore = defineStore('diary', () => {
         }
         if (!quickOptions.value[categoryId].includes(option)) {
           quickOptions.value[categoryId].push(option)
+        }
+        // 同时更新分组数据结构
+        for (const group of quickOptionsGroups.value) {
+          const category = group.categories.find(c => c.id === categoryId)
+          if (category) {
+            if (!category.options) {
+              category.options = []
+            }
+            if (!category.options.includes(option)) {
+              category.options.push(option)
+            }
+            break
+          }
         }
       }
     } catch (err) {
@@ -151,25 +262,33 @@ export const useDiaryStore = defineStore('diary', () => {
             quickOptions.value[categoryId].splice(index, 1)
           }
         }
+        // 同时更新分组数据结构
+        for (const group of quickOptionsGroups.value) {
+          const category = group.categories.find(c => c.id === categoryId)
+          if (category && category.options) {
+            const optIndex = category.options.indexOf(option)
+            if (optIndex !== -1) {
+              category.options.splice(optIndex, 1)
+            }
+            break
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to remove quick option:', err)
     }
   }
 
+  // 保持向后兼容的方法
   const addQuickCategory = async (categoryName, categoryLabel = null) => {
     try {
-      const result = await quickOptionsAPI.addCategory({ 
-        name: categoryName,
-        label: categoryLabel
-      })
-      if (result.success) {
-        const newCategory = result.data
-        quickOptions.value[newCategory.id] = []
-        if (categoryLabel) {
-          categoryLabels.value[categoryLabel] = categoryName
-        }
-        return newCategory
+      // 默认添加到第一个分组或创建默认分组
+      let defaultGroup = quickOptionsGroups.value[0]
+      if (!defaultGroup) {
+        defaultGroup = await addQuickOptionsGroup('默认分组')
+      }
+      if (defaultGroup) {
+        return await addQuickCategoryToGroup(defaultGroup.id, categoryName)
       }
     } catch (err) {
       console.error('Failed to add category:', err)
@@ -184,16 +303,17 @@ export const useDiaryStore = defineStore('diary', () => {
         label: categoryLabel
       })
       if (result.success) {
-        const categories = Object.keys(quickOptions.value)
-        const oldCategory = categories.find(k => k === categoryId)
-        
-        if (oldCategory && oldCategory !== categoryId) {
-          quickOptions.value[categoryId] = quickOptions.value[oldCategory] || []
-          delete quickOptions.value[oldCategory]
-        }
-        
         if (categoryLabel) {
           categoryLabels.value[categoryLabel] = categoryName
+        }
+        // 更新分组数据结构中的类别
+        for (const group of quickOptionsGroups.value) {
+          const category = group.categories.find(c => c.id === categoryId)
+          if (category) {
+            category.name = categoryName
+            categoryLabels.value[categoryId] = categoryName
+            break
+          }
         }
         return result.data
       }
@@ -205,22 +325,16 @@ export const useDiaryStore = defineStore('diary', () => {
 
   const removeQuickCategory = async (categoryId) => {
     try {
-      const result = await quickOptionsAPI.deleteCategory(categoryId)
-      if (result.success) {
-        const labels = Object.keys(categoryLabels.value)
-        labels.forEach(label => {
-          const category = Object.keys(quickOptions.value).find(k => k === categoryId)
-          if (category) {
-            const oldLabel = Object.keys(categoryLabels.value).find(
-              l => categoryLabels.value[l] === categoryId
-            )
-            if (oldLabel) {
-              delete categoryLabels.value[oldLabel]
-            }
-          }
-        })
-        delete quickOptions.value[categoryId]
-        return true
+      // 查找类别所属的分组
+      let groupId = null
+      for (const group of quickOptionsGroups.value) {
+        if (group.categories.find(c => c.id === categoryId)) {
+          groupId = group.id
+          break
+        }
+      }
+      if (groupId) {
+        return await removeQuickCategoryFromGroup(groupId, categoryId)
       }
     } catch (err) {
       console.error('Failed to remove category:', err)
@@ -250,6 +364,7 @@ export const useDiaryStore = defineStore('diary', () => {
     diaries,
     viewMode,
     quickOptions,
+    quickOptionsGroups,
     categoryLabels,
     currentDate,
     isLoading,
@@ -266,6 +381,10 @@ export const useDiaryStore = defineStore('diary', () => {
     addQuickCategory,
     updateQuickCategory,
     removeQuickCategory,
+    addQuickOptionsGroup,
+    removeQuickOptionsGroup,
+    addQuickCategoryToGroup,
+    removeQuickCategoryFromGroup,
     setCurrentDate,
     initStore
   }
