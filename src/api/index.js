@@ -25,16 +25,11 @@ const request = async (url, options = {}) => {
 
 // 日记接口
 export const diaryAPI = {
-  getAll: (startDate, endDate) => {
-    if (startDate && endDate) {
-      return request(`/api/diaries?startDate=${startDate}&endDate=${endDate}`);
-    }
-    return request('/api/diaries');
-  },
+  getAll: () => request('/api/diaries'),
   getById: (id) => request(`/api/diaries/${id}`),
   create: (data) => request('/api/diaries', { method: 'POST', body: JSON.stringify(data) }),
   update: (id, data) => request(`/api/diaries/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id, date) => request(`/api/diaries/${id}?date=${date}`, { method: 'DELETE' }),
+  delete: (id) => request(`/api/diaries/${id}`, { method: 'DELETE' }),
 };
 
 // 快捷选项接口
