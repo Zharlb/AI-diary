@@ -1,20 +1,16 @@
 {
   "categories": [
     {
-      "id": "abc123",
-      "name": "市场",
-      "label": "market",
-      "createdAt": "2026-01-01T00:00:00.000Z"
+      "id": "mpuu2bmu1eeybsi5a",
+      "name": "啊啊啊",
+      "createdAt": "2026-06-01T06:34:10.662Z",
+      "options": []
     },
     {
-      "id": "def456",
-      "name": "指数",
-      "label": "index",
-      "createdAt": "2026-01-01T00:00:00.000Z"
+      "id": "mpuu2fwmqwk8wgbxq",
+      "name": "第三方是的发",
+      "createdAt": "2026-06-01T06:34:16.198Z"
     }
   ],
-  "labels": {
-    "market": "市场",
-    "index": "指数"
-  }
+  "labels": {}
 }

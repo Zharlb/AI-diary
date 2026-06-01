@@ -27,7 +27,6 @@
                 />
                 <button @click="addCategory" class="add-category-btn">添加</button>
               </div>
-              <p class="help-text">系统将自动生成唯一标识</p>
             </div>
             
             <div v-for="(options, categoryId) in quickOptions" :key="categoryId" class="category-section">
@@ -311,12 +310,6 @@ const handleClose = () => {
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.help-text {
-  margin: 8px 0 0;
-  font-size: 12px;
-  color: #999;
 }
 
 .category-label-input {

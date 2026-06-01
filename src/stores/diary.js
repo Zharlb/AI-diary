@@ -38,10 +38,13 @@ export const useDiaryStore = defineStore('diary', () => {
         const labels = result.data.labels || {}
         
         quickOptions.value = {}
-        categoryLabels.value = labels
+        categoryLabels.value = { ...labels }
         
         categories.forEach(cat => {
-          quickOptions.value[cat.id] = []
+          quickOptions.value[cat.id] = cat.options || []
+          if (cat.name) {
+            categoryLabels.value[cat.id] = cat.name
+          }
         })
       }
     } catch (err) {
@@ -123,20 +126,34 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   const addQuickOption = async (categoryId, option) => {
-    if (!quickOptions.value[categoryId]) {
-      quickOptions.value[categoryId] = []
-    }
-    if (!quickOptions.value[categoryId].includes(option)) {
-      quickOptions.value[categoryId].push(option)
+    try {
+      const result = await quickOptionsAPI.addOption(categoryId, option)
+      if (result.success) {
+        if (!quickOptions.value[categoryId]) {
+          quickOptions.value[categoryId] = []
+        }
+        if (!quickOptions.value[categoryId].includes(option)) {
+          quickOptions.value[categoryId].push(option)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to add quick option:', err)
     }
   }
 
   const removeQuickOption = async (categoryId, option) => {
-    if (quickOptions.value[categoryId]) {
-      const index = quickOptions.value[categoryId].indexOf(option)
-      if (index !== -1) {
-        quickOptions.value[categoryId].splice(index, 1)
+    try {
+      const result = await quickOptionsAPI.removeOption(categoryId, option)
+      if (result.success) {
+        if (quickOptions.value[categoryId]) {
+          const index = quickOptions.value[categoryId].indexOf(option)
+          if (index !== -1) {
+            quickOptions.value[categoryId].splice(index, 1)
+          }
+        }
       }
+    } catch (err) {
+      console.error('Failed to remove quick option:', err)
     }
   }
 

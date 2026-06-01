@@ -39,4 +39,11 @@ export const quickOptionsAPI = {
   updateCategory: (id, data) => request(`/api/quick-options/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteCategory: (id) => request(`/api/quick-options/categories/${id}`, { method: 'DELETE' }),
   updateLabels: (data) => request('/api/quick-options/labels', { method: 'PUT', body: JSON.stringify(data) }),
+  addOption: (categoryId, option) => request(`/api/quick-options/categories/${categoryId}/options`, { 
+    method: 'POST', 
+    body: JSON.stringify({ option }) 
+  }),
+  removeOption: (categoryId, option) => request(`/api/quick-options/categories/${categoryId}/options/${encodeURIComponent(option)}`, { 
+    method: 'DELETE' 
+  }),
 };
