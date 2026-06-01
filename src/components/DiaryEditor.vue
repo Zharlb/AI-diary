@@ -348,25 +348,29 @@ const selectedGroupId = ref('')
 
 const filteredCategories = computed(() => {
   const categories = []
-  if (quickOptionsGroups.value.length > 0) {
-    const targetGroupId = selectedGroupId.value || quickOptionsGroups.value[0]?.id
-    quickOptionsGroups.value.forEach(group => {
-      if (targetGroupId === group.id) {
+  const groups = quickOptionsGroups.value || []
+  if (groups.length > 0) {
+    const targetGroupId = selectedGroupId.value || groups[0]?.id
+    groups.forEach(group => {
+      if (group && group.id === targetGroupId && group.categories) {
         group.categories.forEach(cat => {
-          categories.push({
-            categoryId: cat.id,
-            categoryName: cat.name,
-            options: cat.options || []
-          })
+          if (cat) {
+            categories.push({
+              categoryId: cat.id,
+              categoryName: cat.name,
+              options: cat.options || []
+            })
+          }
         })
       }
     })
   } else {
-    Object.keys(quickOptions.value).forEach(categoryId => {
+    const options = quickOptions.value || {}
+    Object.keys(options).forEach(categoryId => {
       categories.push({
         categoryId,
-        categoryName: categoryLabels.value[categoryId] || categoryId,
-        options: quickOptions.value[categoryId] || []
+        categoryName: (categoryLabels.value || {})[categoryId] || categoryId,
+        options: options[categoryId] || []
       })
     })
   }
@@ -374,8 +378,9 @@ const filteredCategories = computed(() => {
 })
 
 watch(quickOptionsGroups, (groups) => {
-  if (groups.length > 0 && !selectedGroupId.value) {
-    selectedGroupId.value = groups[0].id
+  const arr = groups || []
+  if (arr.length > 0 && !selectedGroupId.value) {
+    selectedGroupId.value = arr[0]?.id || ''
   }
 }, { immediate: true })
 
