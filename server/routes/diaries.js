@@ -1,91 +1,142 @@
 import Router from 'koa-router';
-import { readData, writeData, generateId } from '../utils/fileHelper.js';
+import { readDiaryFile, writeDiaryFile, getAllDiaryDates, generateId } from '../utils/fileHelper.js';
 
 const router = new Router();
-const DIARIES_FILE = 'diaries.json';
 
-// 获取所有日记
 router.get('/api/diaries', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  ctx.body = { success: true, data: diaries };
-});
-
-// 获取单个日记
-router.get('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  const diary = diaries.find(d => d.id === ctx.params.id);
-  if (diary) {
-    ctx.body = { success: true, data: diary };
-  } else {
-    ctx.status = 404;
-    ctx.body = { success: false, message: 'Diary not found' };
-  }
-});
-
-// 创建日记
-router.post('/api/diaries', async (ctx) => {
-  const body = ctx.request.body;
-  const diaries = readData(DIARIES_FILE, []);
-  
-  const newDiary = {
-    id: generateId(),
-    ...body,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  diaries.push(newDiary);
-  
-  if (writeData(DIARIES_FILE, diaries)) {
-    ctx.body = { success: true, data: newDiary };
-  } else {
+  try {
+    const dates = getAllDiaryDates();
+    let allDiaries = [];
+    
+    for (const date of dates) {
+      const diaries = readDiaryFile(date);
+      allDiaries = allDiaries.concat(diaries);
+    }
+    
+    ctx.body = { success: true, data: allDiaries };
+  } catch (error) {
     ctx.status = 500;
-    ctx.body = { success: false, message: 'Failed to save diary' };
+    ctx.body = { success: false, message: 'Failed to fetch diaries' };
   }
 });
 
-// 更新日记
-router.put('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  const index = diaries.findIndex(d => d.id === ctx.params.id);
-  
-  if (index === -1) {
+router.get('/api/diaries/:id', async (ctx) => {
+  try {
+    const dates = getAllDiaryDates();
+    
+    for (const date of dates) {
+      const diaries = readDiaryFile(date);
+      const diary = diaries.find(d => d.id === ctx.params.id);
+      
+      if (diary) {
+        ctx.body = { success: true, data: diary };
+        return;
+      }
+    }
+    
     ctx.status = 404;
     ctx.body = { success: false, message: 'Diary not found' };
-    return;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { success: false, message: 'Failed to fetch diary' };
   }
-  
-  const updatedDiary = {
-    ...diaries[index],
-    ...ctx.request.body,
-    id: ctx.params.id,
-    updatedAt: new Date().toISOString()
-  };
-  
-  diaries[index] = updatedDiary;
-  
-  if (writeData(DIARIES_FILE, diaries)) {
-    ctx.body = { success: true, data: updatedDiary };
-  } else {
+});
+
+router.post('/api/diaries', async (ctx) => {
+  try {
+    const body = ctx.request.body;
+    const date = body.date;
+    
+    if (!date) {
+      ctx.status = 400;
+      ctx.body = { success: false, message: 'Date is required' };
+      return;
+    }
+    
+    const diaries = readDiaryFile(date);
+    
+    const newDiary = {
+      id: generateId(),
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    diaries.push(newDiary);
+    
+    if (writeDiaryFile(date, diaries)) {
+      ctx.body = { success: true, data: newDiary };
+    } else {
+      ctx.status = 500;
+      ctx.body = { success: false, message: 'Failed to save diary' };
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { success: false, message: 'Failed to create diary' };
+  }
+});
+
+router.put('/api/diaries/:id', async (ctx) => {
+  try {
+    const dates = getAllDiaryDates();
+    const updates = ctx.request.body;
+    
+    for (const date of dates) {
+      const diaries = readDiaryFile(date);
+      const index = diaries.findIndex(d => d.id === ctx.params.id);
+      
+      if (index !== -1) {
+        const updatedDiary = {
+          ...diaries[index],
+          ...updates,
+          id: diaries[index].id,
+          updatedAt: new Date().toISOString()
+        };
+        
+        diaries[index] = updatedDiary;
+        
+        if (writeDiaryFile(date, diaries)) {
+          ctx.body = { success: true, data: updatedDiary };
+        } else {
+          ctx.status = 500;
+          ctx.body = { success: false, message: 'Failed to update diary' };
+        }
+        return;
+      }
+    }
+    
+    ctx.status = 404;
+    ctx.body = { success: false, message: 'Diary not found' };
+  } catch (error) {
     ctx.status = 500;
     ctx.body = { success: false, message: 'Failed to update diary' };
   }
 });
 
-// 删除日记
 router.delete('/api/diaries/:id', async (ctx) => {
-  const diaries = readData(DIARIES_FILE, []);
-  const filteredDiaries = diaries.filter(d => d.id !== ctx.params.id);
-  
-  if (filteredDiaries.length === diaries.length) {
+  try {
+    const dates = getAllDiaryDates();
+    
+    for (const date of dates) {
+      const diaries = readDiaryFile(date);
+      const index = diaries.findIndex(d => d.id === ctx.params.id);
+      
+      if (index !== -1) {
+        diaries.splice(index, 1);
+        
+        if (writeDiaryFile(date, diaries)) {
+          ctx.body = { success: true };
+        } else {
+          ctx.status = 500;
+          ctx.body = { success: false, message: 'Failed to delete diary' };
+        }
+        return;
+      }
+    }
+    
     ctx.status = 404;
     ctx.body = { success: false, message: 'Diary not found' };
-    return;
-  }
-  
-  if (writeData(DIARIES_FILE, filteredDiaries)) {
-    ctx.body = { success: true };
-  } else {
+  } catch (error) {
     ctx.status = 500;
     ctx.body = { success: false, message: 'Failed to delete diary' };
   }

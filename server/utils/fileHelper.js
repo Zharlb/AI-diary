@@ -1,35 +1,33 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 数据存储目录
-const DATA_DIR = join(__dirname, '..', 'data');
+const DATA_DIR = join(__dirname, '..', '..', 'data');
+const DIARIES_DIR = join(DATA_DIR, 'diaries');
 
-// 确保数据目录存在
-if (!existsSync(DATA_DIR)) {
-  mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// 获取数据文件路径
 export const getDataFilePath = (fileName) => {
   return join(DATA_DIR, fileName);
 };
 
-// 初始化数据文件
-export const initDataFile = (filePath, defaultData) => {
-  if (!existsSync(filePath)) {
-    writeFileSync(filePath, JSON.stringify(defaultData, null, 2), 'utf-8');
+export const getDiaryFilePath = (date) => {
+  return join(DIARIES_DIR, `${date}.json`);
+};
+
+export const ensureDiaryDir = () => {
+  if (!existsSync(DIARIES_DIR)) {
+    mkdirSync(DIARIES_DIR, { recursive: true });
   }
 };
 
-// 读取数据
 export const readData = (fileName, defaultData = []) => {
   const filePath = getDataFilePath(fileName);
   try {
-    initDataFile(filePath, defaultData);
+    if (!existsSync(filePath)) {
+      return defaultData;
+    }
     const data = readFileSync(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
@@ -38,7 +36,6 @@ export const readData = (fileName, defaultData = []) => {
   }
 };
 
-// 写入数据
 export const writeData = (fileName, data) => {
   const filePath = getDataFilePath(fileName);
   try {
@@ -50,7 +47,46 @@ export const writeData = (fileName, data) => {
   }
 };
 
-// 生成唯一ID
+export const readDiaryFile = (date) => {
+  const filePath = getDiaryFilePath(date);
+  try {
+    if (!existsSync(filePath)) {
+      return [];
+    }
+    const data = readFileSync(filePath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Error reading diary file ${filePath}:`, error);
+    return [];
+  }
+};
+
+export const writeDiaryFile = (date, diaries) => {
+  ensureDiaryDir();
+  const filePath = getDiaryFilePath(date);
+  try {
+    writeFileSync(filePath, JSON.stringify(diaries, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error(`Error writing diary file ${filePath}:`, error);
+    return false;
+  }
+};
+
+export const getAllDiaryDates = () => {
+  ensureDiaryDir();
+  try {
+    const files = readdirSync(DIARIES_DIR);
+    return files
+      .filter(file => file.endsWith('.json'))
+      .map(file => file.replace('.json', ''))
+      .sort();
+  } catch (error) {
+    console.error('Error reading diary directory:', error);
+    return [];
+  }
+};
+
 export const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 };
