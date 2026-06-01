@@ -1,168 +1,214 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
-const STORAGE_KEY = 'calendar_diary_data'
-const VIEW_STORAGE_KEY = 'calendar_view_mode'
-const QUICK_OPTIONS_KEY = 'calendar_quick_options'
-const CATEGORY_LABELS_KEY = 'calendar_category_labels'
-
-function loadFromStorage(key, defaultValue) {
-  try {
-    const data = localStorage.getItem(key)
-    return data ? JSON.parse(data) : defaultValue
-  } catch {
-    return defaultValue
-  }
-}
-
-function saveToStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value))
-  } catch (e) {
-    console.error('Failed to save to storage:', e)
-  }
-}
+import { diaryAPI, quickOptionsAPI } from '@/api'
 
 export const useDiaryStore = defineStore('diary', () => {
-  const diaries = ref(loadFromStorage(STORAGE_KEY, []))
-  const viewMode = ref(loadFromStorage(VIEW_STORAGE_KEY, 'week'))
-  const quickOptions = ref(loadFromStorage(QUICK_OPTIONS_KEY, {
-    market: ['高开低走', '低开高走', '震荡上行', '震荡下行', '单边上涨', '单边下跌'],
-    volume: ['放量', '缩量', '平量'],
-    index: ['上证50', '沪深300', '创业板指', '科创板'],
-    focus: ['政策面', '资金面', '技术面', '消息面'],
-    expectation: ['看多', '看空', '观望']
-  }))
-  const categoryLabels = ref(loadFromStorage(CATEGORY_LABELS_KEY, {
-    market: '大盘',
-    volume: '量能',
-    index: '指数',
-    focus: '重点',
-    expectation: '预期'
-  }))
-
+  const diaries = ref([])
+  const viewMode = ref('week')
+  const quickOptions = ref({})
+  const categoryLabels = ref({})
   const currentDate = ref(new Date())
+  const isLoading = ref(false)
+  const error = ref(null)
 
   const getDiariesByDate = (date) => {
     const dateStr = formatDate(date)
     return diaries.value.filter(d => d.date === dateStr)
   }
 
-  const addDiary = (diary) => {
-    const existingIndex = diaries.value.findIndex(d => d.date === diary.date)
-    
-    if (existingIndex !== -1) {
-      diaries.value[existingIndex] = {
-        ...diaries.value[existingIndex],
-        ...diary,
-        updatedAt: new Date().toISOString(),
-        history: [
-          ...diaries.value[existingIndex].history,
-          {
-            time: new Date().toISOString(),
-            action: '修改'
-          }
-        ]
-      }
-      saveToStorage(STORAGE_KEY, diaries.value)
-      return diaries.value[existingIndex]
-    } else {
-      const newDiary = {
-        id: Date.now(),
-        ...diary,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        history: [{
-          time: new Date().toISOString(),
-          action: '创建'
-        }]
-      }
-      diaries.value.push(newDiary)
-      saveToStorage(STORAGE_KEY, diaries.value)
-      return newDiary
+  const fetchDiaries = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const result = await diaryAPI.getAll()
+      diaries.value = result.data || []
+    } catch (err) {
+      error.value = err.message
+      console.error('Failed to fetch diaries:', err)
+    } finally {
+      isLoading.value = false
     }
   }
 
-  const updateDiary = (id, updates, changes = null) => {
-    const index = diaries.value.findIndex(d => d.id === id)
-    if (index !== -1) {
-      const diary = {
-        ...diaries.value[index],
-        ...updates,
-        updatedAt: new Date().toISOString()
+  const fetchQuickOptions = async () => {
+    try {
+      const result = await quickOptionsAPI.get()
+      if (result.data) {
+        const categories = result.data.categories || []
+        const labels = result.data.labels || {}
+        
+        quickOptions.value = {}
+        categoryLabels.value = labels
+        
+        categories.forEach(cat => {
+          quickOptions.value[cat.id] = []
+        })
+      }
+    } catch (err) {
+      console.error('Failed to fetch quick options:', err)
+    }
+  }
+
+  const addDiary = async (diary) => {
+    try {
+      const result = await diaryAPI.create(diary)
+      if (result.success) {
+        diaries.value.push(result.data)
+        return result.data
+      }
+    } catch (err) {
+      error.value = err.message
+      console.error('Failed to add diary:', err)
+    }
+    return null
+  }
+
+  const updateDiary = async (id, updates, changes = null) => {
+    try {
+      const existingIndex = diaries.value.findIndex(d => d.id === id)
+      const existingDiary = existingIndex !== -1 ? diaries.value[existingIndex] : null
+      
+      const diaryData = {
+        ...updates
       }
       
-      // 只有在有实际变更时才添加历史记录
       if (changes && changes.length > 0) {
         const historyEntry = {
           time: new Date().toISOString(),
           action: '修改',
           changes: changes
         }
-        diary.history = [
-          ...diaries.value[index].history,
+        diaryData.history = [
+          ...(existingDiary?.history || []),
           historyEntry
         ]
       }
       
-      diaries.value[index] = diary
-      saveToStorage(STORAGE_KEY, diaries.value)
-      return diaries.value[index]
+      const result = await diaryAPI.update(id, diaryData)
+      if (result.success) {
+        if (existingIndex !== -1) {
+          diaries.value[existingIndex] = result.data
+        } else {
+          diaries.value.push(result.data)
+        }
+        return result.data
+      }
+    } catch (err) {
+      error.value = err.message
+      console.error('Failed to update diary:', err)
     }
     return null
   }
 
-  const deleteDiary = (id) => {
-    const index = diaries.value.findIndex(d => d.id === id)
-    if (index !== -1) {
-      const deleted = diaries.value.splice(index, 1)[0]
-      saveToStorage(STORAGE_KEY, diaries.value)
-      return deleted
+  const deleteDiary = async (id) => {
+    try {
+      const result = await diaryAPI.delete(id)
+      if (result.success) {
+        const index = diaries.value.findIndex(d => d.id === id)
+        if (index !== -1) {
+          diaries.value.splice(index, 1)
+        }
+        return true
+      }
+    } catch (err) {
+      error.value = err.message
+      console.error('Failed to delete diary:', err)
     }
-    return null
+    return false
   }
 
   const setViewMode = (mode) => {
     viewMode.value = mode
-    saveToStorage(VIEW_STORAGE_KEY, mode)
+    localStorage.setItem('calendar_view_mode', mode)
   }
 
-  const addQuickOption = (category, option) => {
-    if (!quickOptions.value[category]) {
-      quickOptions.value[category] = []
+  const addQuickOption = async (categoryId, option) => {
+    if (!quickOptions.value[categoryId]) {
+      quickOptions.value[categoryId] = []
     }
-    if (!quickOptions.value[category].includes(option)) {
-      quickOptions.value[category].push(option)
-      saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+    if (!quickOptions.value[categoryId].includes(option)) {
+      quickOptions.value[categoryId].push(option)
     }
   }
 
-  const removeQuickOption = (category, option) => {
-    if (quickOptions.value[category]) {
-      const index = quickOptions.value[category].indexOf(option)
+  const removeQuickOption = async (categoryId, option) => {
+    if (quickOptions.value[categoryId]) {
+      const index = quickOptions.value[categoryId].indexOf(option)
       if (index !== -1) {
-        quickOptions.value[category].splice(index, 1)
-        saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
+        quickOptions.value[categoryId].splice(index, 1)
       }
     }
   }
 
-  const addQuickCategory = (categoryKey, categoryLabel) => {
-    if (!quickOptions.value[categoryKey]) {
-      quickOptions.value[categoryKey] = []
-      categoryLabels.value[categoryKey] = categoryLabel
-      saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
-      saveToStorage(CATEGORY_LABELS_KEY, categoryLabels.value)
+  const addQuickCategory = async (categoryName, categoryLabel = null) => {
+    try {
+      const result = await quickOptionsAPI.addCategory({ 
+        name: categoryName,
+        label: categoryLabel
+      })
+      if (result.success) {
+        const newCategory = result.data
+        quickOptions.value[newCategory.id] = []
+        if (categoryLabel) {
+          categoryLabels.value[categoryLabel] = categoryName
+        }
+        return newCategory
+      }
+    } catch (err) {
+      console.error('Failed to add category:', err)
     }
+    return null
   }
 
-  const removeQuickCategory = (categoryKey) => {
-    if (quickOptions.value[categoryKey]) {
-      delete quickOptions.value[categoryKey]
-      delete categoryLabels.value[categoryKey]
-      saveToStorage(QUICK_OPTIONS_KEY, quickOptions.value)
-      saveToStorage(CATEGORY_LABELS_KEY, categoryLabels.value)
+  const updateQuickCategory = async (categoryId, categoryName, categoryLabel = null) => {
+    try {
+      const result = await quickOptionsAPI.updateCategory(categoryId, {
+        name: categoryName,
+        label: categoryLabel
+      })
+      if (result.success) {
+        const categories = Object.keys(quickOptions.value)
+        const oldCategory = categories.find(k => k === categoryId)
+        
+        if (oldCategory && oldCategory !== categoryId) {
+          quickOptions.value[categoryId] = quickOptions.value[oldCategory] || []
+          delete quickOptions.value[oldCategory]
+        }
+        
+        if (categoryLabel) {
+          categoryLabels.value[categoryLabel] = categoryName
+        }
+        return result.data
+      }
+    } catch (err) {
+      console.error('Failed to update category:', err)
     }
+    return null
+  }
+
+  const removeQuickCategory = async (categoryId) => {
+    try {
+      const result = await quickOptionsAPI.deleteCategory(categoryId)
+      if (result.success) {
+        const labels = Object.keys(categoryLabels.value)
+        labels.forEach(label => {
+          const category = Object.keys(quickOptions.value).find(k => k === categoryId)
+          if (category) {
+            const oldLabel = Object.keys(categoryLabels.value).find(
+              l => categoryLabels.value[l] === categoryId
+            )
+            if (oldLabel) {
+              delete categoryLabels.value[oldLabel]
+            }
+          }
+        })
+        delete quickOptions.value[categoryId]
+        return true
+      }
+    } catch (err) {
+      console.error('Failed to remove category:', err)
+    }
+    return false
   }
 
   const setCurrentDate = (date) => {
@@ -171,13 +217,29 @@ export const useDiaryStore = defineStore('diary', () => {
     currentDate.value = newDate
   }
 
+  const initStore = async () => {
+    await Promise.all([
+      fetchDiaries(),
+      fetchQuickOptions()
+    ])
+    
+    const savedViewMode = localStorage.getItem('calendar_view_mode')
+    if (savedViewMode) {
+      viewMode.value = savedViewMode
+    }
+  }
+
   return {
     diaries,
     viewMode,
     quickOptions,
     categoryLabels,
     currentDate,
+    isLoading,
+    error,
     getDiariesByDate,
+    fetchDiaries,
+    fetchQuickOptions,
     addDiary,
     updateDiary,
     deleteDiary,
@@ -185,8 +247,10 @@ export const useDiaryStore = defineStore('diary', () => {
     addQuickOption,
     removeQuickOption,
     addQuickCategory,
+    updateQuickCategory,
     removeQuickCategory,
-    setCurrentDate
+    setCurrentDate,
+    initStore
   }
 })
 

@@ -1,0 +1,20 @@
+{
+  "categories": [
+    {
+      "id": "abc123",
+      "name": "市场",
+      "label": "market",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "def456",
+      "name": "指数",
+      "label": "index",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "labels": {
+    "market": "市场",
+    "index": "指数"
+  }
+}
