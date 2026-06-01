@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch, nextTick } from 'vue'
+import { reactive, ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 import ConfirmModal from './ConfirmModal.vue'
 
