@@ -13,80 +13,103 @@
           </div>
           
           <div class="modal-body">
-            <div class="add-group-section">
-              <div class="add-group-header">
-                <h3>添加新分组</h3>
+            <div class="tabs-container">
+              <div class="tabs-header">
+                <button 
+                  v-for="group in groups" 
+                  :key="group.id"
+                  :class="['tab-btn', { active: activeGroupId === group.id }]"
+                  @click="activeGroupId = group.id"
+                >
+                  {{ group.name }}
+                  <button 
+                    v-if="groups.length > 1" 
+                    @click.stop="removeGroup(group.id)" 
+                    class="tab-close-btn"
+                    title="删除分组"
+                  >×</button>
+                </button>
+                <button 
+                  v-if="groups.length < maxGroups"
+                  class="tab-btn add-tab-btn" 
+                  @click="showAddGroup = true"
+                >+</button>
               </div>
-              <div class="add-group-inputs">
+              
+              <div v-if="showAddGroup" class="add-group-row">
                 <input 
+                  ref="addGroupInput"
                   v-model="newGroupName" 
                   type="text" 
-                  placeholder="分组名称"
+                  placeholder="输入分组名称"
                   class="group-name-input"
                   @keyup.enter="addGroup"
+                  @keyup.escape="showAddGroup = false"
                 />
-                <button @click="addGroup" class="add-group-btn">添加</button>
+                <button @click="addGroup" class="add-group-btn">确定</button>
+                <button @click="cancelAddGroup" class="cancel-btn">取消</button>
               </div>
             </div>
             
-            <div v-for="group in groups" :key="group.id" class="group-section">
-              <div class="group-header">
-                <h3>{{ group.name }}</h3>
-                <div class="group-actions">
-                  <div class="add-category">
-                    <input 
-                      v-model="newCategoryNames[group.id]" 
-                      type="text" 
-                      :placeholder="'添加类别'"
-                      class="category-input"
-                      @keyup.enter="addCategory(group.id)"
-                    />
-                    <button @click="addCategory(group.id)" class="add-btn">+</button>
-                  </div>
-                  <button @click="removeGroup(group.id)" class="remove-group-btn" title="删除分组">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <div v-for="category in group.categories" :key="category.id" class="category-section">
-                <div class="category-header">
-                  <h4>{{ category.name }}</h4>
-                  <div class="category-actions">
-                    <div class="add-option">
-                      <input 
-                        v-model="newOptions[category.id]" 
-                        type="text" 
-                        :placeholder="'添加选项'"
-                        class="option-input"
-                        @keyup.enter="addOption(category.id)"
-                      />
-                      <button @click="addOption(category.id)" class="add-btn">+</button>
-                    </div>
-                    <button @click="removeCategory(group.id, category.id)" class="remove-category-btn" title="删除类别">
+            <div v-if="currentGroup" class="group-content">
+              <div class="category-list">
+                <div v-for="category in currentGroup.categories" :key="category.id" class="category-card">
+                  <div class="category-header-row">
+                    <span class="category-name">{{ category.name }}</span>
+                    <button @click="removeCategory(currentGroup.id, category.id)" class="category-delete-btn" title="删除类别">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
                       </svg>
                     </button>
                   </div>
-                </div>
-                <div class="options-list">
-                  <div 
-                    v-for="option in category.options" 
-                    :key="option" 
-                    class="option-item"
-                  >
-                    <span>{{ option }}</span>
-                    <button @click="removeOption(group.id, category.id, option)" class="remove-btn">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                      </svg>
-                    </button>
+                  
+                  <div class="options-area">
+                    <div class="options-display">
+                      <div 
+                        v-for="option in category.options" 
+                        :key="option" 
+                        class="option-tag"
+                      >
+                        {{ option }}
+                        <button @click="removeOption(currentGroup.id, category.id, option)" class="option-remove">×</button>
+                      </div>
+                      <div v-if="category.options.length === 0" class="empty-options">
+                        暂无选项，点击下方添加
+                      </div>
+                    </div>
+                    
+                    <div class="add-option-row">
+                      <input 
+                        v-model="newOptions[category.id]" 
+                        type="text" 
+                        placeholder="添加选项"
+                        class="option-input"
+                        @keyup.enter="addOption(category.id)"
+                      />
+                      <button @click="addOption(category.id)" class="add-option-btn">+</button>
+                    </div>
                   </div>
                 </div>
               </div>
+              
+              <div class="add-category-row">
+                <input 
+                  v-model="newCategoryNames[currentGroup.id]" 
+                  type="text" 
+                  placeholder="添加新类别"
+                  class="category-input"
+                  @keyup.enter="addCategory(currentGroup.id)"
+                />
+                <button @click="addCategory(currentGroup.id)" class="add-category-btn">+ 添加类别</button>
+              </div>
+            </div>
+            
+            <div v-else class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <p>暂无分组，请创建一个</p>
             </div>
           </div>
           
@@ -110,7 +133,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, computed, watch, nextTick } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 import ConfirmModal from './ConfirmModal.vue'
 
@@ -120,9 +143,17 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const store = useDiaryStore()
 
-// 使用计算属性从 store 获取分组数据
 const groups = computed(() => {
   return store.quickOptionsGroups || []
+})
+
+const activeGroupId = ref('')
+const showAddGroup = ref(false)
+const maxGroups = 10
+const addGroupInput = ref(null)
+
+const currentGroup = computed(() => {
+  return groups.value.find(g => g.id === activeGroupId.value)
 })
 
 const newOptions = reactive({})
@@ -135,6 +166,20 @@ const confirmMessage = ref('')
 const confirmType = ref('info')
 const confirmCallback = ref(null)
 const confirmShowCancel = ref(true)
+
+watch(groups, (newGroups) => {
+  if (newGroups.length > 0 && !activeGroupId.value) {
+    activeGroupId.value = newGroups[0].id
+  }
+}, { immediate: true })
+
+watch(() => props.visible, (val) => {
+  if (val && showAddGroup.value) {
+    nextTick(() => {
+      addGroupInput.value?.focus()
+    })
+  }
+})
 
 // 背景锁定功能
 const handleTouchMove = (e) => {
@@ -185,8 +230,17 @@ const addGroup = async () => {
     return
   }
   
-  await store.addQuickOptionsGroup(name)
+  const result = await store.addQuickOptionsGroup(name)
+  if (result) {
+    activeGroupId.value = result.id
+  }
   newGroupName.value = ''
+  showAddGroup.value = false
+}
+
+const cancelAddGroup = () => {
+  newGroupName.value = ''
+  showAddGroup.value = false
 }
 
 const removeGroup = (groupId) => {
@@ -313,109 +367,156 @@ const handleClose = () => {
 .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 0;
 }
 
-.add-group-section {
-  background: #f8f9fa;
-  padding: 14px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px dashed #ddd;
+.tabs-container {
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
 }
 
-.add-group-header {
-  margin-bottom: 10px;
-}
-
-.add-group-header h3 {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.add-group-inputs {
+.tabs-header {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tab-btn {
+  display: flex;
   align-items: center;
-  flex-wrap: wrap;
-}
-
-.group-name-input {
-  padding: 7px 11px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 13px;
-  min-width: 180px;
-}
-
-.add-group-btn {
-  padding: 7px 14px;
+  gap: 6px;
+  padding: 8px 14px;
   border: none;
-  border-radius: 4px;
-  background: #6c757d;
-  color: white;
-  font-size: 13px;
+  border-radius: 6px;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.tab-btn:hover {
+  background: #e8eaed;
+}
+
+.tab-btn.active {
+  background: white;
+  color: #4080ff;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.tab-close-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: #eee;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s;
 }
 
-.add-group-btn:hover {
-  background: #5a6268;
+.tab-close-btn:hover {
+  background: #ff6b6b;
+  color: white;
 }
 
-.group-section {
-  background: #fafbfc;
+.add-tab-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 18px;
+  color: #4080ff;
+}
+
+.add-tab-btn:hover {
+  background: rgba(64, 128, 255, 0.1);
+}
+
+.add-group-row {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-top: 1px solid #eee;
+  align-items: center;
+}
+
+.add-group-row .group-name-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #4080ff;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.add-group-row .add-group-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #4080ff;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #f5f7fa;
+}
+
+.group-content {
+  padding: 16px;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-card {
+  background: #f8f9fa;
   border-radius: 8px;
   padding: 14px;
-  margin-bottom: 16px;
+  border: 1px solid #eee;
 }
 
-.group-section:last-child {
-  margin-bottom: 0;
-}
-
-.group-header {
+.category-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
-.group-header h3 {
-  margin: 0;
-  font-size: 15px;
-  color: #333;
+.category-name {
+  font-size: 14px;
   font-weight: 600;
+  color: #333;
 }
 
-.group-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.add-category {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.category-input {
-  padding: 5px 9px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 12px;
-  width: 120px;
-}
-
-.remove-group-btn {
-  width: 28px;
-  height: 28px;
-  border: 1px solid #e0e0e0;
+.category-delete-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ddd;
   border-radius: 4px;
   background: white;
   color: #999;
@@ -424,65 +525,80 @@ const handleClose = () => {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  flex-shrink: 0;
 }
 
-.remove-group-btn:hover {
+.category-delete-btn:hover {
   background: #fff5f5;
   border-color: #ff6b6b;
   color: #ff6b6b;
 }
 
-.category-section {
-  background: white;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #eee;
-}
-
-.category-section:last-child {
-  margin-bottom: 0;
-}
-
-.category-header {
+.options-area {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.options-display {
+  display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.category-header h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
-  font-weight: 500;
-}
-
-.category-actions {
+.option-tag {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.add-option {
-  display: flex;
   gap: 6px;
-  align-items: center;
-}
-
-.option-input {
-  padding: 4px 8px;
-  border: 1px solid #e0e0e0;
+  padding: 5px 10px;
+  background: white;
   border-radius: 4px;
   font-size: 12px;
-  width: 100px;
+  color: #333;
+  border: 1px solid #eee;
 }
 
-.add-btn {
-  padding: 4px 10px;
+.option-remove {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.option-remove:hover {
+  background: #ff6b6b;
+  color: white;
+}
+
+.empty-options {
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.add-option-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.add-option-row .option-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.add-option-btn {
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
   background: #4080ff;
@@ -492,63 +608,58 @@ const handleClose = () => {
   transition: all 0.2s;
 }
 
-.add-btn:hover {
+.add-option-btn:hover {
   background: #3070ef;
 }
 
-.remove-category-btn {
-  width: 24px;
-  height: 24px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: white;
-  color: #999;
-  cursor: pointer;
+.add-category-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #ddd;
+}
+
+.add-category-row .category-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fafafa;
+}
+
+.add-category-btn {
+  padding: 8px 16px;
+  border: 1px dashed #4080ff;
+  border-radius: 6px;
+  background: rgba(64, 128, 255, 0.05);
+  color: #4080ff;
+  font-size: 13px;
+  cursor: pointer;
   transition: all 0.2s;
-  flex-shrink: 0;
 }
 
-.remove-category-btn:hover {
-  background: #fff5f5;
-  border-color: #ff6b6b;
-  color: #ff6b6b;
+.add-category-btn:hover {
+  background: rgba(64, 128, 255, 0.1);
 }
 
-.options-list {
+.empty-state {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.option-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  background: #f5f7fa;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #333;
-}
-
-.remove-btn {
-  width: 18px;
-  height: 18px;
-  border: none;
-  background: transparent;
-  color: #999;
-  cursor: pointer;
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
+  padding: 60px 20px;
+  color: #999;
 }
 
-.remove-btn:hover {
-  color: #ff6b6b;
+.empty-state svg {
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .modal-footer {
@@ -583,31 +694,55 @@ const handleClose = () => {
   }
   
   .modal-header {
-    padding: 14px;
+    padding: 12px;
   }
   
   .modal-header h2 {
     font-size: 16px;
   }
   
-  .modal-body {
-    padding: 14px;
+  .tabs-header {
+    padding: 8px 12px;
   }
   
-  .group-section {
-    margin-bottom: 14px;
+  .tab-btn {
+    padding: 7px 12px;
+    font-size: 13px;
   }
   
-  .category-section {
-    margin-bottom: 10px;
+  .add-group-row {
+    padding: 10px 12px;
+    flex-wrap: wrap;
   }
   
-  .option-input {
-    width: 80px;
+  .add-group-row .group-name-input {
+    width: 100%;
+    order: 1;
+  }
+  
+  .add-group-row .add-group-btn,
+  .add-group-row .cancel-btn {
+    order: 2;
+  }
+  
+  .group-content {
+    padding: 12px;
+  }
+  
+  .category-card {
+    padding: 12px;
+  }
+  
+  .add-category-row {
+    flex-wrap: wrap;
+  }
+  
+  .add-category-row .category-input {
+    width: 100%;
   }
   
   .modal-footer {
-    padding: 12px 14px;
+    padding: 12px;
   }
   
   .btn {

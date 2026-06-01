@@ -73,49 +73,57 @@
             
             <div class="market-section">
               <div v-if="quickOptionsGroups.length > 1" class="group-selector">
-                <label>选择分组</label>
-                <select v-model="selectedGroupId" class="form-input group-select">
-                  <option value="all">显示所有</option>
-                  <option v-for="group in quickOptionsGroups" :key="group.id" :value="group.id">
-                    {{ group.name }}
-                  </option>
-                </select>
+                <div class="group-select-wrapper">
+                  <div class="group-select-label">选择分组</div>
+                  <div class="group-select-options">
+                    <button 
+                      v-for="group in quickOptionsGroups" 
+                      :key="group.id"
+                      :class="['group-select-btn', { active: selectedGroupId === group.id }]"
+                      @click="selectedGroupId = group.id"
+                    >
+                      {{ group.name }}
+                    </button>
+                  </div>
+                </div>
               </div>
               
-              <div class="market-grid">
+              <div class="categories-container">
                 <div 
                   v-for="item in filteredCategories" 
                   :key="item.categoryId"
-                  class="market-item"
+                  class="category-block"
                 >
-                  <div class="market-label-row">
-                    <div class="market-label-info">
-                      <label>{{ item.categoryName }}</label>
-                      <div class="color-marks">
-                        <button 
-                          :class="['mark-btn', 'up', { active: form[item.categoryId + 'Mark'] === 'up' }]"
-                          @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'up' ? '' : 'up'"
-                        ></button>
-                        <button 
-                          :class="['mark-btn', 'down', { active: form[item.categoryId + 'Mark'] === 'down' }]"
-                          @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'down' ? '' : 'down'"
-                        ></button>
-                      </div>
+                  <div class="category-header">
+                    <span class="category-title">{{ item.categoryName }}</span>
+                    <div class="mark-buttons">
+                      <button 
+                        :class="['mark-btn', 'up', { active: form[item.categoryId + 'Mark'] === 'up' }]"
+                        @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'up' ? '' : 'up'"
+                        title="上升"
+                      >↑</button>
+                      <button 
+                        :class="['mark-btn', 'down', { active: form[item.categoryId + 'Mark'] === 'down' }]"
+                        @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'down' ? '' : 'down'"
+                        title="下降"
+                      >↓</button>
                     </div>
                   </div>
-                  <div class="quick-input">
-                    <div class="input-with-clear">
-                      <input v-model="form[item.categoryId]" type="text" class="form-input" placeholder="输入或选择" />
-                      <button v-if="form[item.categoryId]" class="clear-btn" @click="form[item.categoryId] = ''">×</button>
-                    </div>
-                    <div class="quick-options">
-                      <button 
-                        v-for="opt in item.options" 
-                        :key="opt"
-                        :class="['quick-btn', { selected: form[item.categoryId] === opt }]"
-                        @click="form[item.categoryId] = opt"
-                      >{{ opt }}</button>
-                    </div>
+                  <div class="category-input-area">
+                    <input 
+                      v-model="form[item.categoryId]" 
+                      type="text" 
+                      class="form-input category-input" 
+                      placeholder="输入内容" 
+                    />
+                  </div>
+                  <div v-if="item.options && item.options.length > 0" class="category-options">
+                    <button 
+                      v-for="opt in item.options" 
+                      :key="opt"
+                      :class="['option-btn', { selected: form[item.categoryId] === opt }]"
+                      @click="form[item.categoryId] = opt"
+                    >{{ opt }}</button>
                   </div>
                 </div>
               </div>
@@ -336,13 +344,14 @@ const store = useDiaryStore()
 const quickOptions = computed(() => store.quickOptions)
 const categoryLabels = computed(() => store.categoryLabels)
 const quickOptionsGroups = computed(() => store.quickOptionsGroups)
-const selectedGroupId = ref('all')
+const selectedGroupId = ref('')
 
 const filteredCategories = computed(() => {
   const categories = []
   if (quickOptionsGroups.value.length > 0) {
+    const targetGroupId = selectedGroupId.value || quickOptionsGroups.value[0]?.id
     quickOptionsGroups.value.forEach(group => {
-      if (selectedGroupId.value === 'all' || selectedGroupId.value === group.id) {
+      if (targetGroupId === group.id) {
         group.categories.forEach(cat => {
           categories.push({
             categoryId: cat.id,
@@ -353,7 +362,6 @@ const filteredCategories = computed(() => {
       }
     })
   } else {
-    // 向后兼容旧数据结构
     Object.keys(quickOptions.value).forEach(categoryId => {
       categories.push({
         categoryId,
@@ -364,6 +372,12 @@ const filteredCategories = computed(() => {
   }
   return categories
 })
+
+watch(quickOptionsGroups, (groups) => {
+  if (groups.length > 0 && !selectedGroupId.value) {
+    selectedGroupId.value = groups[0].id
+  }
+}, { immediate: true })
 
 const confirmVisible = ref(false)
 const confirmTitle = ref('提示')
@@ -1140,88 +1154,87 @@ const handleClose = () => {
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 14px;
+  background: #f8f9fa;
 }
 
 .group-selector {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.group-selector label {
-  display: block;
-  margin-bottom: 6px;
+.group-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-select-label {
   font-size: 13px;
   font-weight: 500;
-  color: #333;
+  color: #666;
 }
 
-.group-select {
-  padding: 9px 12px;
+.group-select-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group-select-btn {
+  padding: 8px 16px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-  width: 100%;
   background: white;
+  font-size: 13px;
+  color: #666;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.group-select:focus {
+.group-select-btn:hover {
   border-color: #4080ff;
+  color: #4080ff;
 }
 
-.group-select:hover {
-  border-color: #c0c0c0;
+.group-select-btn.active {
+  background: #4080ff;
+  border-color: #4080ff;
+  color: white;
 }
 
-.market-section h3 {
-  font-size: 15px;
-  margin: 0 0 12px 0;
-  color: #333;
-  font-weight: 600;
-}
-
-.market-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.market-item {
-  width: calc(50% - 5px);
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.market-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.market-label-info {
-  display: flex;
-  align-items: center;
+.categories-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 
-.market-label-row label {
-  margin: 0;
-  font-weight: 600;
+.category-block {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #eee;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.category-title {
   font-size: 14px;
+  font-weight: 600;
   color: #333;
 }
 
-.color-marks {
+.mark-buttons {
   display: flex;
   gap: 6px;
 }
 
 .mark-btn {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border: 2px solid #ddd;
   border-radius: 50%;
   cursor: pointer;
@@ -1229,58 +1242,75 @@ const handleClose = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .mark-btn.up {
   background: #fff;
-  border-color: #ff4444;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
 }
 
 .mark-btn.up.active {
-  background: #ff4444;
-  border-color: #ff4444;
+  background: #ff6b6b;
+  color: white;
 }
 
 .mark-btn.down {
   background: #fff;
-  border-color: #00c853;
+  border-color: #6bcb77;
+  color: #6bcb77;
 }
 
 .mark-btn.down.active {
-  background: #00c853;
-  border-color: #00c853;
+  background: #6bcb77;
+  color: white;
 }
 
-.quick-input {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.category-input-area {
+  margin-bottom: 10px;
 }
 
-.quick-options {
+.category-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.category-input:focus {
+  border-color: #4080ff;
+}
+
+.category-options {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.quick-btn {
-  padding: 4px 9px;
+.option-btn {
+  padding: 5px 11px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   background: white;
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: #555;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.quick-btn:hover {
+.option-btn:hover {
   background: #f0f5ff;
   border-color: #4080ff;
   color: #4080ff;
 }
 
-.quick-btn.selected {
+.option-btn.selected {
   background: #4080ff;
   border-color: #4080ff;
   color: white;
@@ -1984,60 +2014,54 @@ const handleClose = () => {
   }
   
   .market-section {
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   
   .group-selector {
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
   
-  .group-selector label {
+  .group-select-label {
     font-size: 12px;
   }
   
-  .group-select {
-    font-size: 14px;
-    padding: 10px 12px;
-    min-height: 40px;
+  .group-select-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+    min-height: 36px;
   }
   
-  .market-grid {
-    gap: 8px;
+  .categories-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
   
-  .market-item {
-    width: 100%;
-    padding: 10px;
-    background: white;
+  .category-block {
+    padding: 12px;
     border-radius: 6px;
   }
   
-  .market-label-row {
-    margin-bottom: 6px;
-  }
-  
-  .market-label-row label {
+  .category-title {
     font-size: 13px;
   }
   
   .mark-btn {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-    min-height: 26px;
-    font-size: 12px;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
   }
   
-  .quick-options {
-    gap: 4px;
+  .category-input {
+    font-size: 13px;
+    padding: 9px 11px;
+    min-height: 38px;
   }
   
-  .quick-btn {
+  .option-btn {
     padding: 4px 10px;
     font-size: 12px;
-    min-height: 28px;
   }
   
   .image-upload-area {
@@ -2380,26 +2404,35 @@ const handleClose = () => {
   }
   
   .market-section {
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 10px;
   }
   
-  .market-item {
-    padding: 6px;
-    margin-bottom: 6px;
+  .group-select-btn {
+    padding: 6px 12px;
+    font-size: 12px;
   }
   
-  .market-label-row label {
-    font-size: 11px;
+  .category-block {
+    padding: 10px;
+  }
+  
+  .category-title {
+    font-size: 12px;
   }
   
   .mark-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
   }
   
-  .quick-btn {
+  .category-input {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  
+  .option-btn {
     padding: 3px 8px;
     font-size: 11px;
   }
