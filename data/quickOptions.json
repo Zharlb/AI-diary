@@ -17,5 +17,20 @@
       ]
     }
   ],
-  "labels": {}
+  "labels": {},
+  "groups": [
+    {
+      "id": "mpux7pe9nkpjgij39",
+      "name": "测试分组",
+      "categories": [
+        {
+          "id": "mpux83ge2vqiykr65",
+          "name": "测试类别",
+          "options": [],
+          "createdAt": "2026-06-01T08:02:38.846Z"
+        }
+      ],
+      "createdAt": "2026-06-01T08:02:20.625Z"
+    }
+  ]
 }

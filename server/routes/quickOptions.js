@@ -25,6 +25,10 @@ router.post('/api/quick-options/groups', async (ctx) => {
     labels: {}
   });
   
+  if (!options.groups) {
+    options.groups = [];
+  }
+  
   const newGroup = {
     id: generateId(),
     name: body.name,
