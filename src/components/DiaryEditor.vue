@@ -101,12 +101,12 @@
                         :class="['mark-btn', 'up', { active: form[item.categoryId + 'Mark'] === 'up' }]"
                         @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'up' ? '' : 'up'"
                         title="上升"
-                      >↑</button>
+                      ></button>
                       <button 
                         :class="['mark-btn', 'down', { active: form[item.categoryId + 'Mark'] === 'down' }]"
                         @click="form[item.categoryId + 'Mark'] = form[item.categoryId + 'Mark'] === 'down' ? '' : 'down'"
                         title="下降"
-                      >↓</button>
+                      ></button>
                     </div>
                   </div>
                   <div class="category-input-area">
@@ -1233,8 +1233,8 @@ const handleClose = () => {
 }
 
 .mark-btn {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border: 2px solid #ddd;
   border-radius: 50%;
   cursor: pointer;
@@ -1242,30 +1242,26 @@ const handleClose = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
 }
 
 .mark-btn.up {
   background: #fff;
-  border-color: #ff6b6b;
-  color: #ff6b6b;
+  border-color: #ff4444;
 }
 
 .mark-btn.up.active {
-  background: #ff6b6b;
-  color: white;
+  background: #ff4444;
+  border-color: #ff4444;
 }
 
 .mark-btn.down {
   background: #fff;
-  border-color: #6bcb77;
-  color: #6bcb77;
+  border-color: #00c853;
 }
 
 .mark-btn.down.active {
-  background: #6bcb77;
-  color: white;
+  background: #00c853;
+  border-color: #00c853;
 }
 
 .category-input-area {

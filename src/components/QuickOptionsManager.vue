@@ -173,11 +173,16 @@ watch(groups, (newGroups) => {
   }
 }, { immediate: true })
 
-watch(() => props.visible, (val) => {
+watch(() => props.visible, async (val) => {
   if (val && showAddGroup.value) {
-    nextTick(() => {
-      addGroupInput.value?.focus()
-    })
+    await nextTick()
+    try {
+      if (addGroupInput.value) {
+        addGroupInput.value.focus()
+      }
+    } catch (e) {
+      console.warn('Failed to focus input:', e)
+    }
   }
 })
 
