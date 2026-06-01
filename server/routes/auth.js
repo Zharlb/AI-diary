@@ -1,6 +1,10 @@
-const Router = require('koa-router')
-const fs = require('fs')
-const path = require('path')
+import Router from 'koa-router'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const router = new Router({ prefix: '/api/auth' })
 
@@ -239,4 +243,4 @@ router.delete('/users/:id', async (ctx) => {
   ctx.body = { success: true }
 })
 
-module.exports = router
+export default router
