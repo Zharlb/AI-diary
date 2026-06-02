@@ -77,9 +77,10 @@
 
 <script setup>
 import { ref, reactive, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-const emit = defineEmits(['login-success'])
+const router = useRouter()
 const store = useAuthStore()
 
 const form = reactive({
@@ -143,7 +144,7 @@ const handleLogin = async () => {
   const result = await store.login(form.username, form.password)
   
   if (result.success) {
-    emit('login-success')
+    await router.push('/')
   } else {
     errorMessage.value = result.message
     if (result.needSlider) {
