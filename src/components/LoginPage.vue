@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="login-form">
+      <div class="login-form" @keydown="handleKeydown">
         <div class="form-group">
           <label for="username">账号</label>
           <input 
@@ -87,6 +87,12 @@ const form = reactive({
   username: '',
   password: ''
 })
+
+const handleKeydown = (e) => {
+  if (e.key === 'Enter' && !isBlocked.value) {
+    handleLogin()
+  }
+}
 
 const showSlider = ref(false)
 const isDragging = ref(false)

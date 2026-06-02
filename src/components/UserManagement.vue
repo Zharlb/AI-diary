@@ -62,71 +62,100 @@
 
     <transition name="modal-fade">
       <div class="modal-overlay" v-if="showModal" @click.self="closeModal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>{{ isEdit ? '编辑用户' : '新增用户' }}</h3>
-            <button class="close-btn" @click="closeModal">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18"/>
-                <path d="M6 6l12 12"/>
-              </svg>
-            </button>
+        <transition name="modal-scale">
+          <div class="modal-content" v-if="showModal">
+            <div class="modal-header">
+              <h3>{{ isEdit ? '编辑用户' : '新增用户' }}</h3>
+              <button class="close-btn" @click="closeModal">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18"/>
+                  <path d="M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            
+            <div class="modal-body">
+              <div class="form-group">
+                <label>账号 <span class="required">*</span></label>
+                <input 
+                  v-model="form.username" 
+                  type="text" 
+                  placeholder="请输入账号"
+                  :disabled="isEdit"
+                  :class="['form-input', { error: errors.username }]"
+                />
+                <span v-if="errors.username" class="error-text">{{ errors.username }}</span>
+              </div>
+              
+              <div class="form-group">
+                <label>姓名 <span class="required">*</span></label>
+                <input 
+                  v-model="form.name" 
+                  type="text" 
+                  placeholder="请输入姓名"
+                  :class="['form-input', { error: errors.name }]"
+                />
+                <span v-if="errors.name" class="error-text">{{ errors.name }}</span>
+              </div>
+              
+              <div class="form-group" v-if="!isEdit">
+                <label>密码 <span class="required">*</span></label>
+                <input 
+                  v-model="form.password" 
+                  type="password" 
+                  placeholder="请输入密码"
+                  :class="['form-input', { error: errors.password }]"
+                />
+                <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
+              </div>
+              
+              <div class="form-group">
+                <label>角色 <span class="required">*</span></label>
+                <div class="radio-group">
+                  <label 
+                    :class="['radio-label', { active: form.role === 'user' }]"
+                    @click="form.role = 'user'"
+                  >
+                    <input type="radio" v-model="form.role" value="user" />
+                    <span>普通用户</span>
+                  </label>
+                  <label 
+                    :class="['radio-label', { active: form.role === 'admin' }]"
+                    @click="form.role = 'admin'"
+                  >
+                    <input type="radio" v-model="form.role" value="admin" />
+                    <span>管理员</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>状态 <span class="required">*</span></label>
+                <div class="radio-group">
+                  <label 
+                    :class="['radio-label', 'active-green', { active: form.status === 'active' }]"
+                    @click="form.status = 'active'"
+                  >
+                    <input type="radio" v-model="form.status" value="active" />
+                    <span>启用</span>
+                  </label>
+                  <label 
+                    :class="['radio-label', 'active-gray', { active: form.status === 'disabled' }]"
+                    @click="form.status = 'disabled'"
+                  >
+                    <input type="radio" v-model="form.status" value="disabled" />
+                    <span>禁用</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+              <button class="btn btn-cancel" @click="closeModal">取消</button>
+              <button class="btn btn-primary" @click="handleSave">保存</button>
+            </div>
           </div>
-          
-          <div class="modal-body">
-            <div class="form-group">
-              <label>账号 *</label>
-              <input 
-                v-model="form.username" 
-                type="text" 
-                placeholder="请输入账号"
-                :disabled="isEdit"
-                class="form-input"
-              />
-            </div>
-            
-            <div class="form-group">
-              <label>姓名 *</label>
-              <input 
-                v-model="form.name" 
-                type="text" 
-                placeholder="请输入姓名"
-                class="form-input"
-              />
-            </div>
-            
-            <div class="form-group" v-if="!isEdit">
-              <label>密码 *</label>
-              <input 
-                v-model="form.password" 
-                type="password" 
-                placeholder="请输入密码"
-                class="form-input"
-              />
-            </div>
-            
-            <div class="form-group">
-              <label>角色 *</label>
-              <select v-model="form.role" class="form-input">
-                <option value="user">普通用户</option>
-                <option value="admin">管理员</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label>状态 *</label>
-              <select v-model="form.status" class="form-input">
-                <option value="active">启用</option>
-                <option value="disabled">禁用</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="modal-footer">
-            <button class="btn btn-cancel" @click="closeModal">取消</button>
-            <button class="btn btn-primary" @click="handleSave">保存</button>
-          </div>
-        </div>
+        </transition>
       </div>
     </transition>
   </div>
@@ -135,7 +164,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const store = useAuthStore()
 const userList = ref([])
@@ -153,10 +181,40 @@ const form = reactive({
   status: 'active'
 })
 
+const errors = reactive({
+  username: '',
+  name: '',
+  password: ''
+})
+
 const currentUserId = ref('')
 
 const getRoleName = (role) => {
   return role === 'admin' ? '管理员' : '普通用户'
+}
+
+const validateForm = () => {
+  let isValid = true
+  errors.username = ''
+  errors.name = ''
+  errors.password = ''
+  
+  if (!form.username.trim()) {
+    errors.username = '请输入账号'
+    isValid = false
+  }
+  
+  if (!form.name.trim()) {
+    errors.name = '请输入姓名'
+    isValid = false
+  }
+  
+  if (!isEdit.value && !form.password.trim()) {
+    errors.password = '请输入密码'
+    isValid = false
+  }
+  
+  return isValid
 }
 
 const loadUsers = async () => {
@@ -174,6 +232,9 @@ const openAddModal = () => {
   form.password = ''
   form.role = 'user'
   form.status = 'active'
+  errors.username = ''
+  errors.name = ''
+  errors.password = ''
   showModal.value = true
 }
 
@@ -185,6 +246,9 @@ const openEditModal = (user) => {
   form.password = ''
   form.role = user.role
   form.status = user.status
+  errors.username = ''
+  errors.name = ''
+  errors.password = ''
   showModal.value = true
 }
 
@@ -193,13 +257,7 @@ const closeModal = () => {
 }
 
 const handleSave = async () => {
-  if (!form.username || !form.name) {
-    alert('请填写必填项')
-    return
-  }
-  
-  if (!isEdit.value && !form.password) {
-    alert('请设置密码')
+  if (!validateForm()) {
     return
   }
 
@@ -431,35 +489,38 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   width: 100%;
   max-width: 450px;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 18px 22px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
+  color: #333;
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #f5f5f5;
   color: #666;
   cursor: pointer;
@@ -474,51 +535,115 @@ onMounted(async () => {
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 22px;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-size: 14px;
   font-weight: 500;
   color: #333;
 }
 
+.required {
+  color: #ff6b6b;
+}
+
 .form-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  padding: 12px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
   font-size: 14px;
   box-sizing: border-box;
+  transition: all 0.2s;
+  background: #fafafa;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #4080ff;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(64, 128, 255, 0.1);
+}
+
+.form-input.error {
+  border-color: #ff6b6b;
 }
 
 .form-input:disabled {
-  background: #f5f5f5;
+  background: #f0f0f0;
   cursor: not-allowed;
+}
+
+.error-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff6b6b;
+}
+
+.radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.radio-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: #666;
+}
+
+.radio-label input {
+  display: none;
+}
+
+.radio-label:hover {
+  border-color: #4080ff;
+}
+
+.radio-label.active {
+  border-color: #4080ff;
+  background: #e3f2fd;
+  color: #4080ff;
+}
+
+.radio-label.active-green {
+  border-color: #2e7d32;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.radio-label.active-gray {
+  border-color: #9e9e9e;
+  background: #f5f5f5;
+  color: #9e9e9e;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 18px 22px;
   border-top: 1px solid #f0f0f0;
 }
 
 .btn {
-  padding: 8px 20px;
-  border-radius: 6px;
+  padding: 10px 24px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -541,7 +666,33 @@ onMounted(async () => {
 }
 
 .btn-primary:hover {
-  box-shadow: 0 2px 8px rgba(64, 128, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(64, 128, 255, 0.3);
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-scale-enter-active,
+.modal-scale-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-scale-enter-from {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.modal-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(-10px);
 }
 
 @media (max-width: 768px) {
@@ -572,6 +723,15 @@ onMounted(async () => {
   .col-actions {
     flex: 100%;
     justify-content: flex-start;
+  }
+
+  .modal-content {
+    margin: 12px;
+    border-radius: 12px;
+  }
+
+  .radio-group {
+    flex-direction: column;
   }
 }
 </style>
