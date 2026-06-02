@@ -136,6 +136,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 })
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token')
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : ''
+  }
+}
+
 const authAPI = {
   login: async (username, password) => {
     try {
@@ -153,7 +161,10 @@ const authAPI = {
 
   logout: async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      })
     } catch (error) {
       console.error('Logout API error:', error)
     }
@@ -161,7 +172,9 @@ const authAPI = {
 
   getUsers: async () => {
     try {
-      const response = await fetch('/api/auth/users')
+      const response = await fetch('/api/auth/users', {
+        headers: getAuthHeaders()
+      })
       return await response.json()
     } catch (error) {
       console.error('Get users API error:', error)
@@ -173,7 +186,7 @@ const authAPI = {
     try {
       const response = await fetch('/api/auth/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(userData)
       })
       return await response.json()
@@ -187,7 +200,7 @@ const authAPI = {
     try {
       const response = await fetch(`/api/auth/users/${userId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(userData)
       })
       return await response.json()
@@ -200,7 +213,8 @@ const authAPI = {
   deleteUser: async (userId) => {
     try {
       const response = await fetch(`/api/auth/users/${userId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: getAuthHeaders()
       })
       return await response.json()
     } catch (error) {

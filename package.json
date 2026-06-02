@@ -12,6 +12,7 @@
     "pinia": "^2.1.7",
     "v-viewer": "^3.0.23",
     "vue": "^3.4.21",
+    "vue-router": "^4.6.4",
     "wangeditor": "^4.7.15"
   },
   "devDependencies": {
